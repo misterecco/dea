@@ -20,18 +20,32 @@ instance Eq Loc where
 
 -- TODO(tkepa)
 instance Read Loc where
-    readsPrec _ input = do
-        let ls = lines input
-        case ls of
-            [] -> []
-            ("FUNCTION ENTER" : xs) -> [(CL "fun" "path" 0 0, unlines xs)]
-            _ : _ -> []
+    readsPrec _ input = case (lines input) of
+        [] -> []
+        (l:ls) -> do
+            let w = drop 1 $ words l
+            let fname = head w
+            let w2 = drop 2 w
+            let loc = head w2
+            let (path, pos) = span (/= ':') loc
+            let line = read $ takeWhile (/= ',') $ tail pos
+            let col = read $ takeWhile (/= '(') $ tail $ dropWhile (/= ',') pos
+            [(CL fname path line col, unlines ls)]
 
 
 type Stack = [Loc]
 
-data EventType = FunctionEnter | FunctionLeave | IfStmtThen | IfStmtElse
+data EventType = FunctionEnter | FunctionExit | IfStmtThen | IfStmtElse
     deriving (Show, Eq, Ord)
 
 data CodeEvent = CE EventType Loc Stack
     deriving (Show, Eq)
+
+instance Read CodeEvent where
+    readsPrec _ input = case (lines input) of
+        [] -> []
+        ("FUNCTION ENTER" : xs) -> do
+            let (locs, rest) = span (/= "FUNCTION ENTER END") xs
+            let st = map read locs
+            [(CE FunctionEnter (head st) (tail st), (unlines $ tail rest))]
+        _ : _ -> []
