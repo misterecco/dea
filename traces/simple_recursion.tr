@@ -1,0 +1,150 @@
+FUNCTION ENTER
+   1: ~ at /home/tomek/msc/dea/js/simple_recursion.js:1,1(this=0x2af993801521 <JSGlobal Object>)
+FUNCTION ENTER END
+--
+FUNCTION ENTER
+   2: ~print_factorial at /home/tomek/msc/dea/js/simple_recursion.js:6,25(this=0x2af993801521 <JSGlobal Object>, 5)
+   1: ~print_factorial at /home/tomek/msc/dea/js/simple_recursion.js:6,25(this=0x2af993801521 <JSGlobal Object>, 5)
+FUNCTION ENTER END
+--
+FUNCTION ENTER
+   3: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380aff9 <Object map = 0x3f175e10a7c9>)
+   2: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380aff9 <Object map = 0x3f175e10a7c9>)
+   1: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380aff9 <Object map = 0x3f175e10a7c9>)
+FUNCTION ENTER END
+--
+IF STMT - ELSE
+   3: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:2,3
+   3: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380aff9 <Object map = 0x3f175e10a7c9>)
+   2: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380aff9 <Object map = 0x3f175e10a7c9>)
+   1: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380aff9 <Object map = 0x3f175e10a7c9>)
+IF STMT - ELSE END
+--
+FUNCTION ENTER
+   4: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b049 <Object map = 0x3f175e10a7c9>)
+   3: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b049 <Object map = 0x3f175e10a7c9>)
+   2: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b049 <Object map = 0x3f175e10a7c9>)
+   1: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b049 <Object map = 0x3f175e10a7c9>)
+FUNCTION ENTER END
+--
+IF STMT - ELSE
+   4: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:2,3
+   4: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b049 <Object map = 0x3f175e10a7c9>)
+   3: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b049 <Object map = 0x3f175e10a7c9>)
+   2: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b049 <Object map = 0x3f175e10a7c9>)
+   1: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b049 <Object map = 0x3f175e10a7c9>)
+IF STMT - ELSE END
+--
+FUNCTION ENTER
+   5: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b069 <Object map = 0x3f175e10a7c9>)
+   4: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b069 <Object map = 0x3f175e10a7c9>)
+   3: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b069 <Object map = 0x3f175e10a7c9>)
+   2: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b069 <Object map = 0x3f175e10a7c9>)
+   1: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b069 <Object map = 0x3f175e10a7c9>)
+FUNCTION ENTER END
+--
+IF STMT - ELSE
+   5: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:2,3
+   5: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b069 <Object map = 0x3f175e10a7c9>)
+   4: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b069 <Object map = 0x3f175e10a7c9>)
+   3: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b069 <Object map = 0x3f175e10a7c9>)
+   2: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b069 <Object map = 0x3f175e10a7c9>)
+   1: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b069 <Object map = 0x3f175e10a7c9>)
+IF STMT - ELSE END
+--
+FUNCTION ENTER
+   6: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b099 <Object map = 0x3f175e10a7c9>)
+   5: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b099 <Object map = 0x3f175e10a7c9>)
+   4: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b099 <Object map = 0x3f175e10a7c9>)
+   3: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b099 <Object map = 0x3f175e10a7c9>)
+   2: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b099 <Object map = 0x3f175e10a7c9>)
+   1: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b099 <Object map = 0x3f175e10a7c9>)
+FUNCTION ENTER END
+--
+IF STMT - ELSE
+   6: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:2,3
+   6: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b099 <Object map = 0x3f175e10a7c9>)
+   5: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b099 <Object map = 0x3f175e10a7c9>)
+   4: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b099 <Object map = 0x3f175e10a7c9>)
+   3: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b099 <Object map = 0x3f175e10a7c9>)
+   2: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b099 <Object map = 0x3f175e10a7c9>)
+   1: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b099 <Object map = 0x3f175e10a7c9>)
+IF STMT - ELSE END
+--
+FUNCTION ENTER
+   7: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b0c9 <Object map = 0x3f175e10a7c9>)
+   6: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b0c9 <Object map = 0x3f175e10a7c9>)
+   5: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b0c9 <Object map = 0x3f175e10a7c9>)
+   4: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b0c9 <Object map = 0x3f175e10a7c9>)
+   3: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b0c9 <Object map = 0x3f175e10a7c9>)
+   2: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b0c9 <Object map = 0x3f175e10a7c9>)
+   1: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b0c9 <Object map = 0x3f175e10a7c9>)
+FUNCTION ENTER END
+--
+IF STMT - THEN
+   7: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:2,3
+   7: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b0c9 <Object map = 0x3f175e10a7c9>)
+   6: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b0c9 <Object map = 0x3f175e10a7c9>)
+   5: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b0c9 <Object map = 0x3f175e10a7c9>)
+   4: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b0c9 <Object map = 0x3f175e10a7c9>)
+   3: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b0c9 <Object map = 0x3f175e10a7c9>)
+   2: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b0c9 <Object map = 0x3f175e10a7c9>)
+   1: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b0c9 <Object map = 0x3f175e10a7c9>)
+IF STMT - THEN END
+--
+FUNCTION EXIT
+   7: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b0c9 <Object map = 0x3f175e10a7c9>)
+   6: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b0c9 <Object map = 0x3f175e10a7c9>)
+   5: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b0c9 <Object map = 0x3f175e10a7c9>)
+   4: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b0c9 <Object map = 0x3f175e10a7c9>)
+   3: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b0c9 <Object map = 0x3f175e10a7c9>)
+   2: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b0c9 <Object map = 0x3f175e10a7c9>)
+   1: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b0c9 <Object map = 0x3f175e10a7c9>)
+-> 1
+FUNCTION EXIT END
+--
+FUNCTION EXIT
+   6: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b099 <Object map = 0x3f175e10a7c9>)
+   5: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b099 <Object map = 0x3f175e10a7c9>)
+   4: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b099 <Object map = 0x3f175e10a7c9>)
+   3: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b099 <Object map = 0x3f175e10a7c9>)
+   2: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b099 <Object map = 0x3f175e10a7c9>)
+   1: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b099 <Object map = 0x3f175e10a7c9>)
+-> 2
+FUNCTION EXIT END
+--
+FUNCTION EXIT
+   5: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b069 <Object map = 0x3f175e10a7c9>)
+   4: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b069 <Object map = 0x3f175e10a7c9>)
+   3: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b069 <Object map = 0x3f175e10a7c9>)
+   2: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b069 <Object map = 0x3f175e10a7c9>)
+   1: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b069 <Object map = 0x3f175e10a7c9>)
+-> 6
+FUNCTION EXIT END
+--
+FUNCTION EXIT
+   4: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b049 <Object map = 0x3f175e10a7c9>)
+   3: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b049 <Object map = 0x3f175e10a7c9>)
+   2: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b049 <Object map = 0x3f175e10a7c9>)
+   1: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380b049 <Object map = 0x3f175e10a7c9>)
+-> 24
+FUNCTION EXIT END
+--
+FUNCTION EXIT
+   3: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380aff9 <Object map = 0x3f175e10a7c9>)
+   2: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380aff9 <Object map = 0x3f175e10a7c9>)
+   1: ~factorial at /home/tomek/msc/dea/js/simple_recursion.js:1,19(this=0x2af993801521 <JSGlobal Object>, 0x2af99380aff9 <Object map = 0x3f175e10a7c9>)
+-> 120
+FUNCTION EXIT END
+--
+FUNCTION EXIT
+   2: ~print_factorial at /home/tomek/msc/dea/js/simple_recursion.js:6,25(this=0x2af993801521 <JSGlobal Object>, 5)
+   1: ~print_factorial at /home/tomek/msc/dea/js/simple_recursion.js:6,25(this=0x2af993801521 <JSGlobal Object>, 5)
+-> 0x2de4cb3804d1 <undefined>
+FUNCTION EXIT END
+--
+FUNCTION EXIT
+   1: ~ at /home/tomek/msc/dea/js/simple_recursion.js:1,1(this=0x2af993801521 <JSGlobal Object>)
+-> 0x2de4cb3804d1 <undefined>
+FUNCTION EXIT END
+--
