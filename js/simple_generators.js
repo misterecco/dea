@@ -2,10 +2,14 @@ function *factorial(num) {
   let acc = 1;
   while (num > 0) {
     setTimeout(hello);
-    acc = num * acc;
+    acc = multiply(num, acc);
     num--;
     yield acc;
   }
+}
+
+function multiply(a, b) {
+  return a * b;
 }
 
 function hello() {
@@ -17,8 +21,8 @@ function print_factorial(num) {
 
   while (true) {
     const ret = gen.next();
-    console.log(ret.value);
     if (ret.done) break;
+    console.log(ret.value);
   }
 
 }

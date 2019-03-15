@@ -1,6 +1,9 @@
 module Lib where
 
+import Data.List (isInfixOf)
 import Data.List.Split ( endBy )
+
+import Debug.Trace
 
 someFunc :: IO ()
 someFunc = putStrLn "someFunc"
@@ -15,7 +18,7 @@ data Loc = CL {
 
 type Stack = [Loc]
 
-data EventType = FunctionEnter | FunctionExit | IfStmtThen | IfStmtElse
+data EventType = FunctionEnter | FunctionExit | GeneratorEnter | GeneratorYield | IfStmtThen | IfStmtElse
     deriving (Show, Eq, Ord)
 
 data CodeEvent = CE EventType Loc Stack
@@ -48,20 +51,19 @@ instance Read Loc where
 instance Read CodeEvent where
     readsPrec _ input = case (lines input) of
         [] -> []
-        ("FUNCTION ENTER" : xs) -> readEvent FunctionEnter "FUNCTION ENTER END" xs
-        ("FUNCTION EXIT" : xs) -> do
-                let (locs, rest) = span (/= "FUNCTION EXIT END") xs
-                let n = length locs
-                let st = map read $ take (n-1) locs
-                [(CE FunctionExit (head st) (tail st), (unlines $ tail rest))]
-        ("IF STMT - THEN" : xs) -> readEvent IfStmtThen "IF STMT - THEN END" xs
-        ("IF STMT - ELSE" : xs) -> readEvent IfStmtElse "IF STMT - ELSE END" xs
+        ("FUNCTION ENTER" : xs) -> readEvent FunctionEnter 0 xs
+        ("FUNCTION EXIT" : xs) -> readEvent FunctionExit 1 xs
+        ("GENERATOR ENTER" : xs) -> readEvent GeneratorEnter 0 xs
+        ("GENERATOR YIELD" : xs) -> readEvent GeneratorYield 1 xs
+        ("IF STMT - THEN" : xs) -> readEvent IfStmtThen 0 xs
+        ("IF STMT - ELSE" : xs) -> readEvent IfStmtElse 0 xs
         _ : _ -> []
         where
-            readEvent eventType endMarker xs = do
-                let (locs, rest) = span (/= endMarker) xs
-                let st = map read locs
-                [(CE eventType (head st) (tail st), (unlines $ tail rest))]
+            readEvent eventType m xs = do
+                let locs = takeWhile (/= "=") xs
+                let n = length locs
+                let st = map read $ filter (\x -> not (isInfixOf "<JSGenerator>" x)) $ take (n-m) locs
+                [(CE eventType (head st) (tail st), [])]
     readList input = do
         let entries = endBy "--\n" input
         let locs = map read entries
