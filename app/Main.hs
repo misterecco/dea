@@ -15,6 +15,9 @@ runFile f = do
     s <- readFile f
     let events = read s :: [CodeEvent]
     mapM_ print events
+    putStrLn "=============================="
+    let traces = untangleEvents events
+    mapM_ putStrLn (formatTraces traces)
 
 
 printUsage :: IO ()
