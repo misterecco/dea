@@ -1,21 +1,15 @@
-module Lib where
+module Parser where
 
 import Control.Monad.Writer
 import Data.List ( isInfixOf, find, delete )
 import Data.List.Split ( endBy )
-
-import Debug.Trace
-
-someFunc :: IO ()
-someFunc = putStrLn "someFunc"
 
 data Loc = CL {
     functionName :: String,
     filePath :: String,
     line :: Integer,
     column :: Integer
-}
-    deriving (Eq)
+} deriving (Eq)
 
 type Stack = [Loc]
 
@@ -33,7 +27,6 @@ data CodeEvent = CE EventType Loc Stack
     deriving (Eq)
 
 type CallTrace = [CodeEvent]
-
 
 instance Show Loc where
     show (CL fun path line col) = 
@@ -125,3 +118,4 @@ showTraces = mapM_ showTrace
 
 formatTraces :: [CallTrace] -> [String]
 formatTraces traces = execWriter (showTraces traces)
+

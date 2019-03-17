@@ -8,9 +8,10 @@ import System.Environment ( getArgs )
 import System.Exit ( exitFailure, exitSuccess )
 import System.Process
 
-import Lib
+import Alignment
+import Parser 
 
-runFile :: FilePath -> IO ()
+runFile :: FilePath -> IO [CallTrace]
 runFile f = do
     s <- readFile f
     let events = read s :: [CodeEvent]
@@ -18,6 +19,17 @@ runFile f = do
     putStrLn "=============================="
     let traces = untangleEvents events
     mapM_ putStrLn (formatTraces traces)
+    return traces
+
+
+runFiles :: [FilePath] -> IO ()
+runFiles fs = do
+    tracesA <- runFile $ fs !! 0
+    tracesB <- runFile $ fs !! 1
+    putStrLn "=============== Aligned ==============="
+    let (score, aligned) = alignTraces (head tracesA) (head tracesB)
+    putStrLn $ "Score: " ++ show score
+    mapM_ (putStrLn . show) aligned
 
 
 printUsage :: IO ()
@@ -27,8 +39,8 @@ printUsage =
 
 main :: IO ()
 main = do
-  args <- getArgs
-  case args of
-    ["--help"] -> printUsage
-    [fs] -> runFile fs
-    _ -> printUsage
+    args <- getArgs
+    case args of
+        ["--help"] -> printUsage
+        fs@[_, _] -> runFiles fs
+        _ -> printUsage
