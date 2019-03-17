@@ -9,7 +9,7 @@ data Loc = CL {
     filePath :: String,
     line :: Integer,
     column :: Integer
-} deriving (Eq)
+} deriving (Eq, Ord)
 
 type Stack = [Loc]
 
@@ -24,7 +24,7 @@ data EventType
     deriving (Show, Eq, Ord)
 
 data CodeEvent = CE EventType Loc Stack
-    deriving (Eq)
+    deriving (Eq, Ord)
 
 type CallTrace = [CodeEvent]
 
