@@ -15,7 +15,7 @@ runFile :: FilePath -> IO [CallTrace]
 runFile f = do
     s <- readFile f
     let events = read s :: [CodeEvent]
-    mapM_ print events
+    -- mapM_ print events
     putStrLn "=============================="
     let traces = untangleEvents events
     mapM_ putStrLn (formatTraces traces)
@@ -26,10 +26,15 @@ runFiles :: [FilePath] -> IO ()
 runFiles fs = do
     tracesA <- runFile $ fs !! 0
     tracesB <- runFile $ fs !! 1
+    let (matched, unmatchedLeft, unmatchedRight) = if (length tracesA) <= (length tracesB)
+        then analyzeTraces tracesA tracesB
+        else analyzeTraces tracesB tracesA
     putStrLn "=============== Aligned ==============="
-    let (score, aligned) = alignTraces (head tracesA) (head tracesB)
-    putStrLn $ "Score: " ++ show score
-    mapM_ (putStrLn . show) aligned
+    mapM_ (putStrLn . show) matched
+    putStrLn "=============== Unmatched left ==============="
+    mapM_ (putStrLn . show) unmatchedLeft
+    putStrLn "=============== Unmatched right ==============="
+    mapM_ (putStrLn . show) unmatchedRight
 
 
 printUsage :: IO ()

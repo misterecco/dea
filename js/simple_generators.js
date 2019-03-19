@@ -27,4 +27,4 @@ function print_factorial(num) {
 
 }
 
-print_factorial(5);
+print_factorial(4);
