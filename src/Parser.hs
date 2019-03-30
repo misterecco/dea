@@ -13,13 +13,13 @@ data Loc = CL {
 
 type Stack = [Loc]
 
-data EventType 
-    = FunctionEnter 
-    | FunctionExit 
-    | GeneratorEnter 
-    | GeneratorYield 
+data EventType
+    = FunctionEnter
+    | FunctionExit
+    | GeneratorEnter
+    | GeneratorYield
     | GeneratorSuspend
-    | IfStmtThen 
+    | IfStmtThen
     | IfStmtElse
     deriving (Show, Eq, Ord)
 
@@ -29,7 +29,7 @@ data CodeEvent = CE EventType Loc Stack
 type CallTrace = [CodeEvent]
 
 instance Show Loc where
-    show (CL fun path line col) = 
+    show (CL fun path line col) =
         fun ++ " at " ++ path ++ ":" ++ show line ++ "," ++ show col
 
 instance Read Loc where
@@ -63,8 +63,8 @@ instance Read CodeEvent where
                 let n = length locs
                 let st = map read $ filter (\x -> not (isInfixOf "<JSGenerator>" x)) $ take (n-m) locs
                 [(CE eventType (head st) (newStack eventType st), [])]
-            newStack eventType stack = 
-                if elem eventType [FunctionEnter, GeneratorEnter] 
+            newStack eventType stack =
+                if elem eventType [FunctionEnter, GeneratorEnter]
                     then stack else tail stack
     readList input = do
         let entries = endBy "--\n" input
@@ -73,7 +73,7 @@ instance Read CodeEvent where
 
 instance Show CodeEvent where
     show (CE eventType loc st) =
-        "Event: " ++ show eventType ++ "\nLoc: " 
+        "Event: " ++ show eventType ++ "\nLoc: "
             ++ show loc ++ "\nStack:\n" ++ (unlines $ map show st)
 
 
@@ -87,6 +87,8 @@ untangleEvents events = untangle [] [] events
             case event of
                 (CE FunctionExit _ []) -> untangle ((reverse newTrace):results) newOpenTraces events
                 _ -> untangle results (newTrace:newOpenTraces) events
+        -- should not happen in complete trace
+        untangle results openTraces [] = reverse (openTraces ++ results)
         findMatchingTrace openTraces event = case event of
             (CE FunctionEnter _ [_]) -> ([], openTraces)
             (CE FunctionEnter _ st) -> findMatchingOpenEvent (tail st) openTraces
@@ -96,7 +98,7 @@ untangleEvents events = untangle [] [] events
             (CE GeneratorYield loc st) -> findMatchingOpenEvent st openTraces
             (CE IfStmtThen _ st) -> findMatchingOpenEvent st openTraces
             (CE IfStmtElse _ st) -> findMatchingOpenEvent st openTraces
-        findMatchingOpenEvent st openTraces = 
+        findMatchingOpenEvent st openTraces =
             case (find (isStackMatching st) openTraces) of
                 Nothing -> error $ "Didn't find proper predecessor for: " ++ show st ++ " in: " ++ show openTraces
                 Just e -> (e, delete e openTraces)
