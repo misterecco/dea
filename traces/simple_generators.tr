@@ -1,298 +1,298 @@
 FUNCTION ENTER
-   0: ~ at /home/tomek/msc/dea/js/simple_generators.js:1,1(this=0x2f505bc81521 <JSGlobal Object>)
+   0  ~ at /home/tomek/msc/dea/js/simple_generators.js 1,1 (this=0x2f505bc81521 <JSGlobal Object>)
 =
 --
 FUNCTION ENTER
-   0: ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js:19,25(this=0x2f505bc81521 <JSGlobal Object>, 5)
-   1: ~ at /home/tomek/msc/dea/js/simple_generators.js:1,1(this=0x2f505bc81521 <JSGlobal Object>)
+   0  ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js 19,25 (this=0x2f505bc81521 <JSGlobal Object>, 5)
+   1  ~ at /home/tomek/msc/dea/js/simple_generators.js 1,1 (this=0x2f505bc81521 <JSGlobal Object>)
 =
 --
 FUNCTION ENTER
-   0: ~factorial at /home/tomek/msc/dea/js/simple_generators.js:1,20(this=0x2f505bc81521 <JSGlobal Object>, 5)
-   1: ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js:19,25(this=0x2f505bc81521 <JSGlobal Object>, 5)
-   2: ~ at /home/tomek/msc/dea/js/simple_generators.js:1,1(this=0x2f505bc81521 <JSGlobal Object>)
+   0  ~factorial at /home/tomek/msc/dea/js/simple_generators.js 1,20 (this=0x2f505bc81521 <JSGlobal Object>, 5)
+   1  ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js 19,25 (this=0x2f505bc81521 <JSGlobal Object>, 5)
+   2  ~ at /home/tomek/msc/dea/js/simple_generators.js 1,1 (this=0x2f505bc81521 <JSGlobal Object>)
 =
 --
 GENERATOR SUSPEND
-   0: ~factorial at /home/tomek/msc/dea/js/simple_generators.js:1,20(this=0x2f505bc81521 <JSGlobal Object>, 5)
-   1: ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js:19,25(this=0x2f505bc81521 <JSGlobal Object>, 5)
-   2: ~ at /home/tomek/msc/dea/js/simple_generators.js:1,1(this=0x2f505bc81521 <JSGlobal Object>)
+   0  ~factorial at /home/tomek/msc/dea/js/simple_generators.js 1,20 (this=0x2f505bc81521 <JSGlobal Object>, 5)
+   1  ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js 19,25 (this=0x2f505bc81521 <JSGlobal Object>, 5)
+   2  ~ at /home/tomek/msc/dea/js/simple_generators.js 1,1 (this=0x2f505bc81521 <JSGlobal Object>)
 =
 --
 GENERATOR ENTER
-   0: ~factorial at /home/tomek/msc/dea/js/simple_generators.js:1,20(this=0x2f505bc81521 <JSGlobal Object>, 5)
-   1: ~next at <unknown>:<unknown>(this=0x2f505bc8c461 <JSGenerator>)
-   2: ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js:19,25(this=0x2f505bc81521 <JSGlobal Object>, 5)
-   3: ~ at /home/tomek/msc/dea/js/simple_generators.js:1,1(this=0x2f505bc81521 <JSGlobal Object>)
+   0  ~factorial at /home/tomek/msc/dea/js/simple_generators.js 1,20 (this=0x2f505bc81521 <JSGlobal Object>, 5)
+   1  ~next at <unknown> <unknown> (this=0x2f505bc8c461 <JSGenerator>)
+   2  ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js 19,25 (this=0x2f505bc81521 <JSGlobal Object>, 5)
+   3  ~ at /home/tomek/msc/dea/js/simple_generators.js 1,1 (this=0x2f505bc81521 <JSGlobal Object>)
 =
 --
 FUNCTION ENTER
-   0: ~multiply at /home/tomek/msc/dea/js/simple_generators.js:11,18(this=0x2f505bc81521 <JSGlobal Object>, 5, 1)
-   1: ~factorial at /home/tomek/msc/dea/js/simple_generators.js:1,20(this=0x2f505bc81521 <JSGlobal Object>, 5)
-   2: ~next at <unknown>:<unknown>(this=0x2f505bc8c461 <JSGenerator>)
-   3: ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js:19,25(this=0x2f505bc81521 <JSGlobal Object>, 5)
-   4: ~ at /home/tomek/msc/dea/js/simple_generators.js:1,1(this=0x2f505bc81521 <JSGlobal Object>)
+   0  ~multiply at /home/tomek/msc/dea/js/simple_generators.js 11,18 (this=0x2f505bc81521 <JSGlobal Object>, 5, 1)
+   1  ~factorial at /home/tomek/msc/dea/js/simple_generators.js 1,20 (this=0x2f505bc81521 <JSGlobal Object>, 5)
+   2  ~next at <unknown> <unknown> (this=0x2f505bc8c461 <JSGenerator>)
+   3  ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js 19,25 (this=0x2f505bc81521 <JSGlobal Object>, 5)
+   4  ~ at /home/tomek/msc/dea/js/simple_generators.js 1,1 (this=0x2f505bc81521 <JSGlobal Object>)
 =
 --
 FUNCTION EXIT
-   0: ~multiply at /home/tomek/msc/dea/js/simple_generators.js:11,18(this=0x2f505bc81521 <JSGlobal Object>, 5, 1)
-   1: ~factorial at /home/tomek/msc/dea/js/simple_generators.js:1,20(this=0x2f505bc81521 <JSGlobal Object>, 5)
-   2: ~next at <unknown>:<unknown>(this=0x2f505bc8c461 <JSGenerator>)
-   3: ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js:19,25(this=0x2f505bc81521 <JSGlobal Object>, 5)
-   4: ~ at /home/tomek/msc/dea/js/simple_generators.js:1,1(this=0x2f505bc81521 <JSGlobal Object>)
+   0  ~multiply at /home/tomek/msc/dea/js/simple_generators.js 11,18 (this=0x2f505bc81521 <JSGlobal Object>, 5, 1)
+   1  ~factorial at /home/tomek/msc/dea/js/simple_generators.js 1,20 (this=0x2f505bc81521 <JSGlobal Object>, 5)
+   2  ~next at <unknown> <unknown> (this=0x2f505bc8c461 <JSGenerator>)
+   3  ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js 19,25 (this=0x2f505bc81521 <JSGlobal Object>, 5)
+   4  ~ at /home/tomek/msc/dea/js/simple_generators.js 1,1 (this=0x2f505bc81521 <JSGlobal Object>)
 -> 5
 =
 --
 GENERATOR YIELD
-   4: ~factorial at /home/tomek/msc/dea/js/simple_generators.js:7,5
-   0: ~factorial at /home/tomek/msc/dea/js/simple_generators.js:1,20(this=0x2f505bc81521 <JSGlobal Object>, 4)
-   1: ~next at <unknown>:<unknown>(this=0x2f505bc8c461 <JSGenerator>)
-   2: ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js:19,25(this=0x2f505bc81521 <JSGlobal Object>, 5)
-   3: ~ at /home/tomek/msc/dea/js/simple_generators.js:1,1(this=0x2f505bc81521 <JSGlobal Object>)
+   4  ~factorial at /home/tomek/msc/dea/js/simple_generators.js 7,5
+   0  ~factorial at /home/tomek/msc/dea/js/simple_generators.js 1,20 (this=0x2f505bc81521 <JSGlobal Object>, 4)
+   1  ~next at <unknown> <unknown> (this=0x2f505bc8c461 <JSGenerator>)
+   2  ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js 19,25 (this=0x2f505bc81521 <JSGlobal Object>, 5)
+   3  ~ at /home/tomek/msc/dea/js/simple_generators.js 1,1 (this=0x2f505bc81521 <JSGlobal Object>)
 -> 5
 =
 --
 GENERATOR SUSPEND
-   0: ~factorial at /home/tomek/msc/dea/js/simple_generators.js:1,20(this=0x2f505bc81521 <JSGlobal Object>, 4)
-   1: ~next at <unknown>:<unknown>(this=0x2f505bc8c461 <JSGenerator>)
-   2: ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js:19,25(this=0x2f505bc81521 <JSGlobal Object>, 5)
-   3: ~ at /home/tomek/msc/dea/js/simple_generators.js:1,1(this=0x2f505bc81521 <JSGlobal Object>)
+   0  ~factorial at /home/tomek/msc/dea/js/simple_generators.js 1,20 (this=0x2f505bc81521 <JSGlobal Object>, 4)
+   1  ~next at <unknown> <unknown> (this=0x2f505bc8c461 <JSGenerator>)
+   2  ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js 19,25 (this=0x2f505bc81521 <JSGlobal Object>, 5)
+   3  ~ at /home/tomek/msc/dea/js/simple_generators.js 1,1 (this=0x2f505bc81521 <JSGlobal Object>)
 =
 --
 GENERATOR ENTER
-   0: ~factorial at /home/tomek/msc/dea/js/simple_generators.js:1,20(this=0x2f505bc81521 <JSGlobal Object>, 4)
-   1: ~next at <unknown>:<unknown>(this=0x2f505bc8c461 <JSGenerator>)
-   2: ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js:19,25(this=0x2f505bc81521 <JSGlobal Object>, 5)
-   3: ~ at /home/tomek/msc/dea/js/simple_generators.js:1,1(this=0x2f505bc81521 <JSGlobal Object>)
+   0  ~factorial at /home/tomek/msc/dea/js/simple_generators.js 1,20 (this=0x2f505bc81521 <JSGlobal Object>, 4)
+   1  ~next at <unknown> <unknown> (this=0x2f505bc8c461 <JSGenerator>)
+   2  ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js 19,25 (this=0x2f505bc81521 <JSGlobal Object>, 5)
+   3  ~ at /home/tomek/msc/dea/js/simple_generators.js 1,1 (this=0x2f505bc81521 <JSGlobal Object>)
 =
 --
 FUNCTION ENTER
-   0: ~multiply at /home/tomek/msc/dea/js/simple_generators.js:11,18(this=0x2f505bc81521 <JSGlobal Object>, 4, 5)
-   1: ~factorial at /home/tomek/msc/dea/js/simple_generators.js:1,20(this=0x2f505bc81521 <JSGlobal Object>, 4)
-   2: ~next at <unknown>:<unknown>(this=0x2f505bc8c461 <JSGenerator>)
-   3: ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js:19,25(this=0x2f505bc81521 <JSGlobal Object>, 5)
-   4: ~ at /home/tomek/msc/dea/js/simple_generators.js:1,1(this=0x2f505bc81521 <JSGlobal Object>)
+   0  ~multiply at /home/tomek/msc/dea/js/simple_generators.js 11,18 (this=0x2f505bc81521 <JSGlobal Object>, 4, 5)
+   1  ~factorial at /home/tomek/msc/dea/js/simple_generators.js 1,20 (this=0x2f505bc81521 <JSGlobal Object>, 4)
+   2  ~next at <unknown> <unknown> (this=0x2f505bc8c461 <JSGenerator>)
+   3  ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js 19,25 (this=0x2f505bc81521 <JSGlobal Object>, 5)
+   4  ~ at /home/tomek/msc/dea/js/simple_generators.js 1,1 (this=0x2f505bc81521 <JSGlobal Object>)
 =
 --
 FUNCTION EXIT
-   0: ~multiply at /home/tomek/msc/dea/js/simple_generators.js:11,18(this=0x2f505bc81521 <JSGlobal Object>, 4, 5)
-   1: ~factorial at /home/tomek/msc/dea/js/simple_generators.js:1,20(this=0x2f505bc81521 <JSGlobal Object>, 4)
-   2: ~next at <unknown>:<unknown>(this=0x2f505bc8c461 <JSGenerator>)
-   3: ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js:19,25(this=0x2f505bc81521 <JSGlobal Object>, 5)
-   4: ~ at /home/tomek/msc/dea/js/simple_generators.js:1,1(this=0x2f505bc81521 <JSGlobal Object>)
+   0  ~multiply at /home/tomek/msc/dea/js/simple_generators.js 11,18 (this=0x2f505bc81521 <JSGlobal Object>, 4, 5)
+   1  ~factorial at /home/tomek/msc/dea/js/simple_generators.js 1,20 (this=0x2f505bc81521 <JSGlobal Object>, 4)
+   2  ~next at <unknown> <unknown> (this=0x2f505bc8c461 <JSGenerator>)
+   3  ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js 19,25 (this=0x2f505bc81521 <JSGlobal Object>, 5)
+   4  ~ at /home/tomek/msc/dea/js/simple_generators.js 1,1 (this=0x2f505bc81521 <JSGlobal Object>)
 -> 20
 =
 --
 GENERATOR YIELD
-   4: ~factorial at /home/tomek/msc/dea/js/simple_generators.js:7,5
-   0: ~factorial at /home/tomek/msc/dea/js/simple_generators.js:1,20(this=0x2f505bc81521 <JSGlobal Object>, 3)
-   1: ~next at <unknown>:<unknown>(this=0x2f505bc8c461 <JSGenerator>)
-   2: ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js:19,25(this=0x2f505bc81521 <JSGlobal Object>, 5)
-   3: ~ at /home/tomek/msc/dea/js/simple_generators.js:1,1(this=0x2f505bc81521 <JSGlobal Object>)
+   4  ~factorial at /home/tomek/msc/dea/js/simple_generators.js 7,5
+   0  ~factorial at /home/tomek/msc/dea/js/simple_generators.js 1,20 (this=0x2f505bc81521 <JSGlobal Object>, 3)
+   1  ~next at <unknown> <unknown> (this=0x2f505bc8c461 <JSGenerator>)
+   2  ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js 19,25 (this=0x2f505bc81521 <JSGlobal Object>, 5)
+   3  ~ at /home/tomek/msc/dea/js/simple_generators.js 1,1 (this=0x2f505bc81521 <JSGlobal Object>)
 -> 20
 =
 --
 GENERATOR SUSPEND
-   0: ~factorial at /home/tomek/msc/dea/js/simple_generators.js:1,20(this=0x2f505bc81521 <JSGlobal Object>, 3)
-   1: ~next at <unknown>:<unknown>(this=0x2f505bc8c461 <JSGenerator>)
-   2: ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js:19,25(this=0x2f505bc81521 <JSGlobal Object>, 5)
-   3: ~ at /home/tomek/msc/dea/js/simple_generators.js:1,1(this=0x2f505bc81521 <JSGlobal Object>)
+   0  ~factorial at /home/tomek/msc/dea/js/simple_generators.js 1,20 (this=0x2f505bc81521 <JSGlobal Object>, 3)
+   1  ~next at <unknown> <unknown> (this=0x2f505bc8c461 <JSGenerator>)
+   2  ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js 19,25 (this=0x2f505bc81521 <JSGlobal Object>, 5)
+   3  ~ at /home/tomek/msc/dea/js/simple_generators.js 1,1 (this=0x2f505bc81521 <JSGlobal Object>)
 =
 --
 GENERATOR ENTER
-   0: ~factorial at /home/tomek/msc/dea/js/simple_generators.js:1,20(this=0x2f505bc81521 <JSGlobal Object>, 3)
-   1: ~next at <unknown>:<unknown>(this=0x2f505bc8c461 <JSGenerator>)
-   2: ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js:19,25(this=0x2f505bc81521 <JSGlobal Object>, 5)
-   3: ~ at /home/tomek/msc/dea/js/simple_generators.js:1,1(this=0x2f505bc81521 <JSGlobal Object>)
+   0  ~factorial at /home/tomek/msc/dea/js/simple_generators.js 1,20 (this=0x2f505bc81521 <JSGlobal Object>, 3)
+   1  ~next at <unknown> <unknown> (this=0x2f505bc8c461 <JSGenerator>)
+   2  ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js 19,25 (this=0x2f505bc81521 <JSGlobal Object>, 5)
+   3  ~ at /home/tomek/msc/dea/js/simple_generators.js 1,1 (this=0x2f505bc81521 <JSGlobal Object>)
 =
 --
 FUNCTION ENTER
-   0: ~multiply at /home/tomek/msc/dea/js/simple_generators.js:11,18(this=0x2f505bc81521 <JSGlobal Object>, 3, 20)
-   1: ~factorial at /home/tomek/msc/dea/js/simple_generators.js:1,20(this=0x2f505bc81521 <JSGlobal Object>, 3)
-   2: ~next at <unknown>:<unknown>(this=0x2f505bc8c461 <JSGenerator>)
-   3: ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js:19,25(this=0x2f505bc81521 <JSGlobal Object>, 5)
-   4: ~ at /home/tomek/msc/dea/js/simple_generators.js:1,1(this=0x2f505bc81521 <JSGlobal Object>)
+   0  ~multiply at /home/tomek/msc/dea/js/simple_generators.js 11,18 (this=0x2f505bc81521 <JSGlobal Object>, 3, 20)
+   1  ~factorial at /home/tomek/msc/dea/js/simple_generators.js 1,20 (this=0x2f505bc81521 <JSGlobal Object>, 3)
+   2  ~next at <unknown> <unknown> (this=0x2f505bc8c461 <JSGenerator>)
+   3  ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js 19,25 (this=0x2f505bc81521 <JSGlobal Object>, 5)
+   4  ~ at /home/tomek/msc/dea/js/simple_generators.js 1,1 (this=0x2f505bc81521 <JSGlobal Object>)
 =
 --
 FUNCTION EXIT
-   0: ~multiply at /home/tomek/msc/dea/js/simple_generators.js:11,18(this=0x2f505bc81521 <JSGlobal Object>, 3, 20)
-   1: ~factorial at /home/tomek/msc/dea/js/simple_generators.js:1,20(this=0x2f505bc81521 <JSGlobal Object>, 3)
-   2: ~next at <unknown>:<unknown>(this=0x2f505bc8c461 <JSGenerator>)
-   3: ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js:19,25(this=0x2f505bc81521 <JSGlobal Object>, 5)
-   4: ~ at /home/tomek/msc/dea/js/simple_generators.js:1,1(this=0x2f505bc81521 <JSGlobal Object>)
+   0  ~multiply at /home/tomek/msc/dea/js/simple_generators.js 11,18 (this=0x2f505bc81521 <JSGlobal Object>, 3, 20)
+   1  ~factorial at /home/tomek/msc/dea/js/simple_generators.js 1,20 (this=0x2f505bc81521 <JSGlobal Object>, 3)
+   2  ~next at <unknown> <unknown> (this=0x2f505bc8c461 <JSGenerator>)
+   3  ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js 19,25 (this=0x2f505bc81521 <JSGlobal Object>, 5)
+   4  ~ at /home/tomek/msc/dea/js/simple_generators.js 1,1 (this=0x2f505bc81521 <JSGlobal Object>)
 -> 60
 =
 --
 GENERATOR YIELD
-   4: ~factorial at /home/tomek/msc/dea/js/simple_generators.js:7,5
-   0: ~factorial at /home/tomek/msc/dea/js/simple_generators.js:1,20(this=0x2f505bc81521 <JSGlobal Object>, 2)
-   1: ~next at <unknown>:<unknown>(this=0x2f505bc8c461 <JSGenerator>)
-   2: ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js:19,25(this=0x2f505bc81521 <JSGlobal Object>, 5)
-   3: ~ at /home/tomek/msc/dea/js/simple_generators.js:1,1(this=0x2f505bc81521 <JSGlobal Object>)
+   4  ~factorial at /home/tomek/msc/dea/js/simple_generators.js 7,5
+   0  ~factorial at /home/tomek/msc/dea/js/simple_generators.js 1,20 (this=0x2f505bc81521 <JSGlobal Object>, 2)
+   1  ~next at <unknown> <unknown> (this=0x2f505bc8c461 <JSGenerator>)
+   2  ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js 19,25 (this=0x2f505bc81521 <JSGlobal Object>, 5)
+   3  ~ at /home/tomek/msc/dea/js/simple_generators.js 1,1 (this=0x2f505bc81521 <JSGlobal Object>)
 -> 60
 =
 --
 GENERATOR SUSPEND
-   0: ~factorial at /home/tomek/msc/dea/js/simple_generators.js:1,20(this=0x2f505bc81521 <JSGlobal Object>, 2)
-   1: ~next at <unknown>:<unknown>(this=0x2f505bc8c461 <JSGenerator>)
-   2: ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js:19,25(this=0x2f505bc81521 <JSGlobal Object>, 5)
-   3: ~ at /home/tomek/msc/dea/js/simple_generators.js:1,1(this=0x2f505bc81521 <JSGlobal Object>)
+   0  ~factorial at /home/tomek/msc/dea/js/simple_generators.js 1,20 (this=0x2f505bc81521 <JSGlobal Object>, 2)
+   1  ~next at <unknown> <unknown> (this=0x2f505bc8c461 <JSGenerator>)
+   2  ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js 19,25 (this=0x2f505bc81521 <JSGlobal Object>, 5)
+   3  ~ at /home/tomek/msc/dea/js/simple_generators.js 1,1 (this=0x2f505bc81521 <JSGlobal Object>)
 =
 --
 GENERATOR ENTER
-   0: ~factorial at /home/tomek/msc/dea/js/simple_generators.js:1,20(this=0x2f505bc81521 <JSGlobal Object>, 2)
-   1: ~next at <unknown>:<unknown>(this=0x2f505bc8c461 <JSGenerator>)
-   2: ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js:19,25(this=0x2f505bc81521 <JSGlobal Object>, 5)
-   3: ~ at /home/tomek/msc/dea/js/simple_generators.js:1,1(this=0x2f505bc81521 <JSGlobal Object>)
+   0  ~factorial at /home/tomek/msc/dea/js/simple_generators.js 1,20 (this=0x2f505bc81521 <JSGlobal Object>, 2)
+   1  ~next at <unknown> <unknown> (this=0x2f505bc8c461 <JSGenerator>)
+   2  ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js 19,25 (this=0x2f505bc81521 <JSGlobal Object>, 5)
+   3  ~ at /home/tomek/msc/dea/js/simple_generators.js 1,1 (this=0x2f505bc81521 <JSGlobal Object>)
 =
 --
 FUNCTION ENTER
-   0: ~multiply at /home/tomek/msc/dea/js/simple_generators.js:11,18(this=0x2f505bc81521 <JSGlobal Object>, 2, 60)
-   1: ~factorial at /home/tomek/msc/dea/js/simple_generators.js:1,20(this=0x2f505bc81521 <JSGlobal Object>, 2)
-   2: ~next at <unknown>:<unknown>(this=0x2f505bc8c461 <JSGenerator>)
-   3: ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js:19,25(this=0x2f505bc81521 <JSGlobal Object>, 5)
-   4: ~ at /home/tomek/msc/dea/js/simple_generators.js:1,1(this=0x2f505bc81521 <JSGlobal Object>)
+   0  ~multiply at /home/tomek/msc/dea/js/simple_generators.js 11,18 (this=0x2f505bc81521 <JSGlobal Object>, 2, 60)
+   1  ~factorial at /home/tomek/msc/dea/js/simple_generators.js 1,20 (this=0x2f505bc81521 <JSGlobal Object>, 2)
+   2  ~next at <unknown> <unknown> (this=0x2f505bc8c461 <JSGenerator>)
+   3  ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js 19,25 (this=0x2f505bc81521 <JSGlobal Object>, 5)
+   4  ~ at /home/tomek/msc/dea/js/simple_generators.js 1,1 (this=0x2f505bc81521 <JSGlobal Object>)
 =
 --
 FUNCTION EXIT
-   0: ~multiply at /home/tomek/msc/dea/js/simple_generators.js:11,18(this=0x2f505bc81521 <JSGlobal Object>, 2, 60)
-   1: ~factorial at /home/tomek/msc/dea/js/simple_generators.js:1,20(this=0x2f505bc81521 <JSGlobal Object>, 2)
-   2: ~next at <unknown>:<unknown>(this=0x2f505bc8c461 <JSGenerator>)
-   3: ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js:19,25(this=0x2f505bc81521 <JSGlobal Object>, 5)
-   4: ~ at /home/tomek/msc/dea/js/simple_generators.js:1,1(this=0x2f505bc81521 <JSGlobal Object>)
+   0  ~multiply at /home/tomek/msc/dea/js/simple_generators.js 11,18 (this=0x2f505bc81521 <JSGlobal Object>, 2, 60)
+   1  ~factorial at /home/tomek/msc/dea/js/simple_generators.js 1,20 (this=0x2f505bc81521 <JSGlobal Object>, 2)
+   2  ~next at <unknown> <unknown> (this=0x2f505bc8c461 <JSGenerator>)
+   3  ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js 19,25 (this=0x2f505bc81521 <JSGlobal Object>, 5)
+   4  ~ at /home/tomek/msc/dea/js/simple_generators.js 1,1 (this=0x2f505bc81521 <JSGlobal Object>)
 -> 120
 =
 --
 GENERATOR YIELD
-   4: ~factorial at /home/tomek/msc/dea/js/simple_generators.js:7,5
-   0: ~factorial at /home/tomek/msc/dea/js/simple_generators.js:1,20(this=0x2f505bc81521 <JSGlobal Object>, 1)
-   1: ~next at <unknown>:<unknown>(this=0x2f505bc8c461 <JSGenerator>)
-   2: ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js:19,25(this=0x2f505bc81521 <JSGlobal Object>, 5)
-   3: ~ at /home/tomek/msc/dea/js/simple_generators.js:1,1(this=0x2f505bc81521 <JSGlobal Object>)
+   4  ~factorial at /home/tomek/msc/dea/js/simple_generators.js 7,5
+   0  ~factorial at /home/tomek/msc/dea/js/simple_generators.js 1,20 (this=0x2f505bc81521 <JSGlobal Object>, 1)
+   1  ~next at <unknown> <unknown> (this=0x2f505bc8c461 <JSGenerator>)
+   2  ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js 19,25 (this=0x2f505bc81521 <JSGlobal Object>, 5)
+   3  ~ at /home/tomek/msc/dea/js/simple_generators.js 1,1 (this=0x2f505bc81521 <JSGlobal Object>)
 -> 120
 =
 --
 GENERATOR SUSPEND
-   0: ~factorial at /home/tomek/msc/dea/js/simple_generators.js:1,20(this=0x2f505bc81521 <JSGlobal Object>, 1)
-   1: ~next at <unknown>:<unknown>(this=0x2f505bc8c461 <JSGenerator>)
-   2: ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js:19,25(this=0x2f505bc81521 <JSGlobal Object>, 5)
-   3: ~ at /home/tomek/msc/dea/js/simple_generators.js:1,1(this=0x2f505bc81521 <JSGlobal Object>)
+   0  ~factorial at /home/tomek/msc/dea/js/simple_generators.js 1,20 (this=0x2f505bc81521 <JSGlobal Object>, 1)
+   1  ~next at <unknown> <unknown> (this=0x2f505bc8c461 <JSGenerator>)
+   2  ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js 19,25 (this=0x2f505bc81521 <JSGlobal Object>, 5)
+   3  ~ at /home/tomek/msc/dea/js/simple_generators.js 1,1 (this=0x2f505bc81521 <JSGlobal Object>)
 =
 --
 GENERATOR ENTER
-   0: ~factorial at /home/tomek/msc/dea/js/simple_generators.js:1,20(this=0x2f505bc81521 <JSGlobal Object>, 1)
-   1: ~next at <unknown>:<unknown>(this=0x2f505bc8c461 <JSGenerator>)
-   2: ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js:19,25(this=0x2f505bc81521 <JSGlobal Object>, 5)
-   3: ~ at /home/tomek/msc/dea/js/simple_generators.js:1,1(this=0x2f505bc81521 <JSGlobal Object>)
+   0  ~factorial at /home/tomek/msc/dea/js/simple_generators.js 1,20 (this=0x2f505bc81521 <JSGlobal Object>, 1)
+   1  ~next at <unknown> <unknown> (this=0x2f505bc8c461 <JSGenerator>)
+   2  ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js 19,25 (this=0x2f505bc81521 <JSGlobal Object>, 5)
+   3  ~ at /home/tomek/msc/dea/js/simple_generators.js 1,1 (this=0x2f505bc81521 <JSGlobal Object>)
 =
 --
 FUNCTION ENTER
-   0: ~multiply at /home/tomek/msc/dea/js/simple_generators.js:11,18(this=0x2f505bc81521 <JSGlobal Object>, 1, 120)
-   1: ~factorial at /home/tomek/msc/dea/js/simple_generators.js:1,20(this=0x2f505bc81521 <JSGlobal Object>, 1)
-   2: ~next at <unknown>:<unknown>(this=0x2f505bc8c461 <JSGenerator>)
-   3: ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js:19,25(this=0x2f505bc81521 <JSGlobal Object>, 5)
-   4: ~ at /home/tomek/msc/dea/js/simple_generators.js:1,1(this=0x2f505bc81521 <JSGlobal Object>)
+   0  ~multiply at /home/tomek/msc/dea/js/simple_generators.js 11,18 (this=0x2f505bc81521 <JSGlobal Object>, 1, 120)
+   1  ~factorial at /home/tomek/msc/dea/js/simple_generators.js 1,20 (this=0x2f505bc81521 <JSGlobal Object>, 1)
+   2  ~next at <unknown> <unknown> (this=0x2f505bc8c461 <JSGenerator>)
+   3  ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js 19,25 (this=0x2f505bc81521 <JSGlobal Object>, 5)
+   4  ~ at /home/tomek/msc/dea/js/simple_generators.js 1,1 (this=0x2f505bc81521 <JSGlobal Object>)
 =
 --
 FUNCTION EXIT
-   0: ~multiply at /home/tomek/msc/dea/js/simple_generators.js:11,18(this=0x2f505bc81521 <JSGlobal Object>, 1, 120)
-   1: ~factorial at /home/tomek/msc/dea/js/simple_generators.js:1,20(this=0x2f505bc81521 <JSGlobal Object>, 1)
-   2: ~next at <unknown>:<unknown>(this=0x2f505bc8c461 <JSGenerator>)
-   3: ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js:19,25(this=0x2f505bc81521 <JSGlobal Object>, 5)
-   4: ~ at /home/tomek/msc/dea/js/simple_generators.js:1,1(this=0x2f505bc81521 <JSGlobal Object>)
+   0  ~multiply at /home/tomek/msc/dea/js/simple_generators.js 11,18 (this=0x2f505bc81521 <JSGlobal Object>, 1, 120)
+   1  ~factorial at /home/tomek/msc/dea/js/simple_generators.js 1,20 (this=0x2f505bc81521 <JSGlobal Object>, 1)
+   2  ~next at <unknown> <unknown> (this=0x2f505bc8c461 <JSGenerator>)
+   3  ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js 19,25 (this=0x2f505bc81521 <JSGlobal Object>, 5)
+   4  ~ at /home/tomek/msc/dea/js/simple_generators.js 1,1 (this=0x2f505bc81521 <JSGlobal Object>)
 -> 120
 =
 --
 GENERATOR YIELD
-   4: ~factorial at /home/tomek/msc/dea/js/simple_generators.js:7,5
-   0: ~factorial at /home/tomek/msc/dea/js/simple_generators.js:1,20(this=0x2f505bc81521 <JSGlobal Object>, 0)
-   1: ~next at <unknown>:<unknown>(this=0x2f505bc8c461 <JSGenerator>)
-   2: ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js:19,25(this=0x2f505bc81521 <JSGlobal Object>, 5)
-   3: ~ at /home/tomek/msc/dea/js/simple_generators.js:1,1(this=0x2f505bc81521 <JSGlobal Object>)
+   4  ~factorial at /home/tomek/msc/dea/js/simple_generators.js 7,5
+   0  ~factorial at /home/tomek/msc/dea/js/simple_generators.js 1,20 (this=0x2f505bc81521 <JSGlobal Object>, 0)
+   1  ~next at <unknown> <unknown> (this=0x2f505bc8c461 <JSGenerator>)
+   2  ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js 19,25 (this=0x2f505bc81521 <JSGlobal Object>, 5)
+   3  ~ at /home/tomek/msc/dea/js/simple_generators.js 1,1 (this=0x2f505bc81521 <JSGlobal Object>)
 -> 120
 =
 --
 GENERATOR SUSPEND
-   0: ~factorial at /home/tomek/msc/dea/js/simple_generators.js:1,20(this=0x2f505bc81521 <JSGlobal Object>, 0)
-   1: ~next at <unknown>:<unknown>(this=0x2f505bc8c461 <JSGenerator>)
-   2: ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js:19,25(this=0x2f505bc81521 <JSGlobal Object>, 5)
-   3: ~ at /home/tomek/msc/dea/js/simple_generators.js:1,1(this=0x2f505bc81521 <JSGlobal Object>)
+   0  ~factorial at /home/tomek/msc/dea/js/simple_generators.js 1,20 (this=0x2f505bc81521 <JSGlobal Object>, 0)
+   1  ~next at <unknown> <unknown> (this=0x2f505bc8c461 <JSGenerator>)
+   2  ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js 19,25 (this=0x2f505bc81521 <JSGlobal Object>, 5)
+   3  ~ at /home/tomek/msc/dea/js/simple_generators.js 1,1 (this=0x2f505bc81521 <JSGlobal Object>)
 =
 --
 GENERATOR ENTER
-   0: ~factorial at /home/tomek/msc/dea/js/simple_generators.js:1,20(this=0x2f505bc81521 <JSGlobal Object>, 0)
-   1: ~next at <unknown>:<unknown>(this=0x2f505bc8c461 <JSGenerator>)
-   2: ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js:19,25(this=0x2f505bc81521 <JSGlobal Object>, 5)
-   3: ~ at /home/tomek/msc/dea/js/simple_generators.js:1,1(this=0x2f505bc81521 <JSGlobal Object>)
+   0  ~factorial at /home/tomek/msc/dea/js/simple_generators.js 1,20 (this=0x2f505bc81521 <JSGlobal Object>, 0)
+   1  ~next at <unknown> <unknown> (this=0x2f505bc8c461 <JSGenerator>)
+   2  ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js 19,25 (this=0x2f505bc81521 <JSGlobal Object>, 5)
+   3  ~ at /home/tomek/msc/dea/js/simple_generators.js 1,1 (this=0x2f505bc81521 <JSGlobal Object>)
 =
 --
 FUNCTION EXIT
-   0: ~factorial at /home/tomek/msc/dea/js/simple_generators.js:1,20(this=0x2f505bc81521 <JSGlobal Object>, 0)
-   1: ~next at <unknown>:<unknown>(this=0x2f505bc8c461 <JSGenerator>)
-   2: ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js:19,25(this=0x2f505bc81521 <JSGlobal Object>, 5)
-   3: ~ at /home/tomek/msc/dea/js/simple_generators.js:1,1(this=0x2f505bc81521 <JSGlobal Object>)
+   0  ~factorial at /home/tomek/msc/dea/js/simple_generators.js 1,20 (this=0x2f505bc81521 <JSGlobal Object>, 0)
+   1  ~next at <unknown> <unknown> (this=0x2f505bc8c461 <JSGenerator>)
+   2  ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js 19,25 (this=0x2f505bc81521 <JSGlobal Object>, 5)
+   3  ~ at /home/tomek/msc/dea/js/simple_generators.js 1,1 (this=0x2f505bc81521 <JSGlobal Object>)
 -> 0x12595e9804d1 <undefined>
 =
 --
 IF STMT - THEN
-   2: ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js:24,5
-   0: ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js:19,25(this=0x2f505bc81521 <JSGlobal Object>, 5)
-   1: ~ at /home/tomek/msc/dea/js/simple_generators.js:1,1(this=0x2f505bc81521 <JSGlobal Object>)
+   2  ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js 24,5
+   0  ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js 19,25 (this=0x2f505bc81521 <JSGlobal Object>, 5)
+   1  ~ at /home/tomek/msc/dea/js/simple_generators.js 1,1 (this=0x2f505bc81521 <JSGlobal Object>)
 =
 --
 FUNCTION EXIT
-   0: ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js:19,25(this=0x2f505bc81521 <JSGlobal Object>, 5)
-   1: ~ at /home/tomek/msc/dea/js/simple_generators.js:1,1(this=0x2f505bc81521 <JSGlobal Object>)
+   0  ~print_factorial at /home/tomek/msc/dea/js/simple_generators.js 19,25 (this=0x2f505bc81521 <JSGlobal Object>, 5)
+   1  ~ at /home/tomek/msc/dea/js/simple_generators.js 1,1 (this=0x2f505bc81521 <JSGlobal Object>)
 -> 0x12595e9804d1 <undefined>
 =
 --
 FUNCTION EXIT
-   0: ~ at /home/tomek/msc/dea/js/simple_generators.js:1,1(this=0x2f505bc81521 <JSGlobal Object>)
--> 0x12595e9804d1 <undefined>
-=
---
-FUNCTION ENTER
-   0: ~hello at /home/tomek/msc/dea/js/simple_generators.js:15,15(this=0x2f505bc81521 <JSGlobal Object>)
-=
---
-FUNCTION EXIT
-   0: ~hello at /home/tomek/msc/dea/js/simple_generators.js:15,15(this=0x2f505bc81521 <JSGlobal Object>)
+   0  ~ at /home/tomek/msc/dea/js/simple_generators.js 1,1 (this=0x2f505bc81521 <JSGlobal Object>)
 -> 0x12595e9804d1 <undefined>
 =
 --
 FUNCTION ENTER
-   0: ~hello at /home/tomek/msc/dea/js/simple_generators.js:15,15(this=0x2f505bc81521 <JSGlobal Object>)
+   0  ~hello at /home/tomek/msc/dea/js/simple_generators.js 15,15 (this=0x2f505bc81521 <JSGlobal Object>)
 =
 --
 FUNCTION EXIT
-   0: ~hello at /home/tomek/msc/dea/js/simple_generators.js:15,15(this=0x2f505bc81521 <JSGlobal Object>)
+   0  ~hello at /home/tomek/msc/dea/js/simple_generators.js 15,15 (this=0x2f505bc81521 <JSGlobal Object>)
 -> 0x12595e9804d1 <undefined>
 =
 --
 FUNCTION ENTER
-   0: ~hello at /home/tomek/msc/dea/js/simple_generators.js:15,15(this=0x2f505bc81521 <JSGlobal Object>)
+   0  ~hello at /home/tomek/msc/dea/js/simple_generators.js 15,15 (this=0x2f505bc81521 <JSGlobal Object>)
 =
 --
 FUNCTION EXIT
-   0: ~hello at /home/tomek/msc/dea/js/simple_generators.js:15,15(this=0x2f505bc81521 <JSGlobal Object>)
+   0  ~hello at /home/tomek/msc/dea/js/simple_generators.js 15,15 (this=0x2f505bc81521 <JSGlobal Object>)
 -> 0x12595e9804d1 <undefined>
 =
 --
 FUNCTION ENTER
-   0: ~hello at /home/tomek/msc/dea/js/simple_generators.js:15,15(this=0x2f505bc81521 <JSGlobal Object>)
+   0  ~hello at /home/tomek/msc/dea/js/simple_generators.js 15,15 (this=0x2f505bc81521 <JSGlobal Object>)
 =
 --
 FUNCTION EXIT
-   0: ~hello at /home/tomek/msc/dea/js/simple_generators.js:15,15(this=0x2f505bc81521 <JSGlobal Object>)
+   0  ~hello at /home/tomek/msc/dea/js/simple_generators.js 15,15 (this=0x2f505bc81521 <JSGlobal Object>)
 -> 0x12595e9804d1 <undefined>
 =
 --
 FUNCTION ENTER
-   0: ~hello at /home/tomek/msc/dea/js/simple_generators.js:15,15(this=0x2f505bc81521 <JSGlobal Object>)
+   0  ~hello at /home/tomek/msc/dea/js/simple_generators.js 15,15 (this=0x2f505bc81521 <JSGlobal Object>)
 =
 --
 FUNCTION EXIT
-   0: ~hello at /home/tomek/msc/dea/js/simple_generators.js:15,15(this=0x2f505bc81521 <JSGlobal Object>)
+   0  ~hello at /home/tomek/msc/dea/js/simple_generators.js 15,15 (this=0x2f505bc81521 <JSGlobal Object>)
+-> 0x12595e9804d1 <undefined>
+=
+--
+FUNCTION ENTER
+   0  ~hello at /home/tomek/msc/dea/js/simple_generators.js 15,15 (this=0x2f505bc81521 <JSGlobal Object>)
+=
+--
+FUNCTION EXIT
+   0  ~hello at /home/tomek/msc/dea/js/simple_generators.js 15,15 (this=0x2f505bc81521 <JSGlobal Object>)
 -> 0x12595e9804d1 <undefined>
 =
 --

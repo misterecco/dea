@@ -3,6 +3,7 @@ module Parser where
 import Control.Monad.Writer
 import Data.List ( isInfixOf, find, delete )
 import Data.List.Split ( endBy )
+import Debug.Trace
 
 data Loc = CL {
     functionName :: String,
@@ -36,14 +37,12 @@ instance Read Loc where
     readsPrec _ input = case (lines input) of
         [] -> []
         (l:ls) -> do
-            let w = drop 1 $ words l
-            let fname = head w
-            let w2 = drop 2 w
-            let loc = head w2
-            let (path, pos) = span (/= ':') loc
-            let line = read $ takeWhile (/= ',') $ tail pos
-            let col = read $ takeWhile (/= '(') $ tail $ dropWhile (/= ',') pos
-            [(CL fname path line col, unlines ls)]
+            let tokens = words l
+            let fname = tokens !! 1
+            let path = tokens !! 3
+            let loc = tokens !! 4
+            let (line, col) = span (/= ',') loc
+            [(CL fname path (read line) (read $ tail col), unlines ls)]
 
 
 instance Read CodeEvent where
