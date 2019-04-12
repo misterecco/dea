@@ -1,6 +1,7 @@
 import argparse
 
 from selenium import webdriver
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from time import sleep
 
 
@@ -22,13 +23,19 @@ def open_browser_with_extensions(extensions=[], trace_file=None):
         options.add_argument(arg)
 
     if trace_file is not None:
-        # arg = f"--js-flags='--trace-dea --trace-dea-file={trace_file}'"
-        arg = f"--js-flags='--trace-dea'"
+        arg = f"--js-flags='--trace-dea --trace-dea-file={trace_file}'"
+        # arg = f"--js-flags='--trace-dea'"
         print(f"trace arg: {arg}")
         options.add_argument(arg)
 
+    # options.add_experimental_option('debuggerAddress', "localhost:12345")
+    # capabilities = options.to_capabilities()
+
+    # return webdriver.Remote(command_executor="http://localhost:4444/wd/hub",
+    #        desired_capabilities=capabilities)
+
     return webdriver.Chrome(options=options, executable_path=chromedriver_path,
-                            service_args=["--verbose", "--log-path=/home/tomek/msc/dea/automation/cd.log"])
+                           service_args=["--verbose", "--log-path=/home/tomek/msc/dea/automation/cd.log"])
 
 def open_browser_with_ublock(trace_file=None):
     return open_browser_with_extensions(extensions=[ublock_origin_path], trace_file=trace_file)
