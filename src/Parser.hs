@@ -61,10 +61,12 @@ instance Read CodeEvent where
                 let locs = takeWhile (/= "=") xs
                 let n = length locs
                 let st = map read $ filter (\x -> not (isInfixOf "<JSGenerator>" x)) $ take (n-m) locs
-                [(CE eventType (head st) (newStack eventType st), [])]
+                let filSt = filterStack st
+                [(CE eventType (head filSt) (newStack eventType filSt), [])]
             newStack eventType stack =
                 if elem eventType [FunctionEnter, GeneratorEnter]
                     then stack else tail stack
+            filterStack = filter (\loc -> line loc >= 0)
     readList input = do
         let entries = endBy "--\n" input
         let locs = map read entries

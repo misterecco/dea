@@ -9,7 +9,7 @@ import System.Exit ( exitFailure, exitSuccess )
 import System.Process
 
 import Alignment
-import Parser 
+import Parser
 
 runFile :: FilePath -> IO [CallTrace]
 runFile f = do
@@ -28,7 +28,7 @@ runFiles fs = do
     tracesB <- runFile $ fs !! 1
     let (matched, unmatchedLeft, unmatchedRight) = if (length tracesA) <= (length tracesB)
         then analyzeTraces tracesA tracesB
-        else analyzeTraces tracesB tracesA
+        else let (m, ul, ur) = analyzeTraces tracesB tracesA in (map flipDiff m, ur, ul)
     putStrLn "=============== Aligned ==============="
     mapM_ (putStrLn . show) matched
     putStrLn "=============== Unmatched left ==============="

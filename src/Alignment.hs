@@ -1,7 +1,7 @@
 module Alignment where
 
 import Control.Monad.State
-import qualified Data.Map as M ( Map, empty, insertWith, insert, (!), 
+import qualified Data.Map as M ( Map, empty, insertWith, insert, (!),
         size, keys, elemAt, null, delete, assocs, member )
 import Data.List ( nub, (\\), sort, partition )
 
@@ -25,22 +25,30 @@ instance Show EventDiff where
         unlines ["                                   RIGHT: ", "Event: " ++ show eventType, "Loc: " ++ show loc]
 
 alignTraces :: CallTrace -> CallTrace -> (Score, TraceDiff)
-alignTraces leftTrace rightTrace = 
+alignTraces leftTrace rightTrace =
     if null leftTrace || null rightTrace || (head leftTrace) /= (head rightTrace)
         then (-1, [])
         else align leftTrace rightTrace (0, [])
     where
         align [] [] (score, acc) = (score, reverse acc)
-        align [] (event:rightTrace) (score, acc) = 
+        align [] (event:rightTrace) (score, acc) =
             align [] rightTrace (score, ((EDRight event):acc))
-        align (event:leftTrace) [] (score, acc) = 
+        align (event:leftTrace) [] (score, acc) =
             align leftTrace [] (score, ((EDLeft event):acc))
         align (leftEv@(CE _ _ leftSt):leftTr) (rightEv@(CE _ _ rightSt):rightTr) (score, acc) =
-            if leftEv == rightEv 
+            if leftEv == rightEv
                 then align leftTr rightTr (score + 1, ((EDCommon leftEv):acc))
             else if (length leftSt) <= (length rightSt)
                 then align (leftEv:leftTr) rightTr (score, ((EDRight rightEv):acc))
             else align leftTr (rightEv:rightTr) (score, ((EDLeft leftEv):acc))
+
+
+flipDiff :: TraceDiff -> TraceDiff
+flipDiff = map flipEvent
+  where
+    flipEvent (EDLeft ev) = (EDRight ev)
+    flipEvent (EDRight ev) = (EDLeft ev)
+    flipEvent (EDCommon ev) = (EDCommon ev)
 
 
 removeDuplicateTraces :: [CallTrace] -> [CallTrace] -> ([CallTrace], [CallTrace])
@@ -120,17 +128,17 @@ findMatches :: HasCallStack => SMPMonad ([TraceDiff], [CallTrace], [CallTrace])
 findMatches = do
     st <- get
     let fp = freeProposers st
-    if M.null fp 
-        then retrieveMatches 
+    if M.null fp
+        then retrieveMatches
         else do
             let (prop, pref) = M.elemAt 0 fp
-            if null pref || (fst (head pref) == -1) 
+            if null pref || (fst (head pref) == -1)
                 then do
                     let newFp = M.delete prop fp
                     let up = unmatchedProposers st
                     put $ st { freeProposers = newFp, unmatchedProposers = (prop:up) }
                     findMatches
-                else do 
+                else do
                     let (score, acc) = head pref
                     let ea = engagedAcceptors st
                     -- unless (M.member acc ea) $ error "error"
