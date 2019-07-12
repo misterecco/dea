@@ -187,6 +187,14 @@ findDiffs leftTraces rightTraces = do
     findMatches
     retrieveMatches
 
+filterNodiffs :: [TraceDiff] -> [TraceDiff]
+filterNodiffs = filter isNotAllCommon
+  where
+    isNotAllCommon = any isNotCommon
+    isNotCommon ed = case ed of
+        EDCommon _ -> False
+        _ -> True
+
 analyzeTraces :: HasCallStack => [CallTrace] -> [CallTrace] -> ([TraceDiff], [CallTrace], [CallTrace])
 analyzeTraces leftTraces rightTraces = evalState (findDiffs leftTraces rightTraces) initialSMPState
 

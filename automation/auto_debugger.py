@@ -13,7 +13,7 @@ chrome_path = "/home/tomek/msc/chromium/src/out/Opt/chrome"
 chromedriver_path = "/home/tomek/msc/chromedriver/chromedriver"
 profile_ublock = "/home/tomek/msc/dea/automation/profile_ublock"
 profile_no_ublock = "/home/tomek/msc/dea/automation/profile_no_ublock"
-tries_count = 1
+tries_count = 3
 
 def connect_to_chrome(debug_port):
     options = webdriver.ChromeOptions()
@@ -47,10 +47,12 @@ def run_chrome(trace_file=None, profile_path=None, debug_port=None):
         "--no-first-run",
         "--no-sandbox",
         "--use-mock-keychain",
+        "about:blank",
     ]
 
     if trace_file is not None:
         args.append(f"--js-flags='--trace-dea --trace-dea-file={trace_file}'")
+        pass
         # args.append(f"--js-flags='--trace'")
 
     if profile_path is not None:
@@ -71,9 +73,9 @@ def run_chrome(trace_file=None, profile_path=None, debug_port=None):
 
 
 def open_website_and_quit(website, browser, webdriver):
-    sleep(3)
+    sleep(50)
     webdriver.get(website)
-    sleep(10)
+    sleep(15)
     webdriver.close()
     # browser.terminate()
 
