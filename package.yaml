@@ -25,6 +25,7 @@ dependencies:
 - process
 - split
 - mtl
+- hashable
 
 library:
   source-dirs: src

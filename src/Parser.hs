@@ -1,6 +1,13 @@
+{-# LANGUAGE BangPatterns #-}
+{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE DeriveAnyClass #-}
+
 module Parser where
 
 import Control.Monad.Writer
+-- import Control.DeepSeq
+import Data.Hashable
+import GHC.Generics (Generic)
 import Data.List ( isInfixOf, find, delete )
 import Data.List.Split ( endBy )
 import Debug.Trace
@@ -10,9 +17,9 @@ data Loc = CL {
     filePath :: String,
     line :: Integer,
     column :: Integer
-} deriving (Eq, Ord)
+} deriving (Eq, Generic, Hashable, Ord)
 
-type Stack = [Loc]
+type Stack = [Hashed Loc]
 
 data EventType
     = FunctionEnter
@@ -24,7 +31,7 @@ data EventType
     | IfStmtElse
     deriving (Show, Eq, Ord)
 
-data CodeEvent = CE EventType Loc Stack
+data CodeEvent = CE EventType !Loc !Stack
     deriving (Eq, Ord)
 
 type CallTrace = [CodeEvent]
@@ -37,13 +44,16 @@ instance Read Loc where
     readsPrec _ input = case (lines input) of
         [] -> []
         (l:ls) -> do
-            let tokens = words l
-            let fname = tokens !! 1
-            let path = tokens !! 3
-            let loc = tokens !! 4
-            let (line, col) = span (/= ',') loc
-            [(CL fname path (read line) (read $ tail col), unlines ls)]
+            let tokens = words (traceShowId l)
+            let (fname, path, line, col) = parseLoc tokens
+            [(CL fname path (read line) (read col), unlines ls)]
 
+parseLoc :: [String] -> (String, String, String, String)
+parseLoc l = (unwords name, unwords path, line, col)
+    where
+        ((_:name), (_:rest)) = span (/= "at") l
+        (path, (_:loc:_)) = span (/= "@@") rest
+        (line, (_:col)) = span (/= ',') loc
 
 instance Read CodeEvent where
     readsPrec _ input = case (lines input) of
@@ -62,7 +72,8 @@ instance Read CodeEvent where
                 let n = length locs
                 let st = map read $ filter (\x -> not (isInfixOf "<JSGenerator>" x)) $ take (n-m) locs
                 let filSt = filterStack st
-                [(CE eventType (head filSt) (newStack eventType filSt), [])]
+                let hashedSt = map hashed (newStack eventType filSt)
+                [(CE eventType (head filSt) hashedSt, [])]
             newStack eventType stack =
                 if elem eventType [FunctionEnter, GeneratorEnter]
                     then stack else tail stack
@@ -79,33 +90,44 @@ instance Show CodeEvent where
 
 
 untangleEvents :: [CodeEvent] -> [CallTrace]
-untangleEvents events = untangle [] [] events
+untangleEvents events = untangle [] [] events (length events)
     where
-        untangle results [] [] = reverse results
-        untangle results openTraces (event:events) = do
-            let (matchingTrace, newOpenTraces) = findMatchingTrace openTraces event
-            let newTrace = event:matchingTrace
-            case event of
-                (CE FunctionExit _ []) -> untangle ((reverse newTrace):results) newOpenTraces events
-                _ -> untangle results (newTrace:newOpenTraces) events
+        untangle results [] [] _ = reverse results
+        untangle results openTraces (event:events) left = do
+            -- let ev = traceShowId event
+            let (ev, ot) = trace (show (length openTraces) ++ " " ++ show left) (event, openTraces)
+            let (matchingTrace, !newOpenTraces) = findMatchingTrace ot ev
+            let newTrace = ev:matchingTrace
+            case ev of
+                (CE FunctionExit _ []) -> untangle ((reverse newTrace):results) newOpenTraces events (left-1)
+                _ -> untangle results (newTrace:newOpenTraces) events (left-1)
         -- should not happen in complete trace
-        untangle results openTraces [] = reverse (openTraces ++ results)
+        untangle results openTraces [] _ = reverse (openTraces ++ results)
         findMatchingTrace openTraces event = case event of
             (CE FunctionEnter _ [_]) -> ([], openTraces)
             (CE FunctionEnter _ st) -> findMatchingOpenEvent (tail st) openTraces
             (CE GeneratorEnter _ st) -> findMatchingOpenEvent (tail st) openTraces
-            (CE FunctionExit loc st) -> findMatchingOpenEvent (loc:st) openTraces
-            (CE GeneratorSuspend loc st) -> findMatchingOpenEvent (loc:st) openTraces
+            (CE FunctionExit loc st) -> findMatchingOpenEvent ((hashed loc):st) openTraces
+            (CE GeneratorSuspend loc st) -> findMatchingOpenEvent ((hashed loc):st) openTraces
             (CE GeneratorYield loc st) -> findMatchingOpenEvent st openTraces
             (CE IfStmtThen _ st) -> findMatchingOpenEvent st openTraces
             (CE IfStmtElse _ st) -> findMatchingOpenEvent st openTraces
+        findMatchingOpenEvent st [e] = (e, [])
         findMatchingOpenEvent st openTraces =
             case (find (isStackMatching st) openTraces) of
                 Nothing -> error $ "Didn't find proper predecessor for: " ++ show st ++ " in: " ++ show openTraces
                 Just e -> (e, delete e openTraces)
         isStackMatching st trace = case trace of
             [] -> False
-            (CE _ _ st1):_ -> st1 == st
+            (CE _ _ st1):_ -> stackEqual st1 st
+
+stackEqual :: Stack -> Stack -> Bool
+stackEqual lhs rhs = se lhs rhs 3 && (length lhs == length rhs)
+  where
+    se (l:ls) (r:rs) n = (hash l == hash r) && (se ls rs (n-1))
+    se [] [] _ = True
+    se _ _ 0 = True
+    se _ _ _ = False
 
 showEvent :: CodeEvent -> Writer [String] ()
 showEvent (CE eventType loc st) = do

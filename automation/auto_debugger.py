@@ -13,7 +13,7 @@ chrome_path = "/home/tomek/msc/chromium/src/out/Opt/chrome"
 chromedriver_path = "/home/tomek/msc/chromedriver/chromedriver"
 profile_ublock = "/home/tomek/msc/dea/automation/profile_ublock"
 profile_no_ublock = "/home/tomek/msc/dea/automation/profile_no_ublock"
-tries_count = 3
+tries_count = 1
 
 def connect_to_chrome(debug_port):
     options = webdriver.ChromeOptions()
@@ -74,8 +74,8 @@ def open_website_and_quit(website, browser, webdriver):
     sleep(3)
     webdriver.get(website)
     sleep(10)
-    webdriver.quit()
-    browser.terminate()
+    webdriver.close()
+    # browser.terminate()
 
 
 def get_random_port():
@@ -93,11 +93,11 @@ def collect_trace(website, trace_file, profile_path):
     chrome = run_chrome(debug_port=port, trace_file=trace_file, profile_path=profile_path)
     webdriver = connect_to_chrome(debug_port=port)
     open_website_and_quit(website, chrome, webdriver)
-    
+
 
 def collect_positive_trace(website, trace_file):
     collect_trace(website, trace_file, profile_ublock)
-    
+
 
 def collect_negative_trace(website, trace_file):
     collect_trace(website, trace_file, profile_no_ublock)
@@ -120,8 +120,8 @@ def collect_traces(website, traces_dir):
     except FileExistsError:
         pass
     for i in range(tries_count):
-        positive_trace = f"{website_path}/p_{i}.tr"
-        negative_trace = f"{website_path}/n_{i}.tr"
+        positive_trace = f"{website_path}/p_{i}_"
+        negative_trace = f"{website_path}/n_{i}_"
         collect_positive_trace(website, positive_trace)
         collect_negative_trace(website, negative_trace)
 

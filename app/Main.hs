@@ -15,7 +15,8 @@ runFile :: FilePath -> IO [CallTrace]
 runFile f = do
     s <- readFile f
     let events = read s :: [CodeEvent]
-    -- mapM_ print events
+    mapM_ print events
+    putStrLn $ "Number of events: " ++ show (length events)
     putStrLn "=============================="
     let traces = untangleEvents events
     mapM_ putStrLn (formatTraces traces)

@@ -1,0 +1,74 @@
+FUNCTION ENTER
+   0: ~ at /home/tomek/msc/dea/js/simple_map.js 1,1 ()
+=
+--
+FUNCTION ENTER
+   0: ~ at /home/tomek/msc/dea/js/simple_map.js 3,11 ()
+   1: ~map at <unknown> -1,-1 ()
+   2: ~ at /home/tomek/msc/dea/js/simple_map.js 1,1 ()
+=
+--
+FUNCTION EXIT
+   0: ~ at /home/tomek/msc/dea/js/simple_map.js 3,11 ()
+   1: ~ at <unknown> -1,-1 ()
+   2: ~ at /home/tomek/msc/dea/js/simple_map.js 1,1 ()
+-> 2
+=
+--
+FUNCTION ENTER
+   0: ~(anonymous function) at /home/tomek/msc/dea/js/simple_map.js 3,11 ()
+   1: ~map at <unknown> -1,-1 ()
+   2: ~ at /home/tomek/msc/dea/js/simple_map.js 1,1 ()
+=
+--
+FUNCTION EXIT
+   0: ~(anonymous function) at /home/tomek/msc/dea/js/simple_map.js 3,11 ()
+   1: ~map at <unknown> -1,-1 ()
+   2: ~ at /home/tomek/msc/dea/js/simple_map.js 1,1 ()
+-> 4
+=
+--
+FUNCTION ENTER
+   0: ~ at /home/tomek/msc/dea/js/simple_map.js 3,11 ()
+   1: ~map at <unknown> -1,-1 ()
+   2: ~ at /home/tomek/msc/dea/js/simple_map.js 1,1 ()
+=
+--
+FUNCTION EXIT
+   0: ~ at /home/tomek/msc/dea/js/simple_map.js 3,11 ()
+   1: ~map at <unknown> -1,-1 ()
+   2: ~ at /home/tomek/msc/dea/js/simple_map.js 1,1 ()
+-> 6
+=
+--
+FUNCTION ENTER
+   0: ~ at /home/tomek/msc/dea/js/simple_map.js 3,11 ()
+   1: ~map at <unknown> -1,-1 ()
+   2: ~ at /home/tomek/msc/dea/js/simple_map.js 1,1 ()
+=
+--
+FUNCTION EXIT
+   0: ~ at /home/tomek/msc/dea/js/simple_map.js 3,11 ()
+   1: ~map at <unknown> -1,-1 ()
+   2: ~ at /home/tomek/msc/dea/js/simple_map.js 1,1 ()
+-> 8
+=
+--
+FUNCTION ENTER
+   0: ~ at /home/tomek/msc/dea/js/simple_map.js 3,11 ()
+   1: ~map at <unknown> -1,-1 ()
+   2: ~ at /home/tomek/msc/dea/js/simple_map.js 1,1 ()
+=
+--
+FUNCTION EXIT
+   0: ~ at /home/tomek/msc/dea/js/simple_map.js 3,11 ()
+   1: ~map at <unknown> -1,-1 ()
+   2: ~ at /home/tomek/msc/dea/js/simple_map.js 1,1 ()
+-> 10
+=
+--
+FUNCTION EXIT
+   0: ~ at /home/tomek/msc/dea/js/simple_map.js 1,1 ()
+-> 0x361a9f0804d1 <undefined>
+=
+--
