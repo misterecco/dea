@@ -23,9 +23,10 @@ dependencies:
 - base >= 4.7 && < 5
 - containers
 - process
-- split
 - mtl
 - hashable
+- attoparsec
+- bytestring
 
 library:
   source-dirs: src

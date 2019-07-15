@@ -1,23 +1,32 @@
 {-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DeriveAnyClass #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Parser where
 
+import Control.Applicative
 import Control.Monad.Writer
--- import Control.DeepSeq
+import Data.Attoparsec.ByteString.Char8
 import Data.Hashable
-import GHC.Generics (Generic)
 import Data.List ( isInfixOf, find, delete )
-import Data.List.Split ( endBy )
 import Debug.Trace
+import GHC.Generics (Generic)
+
+import qualified Data.ByteString as B
+import qualified Data.ByteString.Char8 as C
+
 
 data Loc = CL {
-    functionName :: String,
-    filePath :: String,
+    functionName :: B.ByteString,
+    filePath :: B.ByteString,
     line :: Integer,
     column :: Integer
 } deriving (Eq, Generic, Hashable, Ord)
+
+instance Show Loc where
+    show (CL fun path line col) =
+        show fun ++ " at " ++ show path ++ ":" ++ show line ++ "," ++ show col
 
 type Stack = [Hashed Loc]
 
@@ -34,59 +43,65 @@ data EventType
 data CodeEvent = CE EventType !Loc !Stack
     deriving (Eq, Ord)
 
-type CallTrace = [CodeEvent]
-
-instance Show Loc where
-    show (CL fun path line col) =
-        fun ++ " at " ++ path ++ ":" ++ show line ++ "," ++ show col
-
-instance Read Loc where
-    readsPrec _ input = case (lines input) of
-        [] -> []
-        (l:ls) -> do
-            let tokens = words (traceShowId l)
-            let (fname, path, line, col) = parseLoc tokens
-            [(CL fname path (read line) (read col), unlines ls)]
-
-parseLoc :: [String] -> (String, String, String, String)
-parseLoc l = (unwords name, unwords path, line, col)
-    where
-        ((_:name), (_:rest)) = span (/= "at") l
-        (path, (_:loc:_)) = span (/= "@@") rest
-        (line, (_:col)) = span (/= ',') loc
-
-instance Read CodeEvent where
-    readsPrec _ input = case (lines input) of
-        [] -> []
-        ("FUNCTION ENTER" : xs) -> readEvent FunctionEnter 0 xs
-        ("FUNCTION EXIT" : xs) -> readEvent FunctionExit 1 xs
-        ("GENERATOR ENTER" : xs) -> readEvent GeneratorEnter 0 xs
-        ("GENERATOR YIELD" : xs) -> readEvent GeneratorYield 1 xs
-        ("GENERATOR SUSPEND" : xs) -> readEvent GeneratorSuspend 0 xs
-        ("IF STMT - THEN" : xs) -> readEvent IfStmtThen 0 xs
-        ("IF STMT - ELSE" : xs) -> readEvent IfStmtElse 0 xs
-        _ : _ -> []
-        where
-            readEvent eventType m xs = do
-                let locs = takeWhile (/= "=") xs
-                let n = length locs
-                let st = map read $ filter (\x -> not (isInfixOf "<JSGenerator>" x)) $ take (n-m) locs
-                let filSt = filterStack st
-                let hashedSt = map hashed (newStack eventType filSt)
-                [(CE eventType (head filSt) hashedSt, [])]
-            newStack eventType stack =
-                if elem eventType [FunctionEnter, GeneratorEnter]
-                    then stack else tail stack
-            filterStack = filter (\loc -> line loc >= 0)
-    readList input = do
-        let entries = endBy "--\n" input
-        let locs = map read entries
-        [(locs, "")]
-
 instance Show CodeEvent where
     show (CE eventType loc st) =
         "Event: " ++ show eventType ++ "\nLoc: "
             ++ show loc ++ "\nStack:\n" ++ (unlines $ map show st)
+
+type CallTrace = [CodeEvent]
+
+
+locParser :: Parser Loc
+locParser = do
+    skipMany space
+    decimal
+    char ':'
+    l <- takeTill (== '\n')
+    case parseLoc l of
+        Just loc -> return loc
+        Nothing -> fail $ "Could not parse loc: " ++ show l
+
+parseLoc :: B.ByteString -> Maybe Loc
+parseLoc l = do
+    let (name, (_:rest)) = span (/= "at") (C.words l)
+    let (path, (_:loc:_)) = span (/= "@@") rest
+    (line, restLoc) <- C.readInteger loc
+    (col, _) <- C.readInteger (C.tail restLoc)
+    return $ CL (C.unwords name) (C.unwords path) line col
+
+eventTypeParser :: Parser EventType
+eventTypeParser =
+        (string "FUNCTION ENTER" >> return FunctionEnter)
+    <|> (string "FUNCTION EXIT" >> return FunctionExit)
+    <|> (string "GENERATOR ENTER" >> return GeneratorEnter)
+    <|> (string "GENERATOR YIELD" >> return GeneratorYield)
+    <|> (string "GENERATOR SUSPEND" >> return GeneratorSuspend)
+    <|> (string "IF STMT - THEN" >> return IfStmtThen)
+    <|> (string "IF STMT - ELSE" >> return IfStmtElse)
+
+codeEventParser :: Parser CodeEvent
+codeEventParser = do
+    eventType <- eventTypeParser <* endOfLine
+    locs <- many (locParser <* endOfLine)
+    when (elem eventType [FunctionExit, GeneratorYield]) $ do
+        _ <- (string "->")
+        skipWhile (/= '\n')
+        endOfLine
+    string "="
+    endOfLine
+    string "--"
+    let st = filterStack locs
+    let hashedSt = map hashed (newStack eventType st)
+    return $ CE eventType (head st) hashedSt
+        where
+            filterStack = filter (\loc -> line loc >= 0)
+            newStack eventType stack =
+                if elem eventType [FunctionEnter, GeneratorEnter]
+                    then stack
+                    else tail stack
+
+callTraceParser :: Parser CallTrace
+callTraceParser = many $ codeEventParser <* endOfLine
 
 
 untangleEvents :: [CodeEvent] -> [CallTrace]
@@ -96,7 +111,7 @@ untangleEvents events = untangle [] [] events (length events)
         untangle results openTraces (event:events) left = do
             -- let ev = traceShowId event
             let (ev, ot) = trace (show (length openTraces) ++ " " ++ show left) (event, openTraces)
-            let (matchingTrace, !newOpenTraces) = findMatchingTrace ot ev
+            let (matchingTrace, newOpenTraces) = findMatchingTrace ot ev
             let newTrace = ev:matchingTrace
             case ev of
                 (CE FunctionExit _ []) -> untangle ((reverse newTrace):results) newOpenTraces events (left-1)
