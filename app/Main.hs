@@ -14,6 +14,7 @@ import qualified Data.ByteString as B
 import Alignment
 import Parser
 
+
 runFile :: FilePath -> IO [CallTrace]
 runFile f = do
     fileContent <- B.readFile f
@@ -30,10 +31,32 @@ runFile f = do
             return traces
 
 
+getTrace :: [FilePath] -> IO [CallTrace]
+getTrace fs = mapM runFile fs >>= (return . commonElements)
+
+
 runFiles :: [FilePath] -> IO ()
 runFiles fs = do
-    tracesA <- runFile $ fs !! 0
-    tracesB <- runFile $ fs !! 1
+    let n = length fs
+    if (n `mod` 2) > 0
+        then do
+            fail "Please provide even number of traces"
+        else do
+            let (fsA, fsB) = splitAt (n `div` 2) fs
+            traceA <- getTrace fsA
+            traceB <- getTrace fsB
+            diffTraces traceA traceB
+
+
+commonElements :: Eq a => [[a]] -> [a]
+commonElements [] = []
+commonElements (h:t) = ct h t
+    where
+        ct h t = filter (\tr -> all (elem tr) t) h
+
+
+diffTraces :: [CallTrace] -> [CallTrace] -> IO ()
+diffTraces tracesA tracesB = do
     let (matched, unmatchedLeft, unmatchedRight) = if (length tracesA) <= (length tracesB)
         then analyzeTraces tracesA tracesB
         else let (m, ul, ur) = analyzeTraces tracesB tracesA in (map flipDiff m, ur, ul)
@@ -61,4 +84,6 @@ main = do
     case args of
         ["--help"] -> printUsage
         fs@[_, _] -> runFiles fs
+        fs@[_, _, _, _] -> runFiles fs
+        fs@[_, _, _, _, _, _] -> runFiles fs
         _ -> printUsage

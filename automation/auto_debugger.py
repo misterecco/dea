@@ -9,31 +9,31 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from time import sleep
 
 
-chrome_path = "/home/tomek/msc/chromium/src/out/Opt/chrome"
-chromedriver_path = "/home/tomek/msc/chromedriver/chromedriver"
-profile_ublock = "/home/tomek/msc/dea/automation/profile_ublock"
-profile_no_ublock = "/home/tomek/msc/dea/automation/profile_no_ublock"
-tries_count = 3
+CHROME_PATH = "/home/tomek/msc/chromium/src/out/Opt/chrome"
+CHROMEDRIVER_PATH = "/home/tomek/msc/chromedriver/chromedriver"
+PROFILE_UBLOCK = "/home/tomek/msc/dea/automation/profile_ublock"
+PROFILE_NO_UBLOCK = "/home/tomek/msc/dea/automation/profile_no_ublock"
+TRIES_COUNT = 3
 
 def connect_to_chrome(debug_port):
     options = webdriver.ChromeOptions()
     options.add_experimental_option('debuggerAddress', f"localhost:{debug_port}")
-    return webdriver.Chrome(options=options, executable_path=chromedriver_path)
+    return webdriver.Chrome(options=options, executable_path=CHROMEDRIVER_PATH)
 
 
 def run_chrome_with_ublock(trace_file=None, debug_port=None):
     return run_chrome(trace_file=trace_file, debug_port=debug_port,
-                      profile_path=profile_ublock)
+                      profile_path=PROFILE_UBLOCK)
 
 
 def run_chrome_without_ublock(trace_file=None, debug_port=None):
     return run_chrome(trace_file=trace_file, debug_port=debug_port,
-                      profile_path=profile_no_ublock)
+                      profile_path=PROFILE_NO_UBLOCK)
 
 
 def run_chrome(trace_file=None, profile_path=None, debug_port=None):
     args = [
-        chrome_path,
+        CHROME_PATH,
         "--disable-background-networking",
         "--disable-client-side-phishing-detection",
         "--disable-default-apps",
@@ -98,11 +98,11 @@ def collect_trace(website, trace_file, profile_path):
 
 
 def collect_positive_trace(website, trace_file):
-    collect_trace(website, trace_file, profile_ublock)
+    collect_trace(website, trace_file, PROFILE_UBLOCK)
 
 
 def collect_negative_trace(website, trace_file):
-    collect_trace(website, trace_file, profile_no_ublock)
+    collect_trace(website, trace_file, PROFILE_NO_UBLOCK)
 
 
 def url_to_path(url):
@@ -121,7 +121,7 @@ def collect_traces(website, traces_dir):
         os.mkdir(website_path)
     except FileExistsError:
         pass
-    for i in range(tries_count):
+    for i in range(TRIES_COUNT):
         positive_trace = f"{website_path}/p_{i}_"
         negative_trace = f"{website_path}/n_{i}_"
         collect_positive_trace(website, positive_trace)

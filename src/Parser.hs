@@ -110,7 +110,8 @@ untangleEvents events = untangle [] [] events (length events)
         untangle results [] [] _ = reverse results
         untangle results openTraces (event:events) left = do
             -- let ev = traceShowId event
-            let (ev, ot) = trace (show (length openTraces) ++ " " ++ show left) (event, openTraces)
+            -- let (ev, ot) = trace (show (length openTraces) ++ " " ++ show left) (event, openTraces)
+            let (ev, ot) = (event, openTraces)
             let (matchingTrace, newOpenTraces) = findMatchingTrace ot ev
             let newTrace = ev:matchingTrace
             case ev of
