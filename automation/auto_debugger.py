@@ -14,6 +14,8 @@ CHROMEDRIVER_PATH = "/home/tomek/msc/chromedriver/chromedriver"
 PROFILE_UBLOCK = "/home/tomek/msc/dea/automation/profile_ublock"
 PROFILE_NO_UBLOCK = "/home/tomek/msc/dea/automation/profile_no_ublock"
 TRIES_COUNT = 3
+UBLOCK_ID = 'cjpalhdlnbpafiamejdnhcphjbkeiagm'
+DOMAIN_BLOCKER_ID = 'ggdcjplapccgoinblmidpkoocfafajfa'
 
 def connect_to_chrome(debug_port):
     options = webdriver.ChromeOptions()
@@ -47,6 +49,7 @@ def run_chrome(trace_file=None, profile_path=None, debug_port=None):
         "--no-first-run",
         "--no-sandbox",
         "--use-mock-keychain",
+        # "--headless",
         "about:blank",
     ]
 
@@ -72,12 +75,13 @@ def run_chrome(trace_file=None, profile_path=None, debug_port=None):
     return subprocess.Popen(cmd, shell=True)
 
 
-def open_website_and_quit(website, browser, webdriver):
-    sleep(50)
+def open_website_and_quit(website, browser, webdriver, prep_time):
+    sleep(prep_time)
     webdriver.get(website)
     sleep(15)
     webdriver.close()
-    # browser.terminate()
+    sleep(2)
+    browser.terminate()
 
 
 def get_random_port():
@@ -90,19 +94,19 @@ def get_random_port():
     return port
 
 
-def collect_trace(website, trace_file, profile_path):
+def collect_trace(website, trace_file, profile_path, prep_time):
     port = get_random_port()
     chrome = run_chrome(debug_port=port, trace_file=trace_file, profile_path=profile_path)
     webdriver = connect_to_chrome(debug_port=port)
-    open_website_and_quit(website, chrome, webdriver)
+    open_website_and_quit(website, chrome, webdriver, prep_time)
 
 
 def collect_positive_trace(website, trace_file):
-    collect_trace(website, trace_file, PROFILE_UBLOCK)
+    collect_trace(website, trace_file, PROFILE_UBLOCK, 50)
 
 
 def collect_negative_trace(website, trace_file):
-    collect_trace(website, trace_file, PROFILE_NO_UBLOCK)
+    collect_trace(website, trace_file, PROFILE_NO_UBLOCK, 10)
 
 
 def url_to_path(url):
@@ -110,6 +114,42 @@ def url_to_path(url):
     path = path.replace("http://", "")
     path = path.replace("/", ".")
     return path
+
+
+def remove_extension_traces(website, website_path, file_prefix):
+    traces = os.listdir(website_path)
+    current_traces = []
+
+    for t in traces:
+        if file_prefix in t:
+            current_traces.append(t)
+
+    print("CURRENT TRACES: ")
+    print(current_traces)
+
+    found = False
+    dst_path = f'{website_path}/{file_prefix[:-1]}.tr'
+
+    for t in current_traces:
+        path = f'{website_path}/{t}'
+        text = f"at {website}"
+        result = subprocess.run(["grep", "-c", text, path], capture_output=True)
+        count = int(result.stdout)
+
+        print(f"{path}:{count}")
+
+        if count == 0:
+            print(f"Remove: {path}")
+            os.remove(path)
+        else:
+            if found:
+                raise Exception(f"Two suitable traces found for prefix: {file_prefix}")
+            print(f"Save: {path}")
+            os.rename(path, dst_path)
+            found = True
+
+    if not found:
+        raise Exception(f"No suitable trace found for prefix: {file_prefix}")
 
 
 def collect_traces(website, traces_dir):
@@ -122,10 +162,14 @@ def collect_traces(website, traces_dir):
     except FileExistsError:
         pass
     for i in range(TRIES_COUNT):
-        positive_trace = f"{website_path}/p_{i}_"
-        negative_trace = f"{website_path}/n_{i}_"
-        collect_positive_trace(website, positive_trace)
+        positive_prefix = f"p_{i}_"
+        negative_prefix = f"n_{i}_"
+        positive_trace = f"{website_path}/{positive_prefix}"
+        negative_trace = f"{website_path}/{negative_prefix}"
         collect_negative_trace(website, negative_trace)
+        remove_extension_traces(website, website_path, negative_prefix)
+        collect_positive_trace(website, positive_trace)
+        remove_extension_traces(website, website_path, positive_prefix)
 
 
 if __name__ == "__main__":

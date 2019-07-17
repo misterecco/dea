@@ -67,10 +67,11 @@ diffTraces tracesA tracesB = do
     putStrLn $ "Number of all traces: " ++ show (length matched)
     putStrLn $ "Number of diffing traces: " ++ show (length interestingMatched)
     mapM_ (putStrLn . show) interestingMatched
-    putStrLn "=============== Unmatched left ==============="
+    -- putStrLn "=============== Unmatched left ==============="
     -- mapM_ (putStrLn . show) (formatTraces unmatchedLeft)
-    putStrLn "=============== Unmatched right ==============="
+    -- putStrLn "=============== Unmatched right ==============="
     -- mapM_ (putStrLn . show) (formatTraces unmatchedRight)
+    putStrLn "========================================"
 
 
 printUsage :: IO ()
