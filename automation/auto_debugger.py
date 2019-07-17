@@ -5,6 +5,7 @@ import subprocess
 import random
 
 from selenium import webdriver
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from time import sleep
 
@@ -77,7 +78,13 @@ def run_chrome(trace_file=None, profile_path=None, debug_port=None):
 
 def open_website_and_quit(website, browser, webdriver, prep_time):
     sleep(prep_time)
-    webdriver.get(website)
+    try:
+        webdriver.get(website)
+    except TimeoutException as e:
+        print(f"WARN: {e}")
+    except e:
+        print(f"ERROR: {e}")
+
     sleep(15)
     webdriver.close()
     sleep(2)
@@ -90,7 +97,7 @@ def get_random_port():
     sock.settimeout(0.2)
     while code == 0:
         port = random.randint(10000, 60000)
-        code = sock.connect_ex(('localhost',port))
+        code = sock.connect_ex(('localhost', port))
     return port
 
 
@@ -110,10 +117,13 @@ def collect_negative_trace(website, trace_file):
 
 
 def url_to_path(url):
-    path = url.replace("https://", "")
-    path = path.replace("http://", "")
+    path = remove_protocol(url)
     path = path.replace("/", ".")
     return path
+
+
+def remove_protocol(url):
+    return url.replace("https://", "").replace("http://", "")
 
 
 def remove_extension_traces(website, website_path, file_prefix):
@@ -131,20 +141,21 @@ def remove_extension_traces(website, website_path, file_prefix):
     dst_path = f'{website_path}/{file_prefix[:-1]}.tr'
 
     for t in current_traces:
+        short_url = remove_protocol(website)
         path = f'{website_path}/{t}'
-        text = f"at {website}"
-        result = subprocess.run(["grep", "-c", text, path], capture_output=True)
+        text = f"at https?:\/\/{short_url}"
+        result = subprocess.run(["grep", "-P", "-c", text, path], capture_output=True)
         count = int(result.stdout)
 
-        print(f"{path}:{count}")
+        print(f"{t}:{count}")
 
         if count == 0:
-            print(f"Remove: {path}")
+            print(f"Remove: {t}")
             os.remove(path)
         else:
             if found:
                 raise Exception(f"Two suitable traces found for prefix: {file_prefix}")
-            print(f"Save: {path}")
+            print(f"Save: {t}")
             os.rename(path, dst_path)
             found = True
 
