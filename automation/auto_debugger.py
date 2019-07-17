@@ -3,6 +3,7 @@ import os
 import socket
 import subprocess
 import random
+import logging
 
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
@@ -18,6 +19,7 @@ TRIES_COUNT = 3
 UBLOCK_ID = 'cjpalhdlnbpafiamejdnhcphjbkeiagm'
 DOMAIN_BLOCKER_ID = 'ggdcjplapccgoinblmidpkoocfafajfa'
 
+
 def connect_to_chrome(debug_port):
     options = webdriver.ChromeOptions()
     options.add_experimental_option('debuggerAddress', f"localhost:{debug_port}")
@@ -32,7 +34,6 @@ def run_chrome_with_ublock(trace_file=None, debug_port=None):
 def run_chrome_without_ublock(trace_file=None, debug_port=None):
     return run_chrome(trace_file=trace_file, debug_port=debug_port,
                       profile_path=PROFILE_NO_UBLOCK)
-
 
 def run_chrome(trace_file=None, profile_path=None, debug_port=None):
     args = [
@@ -66,12 +67,13 @@ def run_chrome(trace_file=None, profile_path=None, debug_port=None):
         debug_port = random.randint(10000, 60000)
 
     args.append(f"--remote-debugging-port={debug_port}")
+    args.append("2> /dev/null")
 
     cmd=""
     for arg in args:
         cmd += f"{arg} "
 
-    print(cmd)
+    logging.debug(cmd)
 
     return subprocess.Popen(cmd, shell=True)
 
@@ -81,9 +83,11 @@ def open_website_and_quit(website, browser, webdriver, prep_time):
     try:
         webdriver.get(website)
     except TimeoutException as e:
-        print(f"WARN: {e}")
-    except e:
-        print(f"ERROR: {e}")
+        logging.warning(f"TIMEOUT {website}")
+    except Exception as e:
+        webdriver.close()
+        browser.terminate()
+        raise e
 
     sleep(15)
     webdriver.close()
@@ -134,9 +138,6 @@ def remove_extension_traces(website, website_path, file_prefix):
         if file_prefix in t:
             current_traces.append(t)
 
-    print("CURRENT TRACES: ")
-    print(current_traces)
-
     found = False
     dst_path = f'{website_path}/{file_prefix[:-1]}.tr'
 
@@ -147,15 +148,15 @@ def remove_extension_traces(website, website_path, file_prefix):
         result = subprocess.run(["grep", "-P", "-c", text, path], capture_output=True)
         count = int(result.stdout)
 
-        print(f"{t}:{count}")
+        logging.debug(f"{t}:{count}")
 
         if count == 0:
-            print(f"Remove: {t}")
+            logging.debug(f"Remove: {t}")
             os.remove(path)
         else:
             if found:
                 raise Exception(f"Two suitable traces found for prefix: {file_prefix}")
-            print(f"Save: {t}")
+            logging.debug(f"Save: {t}")
             os.rename(path, dst_path)
             found = True
 
@@ -164,6 +165,7 @@ def remove_extension_traces(website, website_path, file_prefix):
 
 
 def collect_traces(website, traces_dir):
+    logging.info(f"START {website}")
     if traces_dir[-1] == '/':
         traces_dir = traces_dir[:-1]
     website_subdir = url_to_path(website)
@@ -171,26 +173,52 @@ def collect_traces(website, traces_dir):
     try:
         os.mkdir(website_path)
     except FileExistsError:
-        pass
-    for i in range(TRIES_COUNT):
-        positive_prefix = f"p_{i}_"
-        negative_prefix = f"n_{i}_"
-        positive_trace = f"{website_path}/{positive_prefix}"
-        negative_trace = f"{website_path}/{negative_prefix}"
-        collect_negative_trace(website, negative_trace)
-        remove_extension_traces(website, website_path, negative_prefix)
-        collect_positive_trace(website, positive_trace)
-        remove_extension_traces(website, website_path, positive_prefix)
+        logging.info(f"SKIP {website}")
+        return
+    try:
+        for i in range(TRIES_COUNT):
+            positive_prefix = f"p_{i}_"
+            negative_prefix = f"n_{i}_"
+            positive_trace = f"{website_path}/{positive_prefix}"
+            negative_trace = f"{website_path}/{negative_prefix}"
+            collect_negative_trace(website, negative_trace)
+            remove_extension_traces(website, website_path, negative_prefix)
+            collect_positive_trace(website, positive_trace)
+            remove_extension_traces(website, website_path, positive_prefix)
+    except Exception as e:
+        logging.error(e)
+        return
+    logging.info(f"FINISHED {website}")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('website', help="Website to open")
     parser.add_argument('--traces-dir', help="Where to save the trace",
                         default=None, required=True)
+    parser.add_argument('--log-file', help="Where to save the log", default=None)
+    parser.add_argument('--verbose', '-v', help="Verbose logging",
+                        default=False, action='store_true')
+
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument('website', help="Website to open", nargs="?")
+    group.add_argument('--run-top', default=False, action='store_true',
+                        help="Collect traces for top 100 Polish websites")
+
     args = parser.parse_args()
 
-    collect_traces(args.website, args.traces_dir)
+    logger_config = {
+        'format': '%(levelname)s: %(asctime)s: %(message)s',
+        'datefmt': '%m/%d/%Y %H:%M:%S',
+    }
+    logger_config['level'] = logging.DEBUG if args.verbose else logging.INFO
+    if args.log_file:
+        logger_config['filename'] = args.log_file
 
-    print()
+    logging.basicConfig(**logger_config)
+    logging.debug(args)
 
+    if args.website is not None:
+        collect_traces(args.website, args.traces_dir)
+
+    if args.run_top:
+        logging.error("Collecting top list of websites not implemented")
