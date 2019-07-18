@@ -9,7 +9,7 @@ import System.Environment ( getArgs )
 import System.Exit ( exitFailure, exitSuccess )
 import System.Process
 
-import qualified Data.ByteString.Lazy as B
+import qualified Data.ByteString.Lazy.Char8 as B
 
 import Alignment
 import Parser
@@ -55,9 +55,7 @@ runFiles fs = do
 
 commonElements :: Eq a => [[a]] -> [a]
 commonElements [] = []
-commonElements (h:t) = ct h t
-    where
-        ct h t = filter (\tr -> all (elem tr) t) h
+commonElements (h:t) = filter (\tr -> all (elem tr) t) h
 
 
 diffTraces :: [CallTrace] -> [CallTrace] -> IO ()

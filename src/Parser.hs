@@ -102,7 +102,7 @@ codeEventParser = do
                     else tail stack
 
 callTraceParser :: Parser CallTrace
-callTraceParser = many $ codeEventParser <* endOfLine
+callTraceParser = many' $ codeEventParser <* endOfLine
 
 
 untangleEvents :: [CodeEvent] -> [CallTrace]
