@@ -9,6 +9,7 @@ from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from time import sleep
+from tqdm import tqdm
 
 
 CHROME_PATH = "/home/tomek/msc/chromium/src/out/Opt/chrome"
@@ -82,17 +83,16 @@ def open_website_and_quit(website, browser, webdriver, prep_time):
     sleep(prep_time)
     try:
         webdriver.get(website)
+        sleep(30)
+        webdriver.close()
+        sleep(2)
+        browser.terminate()
     except TimeoutException as e:
         logging.warning(f"TIMEOUT {website}")
     except Exception as e:
         webdriver.close()
-        browser.terminate()
+        browser.kill()
         raise e
-
-    sleep(15)
-    webdriver.close()
-    sleep(2)
-    browser.terminate()
 
 
 def get_random_port():
@@ -201,8 +201,8 @@ if __name__ == "__main__":
 
     group = parser.add_mutually_exclusive_group()
     group.add_argument('website', help="Website to open", nargs="?")
-    group.add_argument('--run-top', default=False, action='store_true',
-                        help="Collect traces for top 100 Polish websites")
+    group.add_argument('--list-file', default=None,
+                        help="File with a list of websites to collect traces from")
 
     args = parser.parse_args()
 
@@ -220,5 +220,7 @@ if __name__ == "__main__":
     if args.website is not None:
         collect_traces(args.website, args.traces_dir)
 
-    if args.run_top:
-        logging.error("Collecting top list of websites not implemented")
+    if args.list_file:
+        for line in tqdm(list(open(args.list_file))):
+            website = line.strip()
+            collect_traces(website, args.traces_dir)
