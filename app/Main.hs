@@ -17,7 +17,10 @@ import Parser
 
 runFile :: FilePath -> IO [CallTrace]
 runFile f = do
-    res <- B.readFile f >>= (return . parse callTraceParser)
+    res <- withFile f ReadMode $ \h -> do
+        hSetBinaryMode h True
+        fileContent <- B.hGetContents h
+        return $! parse callTraceParser fileContent
     case res of
         Fail remainder context err -> do
             putStrLn "REMAINDER:"
@@ -31,9 +34,8 @@ runFile f = do
             -- mapM_ print events
             putStrLn $ "Number of events: " ++ show (length events)
             putStrLn "=============================="
-            let traces = untangleEvents events
+            return $! untangleEvents events
             -- mapM_ putStrLn (formatTraces traces)
-            return traces
 
 
 getTrace :: [FilePath] -> IO [CallTrace]
@@ -44,12 +46,14 @@ runFiles :: [FilePath] -> IO ()
 runFiles fs = do
     let n = length fs
     if (n `mod` 2) > 0
-        then do
-            fail "Please provide even number of traces"
+        then fail "Please provide even number of traces"
         else do
             let (fsA, fsB) = splitAt (n `div` 2) fs
             traceA <- getTrace fsA
+            mapM_ putStrLn (formatTraces traceA)
+            putStrLn "==========================================="
             traceB <- getTrace fsB
+            mapM_ putStrLn (formatTraces traceB)
             diffTraces traceA traceB
 
 
