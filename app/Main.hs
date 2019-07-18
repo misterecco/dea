@@ -3,13 +3,13 @@ module Main where
 import Control.Monad
 import Data.List ( isSuffixOf )
 import Data.Map ( (!) )
-import Data.Attoparsec.ByteString.Char8
+import Data.Attoparsec.ByteString.Lazy
 import System.IO
 import System.Environment ( getArgs )
 import System.Exit ( exitFailure, exitSuccess )
 import System.Process
 
-import qualified Data.ByteString as B
+import qualified Data.ByteString.Lazy as B
 
 import Alignment
 import Parser
@@ -17,12 +17,17 @@ import Parser
 
 runFile :: FilePath -> IO [CallTrace]
 runFile f = do
-    fileContent <- B.readFile f
-    -- let events = B.readFile f >>= parseOnly callTraceParser
-    case (parseOnly callTraceParser fileContent) of
-        Left err -> do
-            fail $ show err
-        Right events -> do
+    res <- B.readFile f >>= (return . parse callTraceParser)
+    case res of
+        Fail remainder context err -> do
+            putStrLn "REMAINDER:"
+            B.putStrLn remainder
+            putStrLn "CONTEXT:"
+            mapM_ putStrLn context
+            putStrLn "ERROR:"
+            putStrLn err
+            fail err
+        Done _ events -> do
             -- mapM_ print events
             putStrLn $ "Number of events: " ++ show (length events)
             putStrLn "=============================="

@@ -7,7 +7,8 @@ module Parser where
 
 import Control.Applicative
 import Control.Monad.Writer
-import Data.Attoparsec.ByteString.Char8
+import Data.Attoparsec.ByteString.Lazy
+import Data.Attoparsec.ByteString.Char8 (decimal, char, endOfLine, space)
 import Data.Hashable
 import Data.List ( isInfixOf, find, delete )
 import Debug.Trace
@@ -56,7 +57,7 @@ locParser = do
     skipMany space
     decimal
     char ':'
-    l <- takeTill (== '\n')
+    l <- takeTill (== 10)
     case parseLoc l of
         Just loc -> return loc
         Nothing -> fail $ "Could not parse loc: " ++ show l
@@ -85,7 +86,7 @@ codeEventParser = do
     locs <- many (locParser <* endOfLine)
     when (elem eventType [FunctionExit, GeneratorYield]) $ do
         _ <- (string "->")
-        skipWhile (/= '\n')
+        skipWhile (/= 10)
         endOfLine
     string "="
     endOfLine
