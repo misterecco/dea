@@ -1,6 +1,7 @@
 module Alignment where
 
 import Control.Monad.State
+import Data.Hashable
 import qualified Data.Map as M ( Map, empty, insertWith, insert, (!),
         size, keys, elemAt, null, delete, assocs, member )
 import Data.List ( nub, (\\), sort, partition )
@@ -28,19 +29,26 @@ alignTraces :: CallTrace -> CallTrace -> (Score, TraceDiff)
 alignTraces leftTrace rightTrace =
     if null leftTrace || null rightTrace || (head leftTrace) /= (head rightTrace)
         then (-1, [])
-        else align leftTrace rightTrace (0, [])
+        else let (CE _ loc _) = head leftTrace
+            in align leftTrace rightTrace [hashed loc] [hashed loc] (0, [])
     where
-        align [] [] (score, acc) = (score, reverse acc)
-        align [] (event:rightTrace) (score, acc) =
-            align [] rightTrace (score, ((EDRight event):acc))
-        align (event:leftTrace) [] (score, acc) =
-            align leftTrace [] (score, ((EDLeft event):acc))
-        align (leftEv@(CE _ _ leftSt):leftTr) (rightEv@(CE _ _ rightSt):rightTr) (score, acc) =
-            if leftEv == rightEv
-                then align leftTr rightTr (score + 1, ((EDCommon leftEv):acc))
+        align [] [] _ _ (score, acc) = (score, reverse acc)
+        align [] (event:rightTrace) _ _ (score, acc) =
+            align [] rightTrace [] [] (score, ((EDRight event):acc))
+        align (event:leftTrace) [] _ _ (score, acc) =
+            align leftTrace [] [] [] (score, ((EDLeft event):acc))
+        align (leftEv:leftTr) (rightEv:rightTr) leftSt rightSt (score, acc) =
+            if eventsAligned leftEv rightEv leftSt rightSt
+                then align leftTr rightTr (newStack leftEv leftSt) (newStack leftEv rightSt) (score + 1, ((EDCommon leftEv):acc))
             else if (length leftSt) <= (length rightSt)
-                then align (leftEv:leftTr) rightTr (score, ((EDRight rightEv):acc))
-            else align leftTr (rightEv:rightTr) (score, ((EDLeft leftEv):acc))
+                then align (leftEv:leftTr) rightTr leftSt (newStack rightEv rightSt) (score, ((EDRight rightEv):acc))
+            else align leftTr (rightEv:rightTr) (newStack leftEv leftSt) rightSt (score, ((EDLeft leftEv):acc))
+        eventsAligned (CE lt ll _) (CE rt rl _) leftSt rightSt =
+            (CE lt ll leftSt) == (CE rt rl rightSt)
+        newStack (CE et loc _) st =
+            if (et `elem` [FunctionEnter, GeneratorEnter]) then (hashed loc):st
+            else if (et `elem` [FunctionExit, GeneratorSuspend]) then tail st
+            else st
 
 
 flipDiff :: TraceDiff -> TraceDiff

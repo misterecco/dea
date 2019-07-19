@@ -97,7 +97,7 @@ codeEventParser = do
         where
             filterStack = filter (\loc -> line loc >= 0)
             newStack eventType stack =
-                if elem eventType [FunctionEnter, GeneratorEnter]
+                if eventType `elem` [FunctionEnter, GeneratorEnter]
                     then stack
                     else tail stack
 
