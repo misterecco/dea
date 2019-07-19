@@ -67,9 +67,9 @@ parseLoc :: B.ByteString -> Maybe Loc
 parseLoc l = do
     let (name, (_:rest)) = span (/= "at") (C.words l)
     let (path, (_:loc:_)) = span (/= "@@") rest
-    (line, restLoc) <- C.readInteger loc
-    (col, _) <- C.readInteger (C.tail restLoc)
-    return $! CL (SB.toShort $! C.unwords name) (SB.toShort $! C.unwords path) (fromIntegral line) (fromIntegral col)
+    (line, restLoc) <- C.readInt loc
+    (col, _) <- C.readInt (C.tail restLoc)
+    return $! CL (SB.toShort $! C.unwords name) (SB.toShort $! C.unwords path) line col
 
 eventTypeParser :: Parser EventType
 eventTypeParser =
