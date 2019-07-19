@@ -52,10 +52,10 @@ runFiles fs = do
         else do
             let (fsA, fsB) = splitAt (n `div` 2) fs
             traceA <- getTrace fsA
-            mapM_ (hPutStrLn stderr) (formatTraces traceA)
+            -- mapM_ (hPutStrLn stderr) (formatTraces traceA)
             putStrLn "==========================================="
             traceB <- getTrace fsB
-            mapM_ (hPutStrLn stderr) (formatTraces traceB)
+            -- mapM_ (hPutStrLn stderr) (formatTraces traceB)
             diffTraces traceA traceB
 
 
