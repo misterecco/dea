@@ -1,15 +1,17 @@
+{-# LANGUAGE Strict #-}
+
 module Main where
 
 import Control.Monad
 import Data.List ( isSuffixOf )
 import Data.Map ( (!) )
-import Data.Attoparsec.ByteString.Lazy
+import Data.Attoparsec.ByteString
 import System.IO
 import System.Environment ( getArgs )
 import System.Exit ( exitFailure, exitSuccess )
 import System.Process
 
-import qualified Data.ByteString.Lazy.Char8 as B
+import qualified Data.ByteString.Char8 as B
 
 import Alignment
 import Parser
@@ -20,19 +22,19 @@ runFile f = do
     res <- withFile f ReadMode $ \h -> do
         hSetBinaryMode h True
         fileContent <- B.hGetContents h
-        return $! parse callTraceParser fileContent
+        return $! parseOnly callTraceParser fileContent
     case res of
-        -- Left err -> fail err
-        Fail remainder context err -> do
-            putStrLn "REMAINDER:"
-            B.putStrLn remainder
-            putStrLn "CONTEXT:"
-            mapM_ putStrLn context
-            putStrLn "ERROR:"
-            putStrLn err
-            fail err
-        -- Right events -> do
-        Done _ events -> do
+        Left err -> fail err
+        -- Fail remainder context err -> do
+        --     putStrLn "REMAINDER:"
+        --     B.putStrLn remainder
+        --     putStrLn "CONTEXT:"
+        --     mapM_ putStrLn context
+        --     putStrLn "ERROR:"
+        --     putStrLn err
+        --     fail err
+        Right events -> do
+        -- Done _ events -> do
             -- mapM_ print events
             putStrLn $ "Number of events: " ++ show (length events)
             putStrLn "=============================="

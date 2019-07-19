@@ -2,12 +2,13 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE Strict #-}
 
 module Parser where
 
 import Control.Applicative
 import Control.Monad.Writer
-import Data.Attoparsec.ByteString.Lazy
+import Data.Attoparsec.ByteString
 import Data.Attoparsec.ByteString.Char8 (decimal, char, endOfLine, space)
 import Data.Hashable
 import Data.List ( isInfixOf, find, delete )
@@ -16,11 +17,11 @@ import GHC.Generics (Generic)
 
 import qualified Data.ByteString as B
 import qualified Data.ByteString.Char8 as C
-
+import qualified Data.ByteString.Short as SB
 
 data Loc = CL {
-    functionName :: !B.ByteString,
-    filePath :: !B.ByteString,
+    functionName :: !SB.ShortByteString,
+    filePath :: !SB.ShortByteString,
     line :: !Int,
     column :: !Int
 } deriving (Eq, Generic, Hashable, Ord)
@@ -68,7 +69,7 @@ parseLoc l = do
     let (path, (_:loc:_)) = span (/= "@@") rest
     (line, restLoc) <- C.readInteger loc
     (col, _) <- C.readInteger (C.tail restLoc)
-    return $! CL (B.copy $! C.unwords name) (B.copy $! C.unwords path) (fromIntegral line) (fromIntegral col)
+    return $! CL (SB.toShort $! C.unwords name) (SB.toShort $! C.unwords path) (fromIntegral line) (fromIntegral col)
 
 eventTypeParser :: Parser EventType
 eventTypeParser =

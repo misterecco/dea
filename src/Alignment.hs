@@ -1,3 +1,5 @@
+{-# LANGUAGE Strict #-}
+
 module Alignment where
 
 import Control.Monad.State
