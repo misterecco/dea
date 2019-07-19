@@ -19,10 +19,10 @@ import qualified Data.ByteString.Char8 as C
 
 
 data Loc = CL {
-    functionName :: B.ByteString,
-    filePath :: B.ByteString,
-    line :: Integer,
-    column :: Integer
+    functionName :: !B.ByteString,
+    filePath :: !B.ByteString,
+    line :: !Int,
+    column :: !Int
 } deriving (Eq, Generic, Hashable, Ord)
 
 instance Show Loc where
@@ -68,7 +68,7 @@ parseLoc l = do
     let (path, (_:loc:_)) = span (/= "@@") rest
     (line, restLoc) <- C.readInteger loc
     (col, _) <- C.readInteger (C.tail restLoc)
-    return $ CL (C.unwords name) (C.unwords path) line col
+    return $! CL (B.copy $! C.unwords name) (B.copy $! C.unwords path) (fromIntegral line) (fromIntegral col)
 
 eventTypeParser :: Parser EventType
 eventTypeParser =
@@ -157,6 +157,12 @@ showTrace events = do
 
 showTraces :: [CallTrace] -> Writer [String] ()
 showTraces = mapM_ showTrace
+
+removeStack :: CodeEvent -> CodeEvent
+removeStack (CE t l _) = CE t l []
+
+removeStacks :: CallTrace -> CallTrace
+removeStacks = map removeStack
 
 formatTraces :: [CallTrace] -> [String]
 formatTraces traces = execWriter (showTraces traces)

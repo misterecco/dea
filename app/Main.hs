@@ -22,6 +22,7 @@ runFile f = do
         fileContent <- B.hGetContents h
         return $! parse callTraceParser fileContent
     case res of
+        -- Left err -> fail err
         Fail remainder context err -> do
             putStrLn "REMAINDER:"
             B.putStrLn remainder
@@ -30,6 +31,7 @@ runFile f = do
             putStrLn "ERROR:"
             putStrLn err
             fail err
+        -- Right events -> do
         Done _ events -> do
             -- mapM_ print events
             putStrLn $ "Number of events: " ++ show (length events)
@@ -50,10 +52,10 @@ runFiles fs = do
         else do
             let (fsA, fsB) = splitAt (n `div` 2) fs
             traceA <- getTrace fsA
-            mapM_ putStrLn (formatTraces traceA)
+            mapM_ (hPutStrLn stderr) (formatTraces traceA)
             putStrLn "==========================================="
             traceB <- getTrace fsB
-            mapM_ putStrLn (formatTraces traceB)
+            mapM_ (hPutStrLn stderr) (formatTraces traceB)
             diffTraces traceA traceB
 
 
