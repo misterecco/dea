@@ -27,6 +27,7 @@ dependencies:
 - hashable
 - attoparsec
 - bytestring
+- deepseq
 
 library:
   source-dirs: src

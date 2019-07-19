@@ -2,10 +2,12 @@
 
 module Main where
 
+import Control.DeepSeq
 import Control.Monad
+import Data.Attoparsec.ByteString
 import Data.List ( isSuffixOf )
 import Data.Map ( (!) )
-import Data.Attoparsec.ByteString
+import Data.IORef
 import System.IO
 import System.Environment ( getArgs )
 import System.Exit ( exitFailure, exitSuccess )
@@ -43,7 +45,17 @@ runFile f = do
 
 
 getTrace :: [FilePath] -> IO [CallTrace]
-getTrace fs = mapM runFile fs >>= (return . commonElements)
+getTrace fs = do
+    firstTrace <- runFile (head fs)
+    let _ = rnf firstTrace
+    result <- newIORef firstTrace
+    forM (tail fs) $ \f -> do
+        nextTrace <- runFile f
+        currentResult <- readIORef result
+        let nextResult = commonElements nextTrace currentResult
+        let _ = rnf nextResult
+        writeIORef result nextResult
+    readIORef result
 
 
 runFiles :: [FilePath] -> IO ()
@@ -61,9 +73,8 @@ runFiles fs = do
             diffTraces traceA traceB
 
 
-commonElements :: Eq a => [[a]] -> [a]
-commonElements [] = []
-commonElements (h:t) = filter (\tr -> all (elem tr) t) h
+commonElements :: Eq a => [a] -> [a] -> [a]
+commonElements l = filter (`elem` l)
 
 
 diffTraces :: [CallTrace] -> [CallTrace] -> IO ()

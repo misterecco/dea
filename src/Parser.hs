@@ -7,6 +7,7 @@
 module Parser where
 
 import Control.Applicative
+import Control.DeepSeq
 import Control.Monad.Writer
 import Data.Attoparsec.ByteString
 import Data.Attoparsec.ByteString.Char8 (decimal, char, endOfLine, space)
@@ -24,7 +25,7 @@ data Loc = CL {
     filePath :: !SB.ShortByteString,
     line :: !Int,
     column :: !Int
-} deriving (Eq, Generic, Hashable, Ord)
+} deriving (Eq, Generic, Hashable, Ord, NFData)
 
 instance Show Loc where
     show (CL fun path line col) =
@@ -40,10 +41,10 @@ data EventType
     | GeneratorSuspend
     | IfStmtThen
     | IfStmtElse
-    deriving (Show, Eq, Ord)
+    deriving (Show, Eq, Ord, Generic, NFData)
 
 data CodeEvent = CE EventType !Loc !Stack
-    deriving (Eq, Ord)
+    deriving (Eq, Ord, Generic, NFData)
 
 instance Show CodeEvent where
     show (CE eventType loc st) =
