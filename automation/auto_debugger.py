@@ -89,6 +89,9 @@ def open_website_and_quit(website, browser, webdriver, prep_time):
         browser.terminate()
     except TimeoutException as e:
         logging.warning(f"TIMEOUT {website}")
+        sleep(90)
+        webdriver.close()
+        browser.kill()
     except Exception as e:
         webdriver.close()
         browser.kill()
@@ -106,6 +109,7 @@ def get_random_port():
 
 
 def collect_trace(website, trace_file, profile_path, prep_time):
+    os.system("killall -9 chromium")
     port = get_random_port()
     chrome = run_chrome(debug_port=port, trace_file=trace_file, profile_path=profile_path)
     webdriver = connect_to_chrome(debug_port=port)

@@ -134,19 +134,11 @@ untangleEvents events = untangle [] [] events (length events)
         findMatchingOpenEvent st [e] = (e, [])
         findMatchingOpenEvent st openTraces =
             case (find (isStackMatching st) openTraces) of
-                Nothing -> error $ "Didn't find proper predecessor for: " ++ show st ++ " in: " ++ show openTraces
+                Nothing -> error $ "Didn't find proper predecessor for: " ++ show st ++ " in: " ++ show (map head openTraces)
                 Just e -> (e, delete e openTraces)
         isStackMatching st trace = case trace of
             [] -> False
-            (CE _ _ st1):_ -> stackEqual st1 st
-
-stackEqual :: Stack -> Stack -> Bool
-stackEqual lhs rhs = se lhs rhs 3 && (length lhs == length rhs)
-  where
-    se (l:ls) (r:rs) n = (hash l == hash r) && (se ls rs (n-1))
-    se [] [] _ = True
-    se _ _ 0 = True
-    se _ _ _ = False
+            (CE _ _ st1):_ -> st1 == st
 
 showEvent :: CodeEvent -> Writer [String] ()
 showEvent (CE eventType loc st) = do
