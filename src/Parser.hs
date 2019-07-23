@@ -112,18 +112,21 @@ untangleEvents events = untangle [] [] events (length events)
     where
         untangle results [] [] _ = reverse results
         untangle results openTraces (event:events) left = do
-            -- let ev = traceShowId event
             -- let (ev, ot) = trace (show (length openTraces) ++ " " ++ show left) (event, openTraces)
             let (ev, ot) = (event, openTraces)
-            let (matchingTrace, newOpenTraces) = findMatchingTrace ot ev
-            let newTrace = ev:matchingTrace
-            case ev of
-                (CE FunctionExit _ []) -> untangle ((reverse newTrace):results) newOpenTraces events (left-1)
-                _ -> untangle results (newTrace:newOpenTraces) events (left-1)
+            case findMatchingTrace ot ev of
+                Just (matchingTrace, newOpenTraces) -> do
+                    let newTrace = ev:matchingTrace
+                    case ev of
+                        (CE FunctionExit _ []) -> untangle ((reverse newTrace):results) newOpenTraces events (left-1)
+                        _ -> untangle results (newTrace:newOpenTraces) events (left-1)
+                Nothing -> do
+                    let newOpenTraces = trace ("Didn't find proper predecessor for: " ++ show ev ++ " in " ++ (show $ map head openTraces)) openTraces
+                    untangle results newOpenTraces events (left-1)
         -- should not happen in complete trace
         untangle results openTraces [] _ = reverse (openTraces ++ results)
         findMatchingTrace openTraces event = case event of
-            (CE FunctionEnter _ [_]) -> ([], openTraces)
+            (CE FunctionEnter _ [_]) -> Just ([], openTraces)
             (CE FunctionEnter _ st) -> findMatchingOpenEvent (tail st) openTraces
             (CE GeneratorEnter _ st) -> findMatchingOpenEvent (tail st) openTraces
             (CE FunctionExit loc st) -> findMatchingOpenEvent ((hashed loc):st) openTraces
@@ -131,11 +134,11 @@ untangleEvents events = untangle [] [] events (length events)
             (CE GeneratorYield loc st) -> findMatchingOpenEvent st openTraces
             (CE IfStmtThen _ st) -> findMatchingOpenEvent st openTraces
             (CE IfStmtElse _ st) -> findMatchingOpenEvent st openTraces
-        findMatchingOpenEvent st [e] = (e, [])
+        findMatchingOpenEvent st [e] = Just (e, [])
         findMatchingOpenEvent st openTraces =
             case (find (isStackMatching st) openTraces) of
-                Nothing -> error $ "Didn't find proper predecessor for: " ++ show st ++ " in: " ++ show (map head openTraces)
-                Just e -> (e, delete e openTraces)
+                Nothing -> Nothing
+                Just e -> Just (e, delete e openTraces)
         isStackMatching st trace = case trace of
             [] -> False
             (CE _ _ st1):_ -> st1 == st

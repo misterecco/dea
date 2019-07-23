@@ -174,6 +174,9 @@ def collect_traces(website, traces_dir):
         traces_dir = traces_dir[:-1]
     website_subdir = url_to_path(website)
     website_path = f"{traces_dir}/{website_subdir}"
+    if (website[0:2] == '--' or website[0:2] == "++"):
+        logging.info(f"SKIP (disabled) {website}")
+        return
     try:
         os.mkdir(website_path)
     except FileExistsError:
