@@ -1,0 +1,6 @@
+*.doubleclick.net
+*.google-analytics.com
+ssl.google-analytics.com
+*.gstatic.com
+*.googletagservices.com
+*.googletagmanager.com
