@@ -168,20 +168,28 @@ def remove_extension_traces(website, website_path, file_prefix):
         raise Exception(f"No suitable trace found for prefix: {file_prefix}")
 
 
-def collect_traces(website, traces_dir):
-    logging.info(f"START {website}")
-    if traces_dir[-1] == '/':
-        traces_dir = traces_dir[:-1]
+def get_website_path(parent_dir, website):
+    if parent_dir[-1] == '/':
+        parent_dir = parent_dir[:-1]
     website_subdir = url_to_path(website)
-    website_path = f"{traces_dir}/{website_subdir}"
+    return f"{parent_dir}/{website_subdir}"
+
+
+def collect_traces(website, traces_dir):
+    logging.info(f"[COLLECTION] START {website}")
+
+    website_path = get_website_path(traces_dir, website)
+
     if (website[0:2] == '--' or website[0:2] == "++"):
-        logging.info(f"SKIP (disabled) {website}")
+        logging.info(f"[COLLECTION] SKIP (disabled) {website}")
         return
+
     try:
         os.mkdir(website_path)
     except FileExistsError:
-        logging.info(f"SKIP {website}")
+        logging.info(f"[COLLECTION] SKIP {website}")
         return
+
     try:
         for i in range(TRIES_COUNT):
             positive_prefix = f"p_{i}_"
@@ -195,23 +203,70 @@ def collect_traces(website, traces_dir):
     except Exception as e:
         logging.error(e)
         return
-    logging.info(f"FINISHED {website}")
+    logging.info(f"[COLLECTION] FINISHED {website}")
+
+
+def analyze_traces(website, traces_dir, results_dir):
+    logging.info(f"[ANALYSIS] {website}")
+
+    website_traces_path = get_website_path(traces_dir, website)
+    website_results_path = get_website_path(results_dir, website)
+
+    if (website[0:2] == '--' or website[0:2] == "++"):
+        logging.info(f"[ANALYSIS] SKIP (disabled) {website}")
+        return
+
+    try:
+        os.mkdir(website_results_path)
+    except FileExistsError:
+        logging.info(f"[ANALYSIS] SKIP {website}")
+        return
+
+    try:
+        cmd = "stack exec dea-exe -- "
+        for i in range(3):
+            cmd += f"{website_traces_path}/p_{i}.tr "
+        for i in range(3):
+            cmd += f"{website_traces_path}/n_{i}.tr "
+
+        cmd += f"> {website_results_path}/analysis.out "
+        cmd += f"2> {website_results_path}/analysis.err "
+        cmd += "+RTS -M8G -RTS "
+
+        analysis = subprocess.Popen(cmd, shell=True)
+        analysis.wait()
+        logging.info(f"[ANALYSIS] return code: {analysis.returncode}")
+    except Exception as e:
+        logging.error(e)
+        return
+    logging.info(f"[ANALYSIS] FINISHED {website}")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--traces-dir', help="Where to save the trace",
                         default=None, required=True)
+    parser.add_argument('--results-dir', help="Where to save the trace",
+                        default=None)
     parser.add_argument('--log-file', help="Where to save the log", default=None)
     parser.add_argument('--verbose', '-v', help="Verbose logging",
                         default=False, action='store_true')
 
-    group = parser.add_mutually_exclusive_group()
-    group.add_argument('website', help="Website to open", nargs="?")
-    group.add_argument('--list-file', default=None,
+    action = parser.add_argument_group('Actions', "Actions that script should perform")
+    action.add_argument('--collect', help="Trace collection",
+                        default=False, action='store_true')
+    action.add_argument('--analyze', help="Trace analysis",
+                        default=False, action='store_true')
+
+    source = parser.add_mutually_exclusive_group()
+    source.add_argument('website', help="Website to open", nargs="?")
+    source.add_argument('--list-file', default=None,
                         help="File with a list of websites to collect traces from")
 
     args = parser.parse_args()
+
+    if args.analyze and args.results_dir is None:
+        parser.error("--analyze requires --results-dir")
 
     logger_config = {
         'format': '%(levelname)s: %(asctime)s: %(message)s',
@@ -224,10 +279,20 @@ if __name__ == "__main__":
     logging.basicConfig(**logger_config)
     logging.debug(args)
 
-    if args.website is not None:
-        collect_traces(args.website, args.traces_dir)
+    if args.collect:
+        if args.website is not None:
+            collect_traces(args.website, args.traces_dir)
 
-    if args.list_file:
-        for line in tqdm(list(open(args.list_file))):
-            website = line.strip()
-            collect_traces(website, args.traces_dir)
+        if args.list_file:
+            for line in tqdm(list(open(args.list_file))):
+                website = line.strip()
+                collect_traces(website, args.traces_dir)
+
+    if args.analyze:
+        if args.website is not None:
+            analyze_traces(args.website, args.traces_dir, args.results_dir)
+
+        if args.list_file:
+            for line in tqdm(list(open(args.list_file))):
+                website = line.strip()
+                analyze_traces(website, args.traces_dir, args.results_dir)
