@@ -84,6 +84,8 @@
 
 \usepackage{xcolor}
 \newcommand{\todo}[1]{\colorbox{yellow}{ \color{red} \textbf{TODO}: {#1}}}
+\usepackage{cite}
+\usepackage{url}
 
 % koniec definicji
 
@@ -126,11 +128,44 @@ on Polish websites or to build an extension capable of circumventing such script
 \section{JavaScript execution model}
 
 \chapter{Related work}
-\section{Zhu et. al}
+\section{Measuring and Disrupting Anti-Adblockers Using Differential Execution Analysis}
+
+The method is based on paper by Zhu et al. \cite{DBLP:conf/ndss/ZhuHQSY18}
+
+
 
 \chapter{Trace collection}
-\section{JavaScript rewriting}
-\section{JavaScript engine instrumentation}
+
+\section{Methods overview}
+There are a few distinct ways to obtain execution trace of JavaScript code. 
+
+The simplest (and most limited) methods use only mechanisms present in the language.
+More elaborate inject special tracing code to analyzed script. The last kind modify the engine to produce
+the desired data.
+
+\section{Dynamic code instrumentation}
+JavaScript is a very dynamic language. For this reason it is relatively easy to write code that will
+modify each function present in the environment to log each entry and exit,
+possibly along with all the arguments and return value \cite{stack:js-console-log}.
+
+Snippet \todo{add snippet showing how to do that} is an example of code that does just that.
+It replaces function definition with new one that logs its arguments before calling the old function and logs return
+the return value after that. 
+
+It is also possible to traverse recursively the entire global object and replace each function this way.
+
+However, this is not enough for the needs of Differential Execution Analysis. 
+The most obvious limitation is that it's not possible to instrument control statements.
+Another major shortcoming is that function can be instrumented only after they are defined. 
+It is quite an obstacle, because JavaScript allows to define function practically anywhere and it is very common
+to use anonymous functions as callbacks. It is not possible to instrument such callback 
+without modyfing the instumented code.
+
+
+\section{Code rewriting}
+
+
+\section{Engine instrumentation}
 
 \chapter{Trace collection by V8 instrumentation}
 \section{V8 architecture}
@@ -148,50 +183,10 @@ on Polish websites or to build an extension capable of circumventing such script
 
 \chapter{Evaluation}
 
-\begin{thebibliography}{99}
+
+\bibliography{sources}{}
 \addcontentsline{toc}{chapter}{Bibliography}
-
-\bibitem[Bea65]{beaman} Juliusz Beaman, \textit{Morbidity of the Jolly
-    function}, Mathematica Absurdica, 117 (1965) 338--9.
-
-\bibitem[Blar16]{eb1} Elizjusz Blarbarucki, \textit{O pewnych
-    aspektach pewnych aspektów}, Astrolog Polski, Zeszyt 16, Warszawa
-  1916.
-
-\bibitem[Fif00]{ffgg} Filigran Fifak, Gizbert Gryzogrzechotalski,
-  \textit{O blabalii fetorycznej}, Materiały Konferencji Euroblabal
-  2000.
-
-\bibitem[Fif01]{ff-sr} Filigran Fifak, \textit{O fetorach
-    $\sigma$-$\rho$}, Acta Fetorica, 2001.
-
-\bibitem[Głomb04]{grglo} Gryzybór Głombaski, \textit{Parazytonikacja
-    blabiczna fetorów --- nowa teoria wszystkiego}, Warszawa 1904.
-
-\bibitem[Hopp96]{hopp} Claude Hopper, \textit{On some $\Pi$-hedral
-    surfaces in quasi-quasi space}, Omnius University Press, 1996.
-
-\bibitem[Leuk00]{leuk} Lechoslav Leukocyt, \textit{Oval mappings ab ovo},
-  Materiały Białostockiej Konferencji Hodowców Drobiu, 2000.
-
-\bibitem[Rozk93]{JR} Josip A.~Rozkosza, \textit{O pewnych własnościach
-    pewnych funkcji}, Północnopomorski Dziennik Matematyczny 63491
-  (1993).
-
-\bibitem[Spy59]{spyrpt} Mrowclaw Spyrpt, \textit{A matrix is a matrix
-    is a matrix}, Mat. Zburp., 91 (1959) 28--35.
-
-\bibitem[Sri64]{srinis} Rajagopalachari Sriniswamiramanathan,
-  \textit{Some expansions on the Flausgloten Theorem on locally
-    congested lutches}, J. Math.  Soc., North Bombay, 13 (1964) 72--6.
-
-\bibitem[Whi25]{russell} Alfred N. Whitehead, Bertrand Russell,
-  \textit{Principia Mathematica}, Cambridge University Press, 1925.
-
-\bibitem[Zen69]{heu} Zenon Zenon, \textit{Użyteczne heurystyki
-    w~blabalizie}, Młody Technik, nr~11, 1969.
-
-\end{thebibliography}
+\bibliographystyle{plain}
 
 \end{document}
 
