@@ -86,6 +86,13 @@
 \newcommand{\todo}[1]{\colorbox{yellow}{ \color{red} \textbf{TODO}: {#1}}}
 \usepackage{cite}
 \usepackage{url}
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks   = true,    % Colours links instead of ugly boxes
+  urlcolor     = blue,    % Colour for external hyperlinks
+  linkcolor    = blue,    % Colour of internal links
+  citecolor    = red      % Colour of citations
+}
 
 % koniec definicji
 
@@ -112,7 +119,19 @@ on Polish websites or to build an extension capable of circumventing such script
 \chapter*{Introduction}
 \addcontentsline{toc}{chapter}{Introduction}
 
-\todo{}
+In modern-era Internet most webpages operate for profit. Most of them, however, choose to provide free content
+in exchange for displaying paid ads. Unfortunately, not all websites play fair. Some of them
+concentrate on displaying as many ads as possible and generate traffic by using click-baits 
+and other shady practices. Even websites with valuable content can have overwhelming amount 
+of ads. This leads to grave dissatisfaction of some portion of users. To make their browsing experience better,
+they turn to use of ad-blocking extensions.
+
+The amount of users doing that cannot be ignored. In 2019 there was over 615 million devices worldwide
+with adblocker installed \cite{internet-facts}. This, in turn, leads to loss of revenue for many businesses.
+To combat this, some of them choose to deploy anti-adblockers, which generate warnings 
+or even block content entirely for users with adblockers.
+
+
 
 \chapter{Basic concepts}
 \section{Definitions}
@@ -121,17 +140,72 @@ on Polish websites or to build an extension capable of circumventing such script
   \item Execution event -- each occurence of control executing some statement, entering or leaving a control structure etc.
   \item Execution trace -- a series of execution events collected during program execution. 
            It is dependent both on program structure and it's input (also implicit such as randomly generated numbers)
-  \item Execution index
-  \item Stable marriage problem
+  \item Execution index -- a concept formally introduced by Xin et al. \cite{sigplan:execution-indexing}. 
+                                         For our purposes it is any function that uniquely identifies execution points. In our case it will
+                                         be a statement source map information with the current function stack
+  \item Stable marriage problem -- given equallly sized sets of men and women and their matrimonial preferences,
+                                                       find a stable matching, i.e. matching in which there exists no pair of man and woman 
+                                                       in which they both would have better partner than currently assigned.
+                                                       It can be solved using Gale-Shapley algorithm \cite{wiki:smp}
 \end{itemize}
 
+\section{Adblockers}
+\todo{References?}
+
+Ads are the main source of income for numerous websites. By displaying ads, authors are able to provide
+valuable content free of charge. 
+
+However, there are multiple reasons why users may not want to see ads: 
+\begin{itemize}
+  \item There are websites which sole purpose is to earn money by displaying as many ads 
+           as possible without providing any interesting or original content
+           They often generate traffic using click-baits and similar shady practices.
+  \item Ads often lenghten pages loading times. The slower the connection, the more frustrating it becomes.
+  \item Ads increase webpage payload size, which generates higher cost in case of mobile connections.
+  \item Some ads track users, which raises privacy concerns
+  \item Ads can be used to spread malware
+\end{itemize}
+
+One of the solutions is to use special browser extensions, called ad blockers, that prevent ads from being displayed.
+Their work is based on community-curated list of filters. Those filters are used to first identify some portions
+of website as ads and later remove.
+
+The removal depends on the type of ad. Whole page overlay can simply be not shown without disrupting
+website UI. On the other hand, after removing banners, there remain some blank space, which is usually
+fixed by repositioning adjacent elements. In some cases, particularly when ads are served from domain
+of some ad provider, the requests loading ads can be blocked, thus saving the bandwidth and data usage.
+
+There is some controversy concerning morality of use of such extensions.
+One of the most popular ad-blocking extension, uBlock Origin states in its manifesto,
+that users should have control over what content should be accepted in their browser \cite{ublock:manifesto}.
+
+
+
+\section{Anti-adblockers}
+As mentioned earlier, ads are the main source of income for numerous websites, including some 
+news services. Users using AdBlock deprive such websites of their rightful income.
+To recover lost revenue, many websites started deploying anti-adblocking scripts.
+Their goal is simple -- when they detect that content blocking extension is present, 
+they take some action, potentially mitigating the problem.
+The action can vary from simply just reporting the use of extension to the backend to blocking 
+the content entirely.
+
+Anti-adblockers come in many variants. There are simple, custom scripts written 
+specifically for one service, but there are also some sophisticated scripts 
+provided by third parties, designed to be run on any site.
+
+One rather simple example is presented by company offering "Adblock Analytics" service.
+Their example includes 
+
 \section{JavaScript execution model}
+Event loop \cite{mozilla:event-loop}
 
-\chapter{Related work}
-\section{Measuring and Disrupting Anti-Adblockers Using Differential Execution Analysis}
+\section{Differential Execution Analysis}
 
-The method is based on paper by Zhu et al. \cite{DBLP:conf/ndss/ZhuHQSY18}
-
+\section{Detecting anti-adblockers}
+Paper "Measuring and Disrupting Anti-Adblockers Using Differential Execution Analysis" 
+by Zhu et al. \cite{DBLP:conf/ndss/ZhuHQSY18} introduced a method of detecting anti-adblockers
+using Differential Execution Analysis.
 
 
 \chapter{Trace collection}
@@ -143,12 +217,12 @@ The simplest (and most limited) methods use only mechanisms present in the langu
 More elaborate inject special tracing code to analyzed script. The last kind modify the engine to produce
 the desired data.
 
-\section{Dynamic code instrumentation}
+\section{Dynamic in-JS code injection}
 JavaScript is a very dynamic language. For this reason it is relatively easy to write code that will
 modify each function present in the environment to log each entry and exit,
 possibly along with all the arguments and return value \cite{stack:js-console-log}.
 
-Snippet \todo{add snippet showing how to do that} is an example of code that does just that.
+Snippet \todo{add snippet showing how to do that} is an example of a code that does just that.
 It replaces function definition with new one that logs its arguments before calling the old function and logs return
 the return value after that. 
 
@@ -159,17 +233,19 @@ The most obvious limitation is that it's not possible to instrument control stat
 Another major shortcoming is that function can be instrumented only after they are defined. 
 It is quite an obstacle, because JavaScript allows to define function practically anywhere and it is very common
 to use anonymous functions as callbacks. It is not possible to instrument such callback 
-without modyfing the instumented code.
+without modyfing the instumented code, which brings us to the next method
 
-
-\section{Code rewriting}
+\section{Static code injection}
+Less limited approach is to statically rewrite the instrumented code and inject tracing code wherever it is needed.
 
 
 \section{Engine instrumentation}
 
 \chapter{Trace collection by V8 instrumentation}
 \section{V8 architecture}
+\subsection{JS built-in functions}
 \section{V8 usage in chromium}
+\subsection{Extensions model}
 \section{Chrome's extensions architecture}
 \section{V8's \emph{-{}-trace} flag}
 \section{Bytecode injection}
@@ -182,6 +258,8 @@ without modyfing the instumented code.
 \section{Noise filtering}
 
 \chapter{Evaluation}
+\section{Evaluated websites}
+\section{Detected anti-adblockers}
 
 
 \bibliography{sources}{}

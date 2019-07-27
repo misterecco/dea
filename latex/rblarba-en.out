@@ -1,0 +1,31 @@
+\BOOKMARK [0][-]{chapter*.2}{Introduction}{}% 1
+\BOOKMARK [0][-]{chapter.1}{Basic concepts}{}% 2
+\BOOKMARK [1][-]{section.1.1}{Definitions}{chapter.1}% 3
+\BOOKMARK [1][-]{section.1.2}{Adblockers}{chapter.1}% 4
+\BOOKMARK [1][-]{section.1.3}{Anti-adblockers}{chapter.1}% 5
+\BOOKMARK [1][-]{section.1.4}{JavaScript execution model}{chapter.1}% 6
+\BOOKMARK [1][-]{section.1.5}{Differential Execution Analysis}{chapter.1}% 7
+\BOOKMARK [1][-]{section.1.6}{Detecting anti-adblockers}{chapter.1}% 8
+\BOOKMARK [0][-]{chapter.2}{Trace collection}{}% 9
+\BOOKMARK [1][-]{section.2.1}{Methods overview}{chapter.2}% 10
+\BOOKMARK [1][-]{section.2.2}{Dynamic in-JS code injection}{chapter.2}% 11
+\BOOKMARK [1][-]{section.2.3}{Static code injection}{chapter.2}% 12
+\BOOKMARK [1][-]{section.2.4}{Engine instrumentation}{chapter.2}% 13
+\BOOKMARK [0][-]{chapter.3}{Trace collection by V8 instrumentation}{}% 14
+\BOOKMARK [1][-]{section.3.1}{V8 architecture}{chapter.3}% 15
+\BOOKMARK [2][-]{subsection.3.1.1}{JS built-in functions}{section.3.1}% 16
+\BOOKMARK [1][-]{section.3.2}{V8 usage in chromium}{chapter.3}% 17
+\BOOKMARK [2][-]{subsection.3.2.1}{Extensions model}{section.3.2}% 18
+\BOOKMARK [1][-]{section.3.3}{Chrome's extensions architecture}{chapter.3}% 19
+\BOOKMARK [1][-]{section.3.4}{V8's --trace flag}{chapter.3}% 20
+\BOOKMARK [1][-]{section.3.5}{Bytecode injection}{chapter.3}% 21
+\BOOKMARK [1][-]{section.3.6}{Controlling Chrome programatically}{chapter.3}% 22
+\BOOKMARK [0][-]{chapter.4}{Trace analysis}{}% 23
+\BOOKMARK [1][-]{section.4.1}{Trace untangling using execution index}{chapter.4}% 24
+\BOOKMARK [2][-]{subsection.4.1.1}{Optimizations}{section.4.1}% 25
+\BOOKMARK [1][-]{section.4.2}{Trace matching using SMP}{chapter.4}% 26
+\BOOKMARK [1][-]{section.4.3}{Noise filtering}{chapter.4}% 27
+\BOOKMARK [0][-]{chapter.5}{Evaluation}{}% 28
+\BOOKMARK [1][-]{section.5.1}{Evaluated websites}{chapter.5}% 29
+\BOOKMARK [1][-]{section.5.2}{Detected anti-adblockers}{chapter.5}% 30
+\BOOKMARK [0][-]{chapter*.3}{Bibliography}{}% 31

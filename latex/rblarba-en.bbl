@@ -1,0 +1,53 @@
+\begin{thebibliography}{1}
+
+\bibitem{internet-facts}
+{HostingFacts Team}.
+\newblock {Internet Stats and Facts for 2019}.
+\newblock \url{https://hostingfacts.com/internet-facts-stats}, 2019.
+\newblock [Online; accessed 27-July-2019].
+
+\bibitem{mozilla:event-loop}
+{MDN}.
+\newblock Concurrency model and event loop.
+\newblock
+  \url{https://developer.mozilla.org/en-US/docs/Web/JavaScript/EventLoop},
+  2019.
+\newblock [Online; accessed 26-July-2019].
+
+\bibitem{stack:js-console-log}
+{StackOverflow users}.
+\newblock Adding console.log to every function automatically.
+\newblock
+  \url{https://stackoverflow.com/questions/5033836/adding-console-log-to-every-function-automatically},
+  2017.
+\newblock [Online; accessed 25-July-2019].
+
+\bibitem{ublock:manifesto}
+{uBlock Origin Contributors}.
+\newblock {This is uBlock's manifesto}.
+\newblock \url{https://github.com/gorhill/uBlock/blob/master/MANIFESTO.md},
+  2015.
+\newblock [Online; accessed 27-July-2019].
+
+\bibitem{wiki:smp}
+{Wikipedia contributors}.
+\newblock Stable marriage problem --- {Wikipedia}{,} the free encyclopedia.
+\newblock
+  \url{https://en.wikipedia.org/w/index.php?title=Stable_marriage_problem&oldid=907225019},
+  2019.
+\newblock [Online; accessed 25-July-2019].
+
+\bibitem{sigplan:execution-indexing}
+Bin Xin, William~N. Sumner, and Xiangyu Zhang.
+\newblock Efficient program execution indexing.
+\newblock In {\em Proceedings of the 29th ACM SIGPLAN Conference on Programming
+  Language Design and Implementation}, PLDI '08, pages 238--248, New York, NY,
+  USA, 2008. ACM.
+
+\bibitem{DBLP:conf/ndss/ZhuHQSY18}
+Shitong Zhu, Xunchao Hu, Zhiyun Qian, Zubair Shafiq, and Heng Yin.
+\newblock Measuring and disrupting anti-adblockers using differential execution
+  analysis.
+\newblock In {\em {NDSS}}. The Internet Society, 2018.
+
+\end{thebibliography}
