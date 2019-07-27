@@ -1,9 +1,10 @@
 import argparse
+import logging
 import os
 import socket
 import subprocess
 import random
-import logging
+import re
 
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
@@ -148,7 +149,7 @@ def remove_extension_traces(website, website_path, file_prefix):
     for t in current_traces:
         short_url = remove_protocol(website)
         path = f'{website_path}/{t}'
-        text = f"at https?:\/\/{short_url}"
+        text = f"at https?:\/\/{re.escape(short_url)}"
         result = subprocess.run(["grep", "-P", "-c", text, path], capture_output=True)
         count = int(result.stdout)
 
@@ -231,7 +232,7 @@ def analyze_traces(website, traces_dir, results_dir):
 
         cmd += f"> {website_results_path}/analysis.out "
         cmd += f"2> {website_results_path}/analysis.err "
-        cmd += "+RTS -M8G -RTS "
+        cmd += "+RTS -M14G -RTS "
 
         analysis = subprocess.Popen(cmd, shell=True)
         analysis.wait()
