@@ -31,7 +31,7 @@ instance Show Loc where
     show (CL fun path line col) =
         show fun ++ " at " ++ show path ++ ":" ++ show line ++ "," ++ show col
 
-type Stack = [Hashed Loc]
+type Stack = [Loc]
 
 data EventType
     = FunctionEnter
@@ -94,8 +94,7 @@ codeEventParser = do
     endOfLine
     string "--"
     let st = filterStack locs
-    let hashedSt = map hashed (newStack eventType st)
-    return $ CE eventType (head st) hashedSt
+    return $ CE eventType (head st) (newStack eventType st)
         where
             filterStack = filter (\loc -> line loc >= 0)
             newStack eventType stack =
@@ -129,8 +128,8 @@ untangleEvents events = untangle [] [] events (length events)
             (CE FunctionEnter _ [_]) -> Just ([], openTraces)
             (CE FunctionEnter _ st) -> findMatchingOpenEvent (tail st) openTraces
             (CE GeneratorEnter _ st) -> findMatchingOpenEvent (tail st) openTraces
-            (CE FunctionExit loc st) -> findMatchingOpenEvent ((hashed loc):st) openTraces
-            (CE GeneratorSuspend loc st) -> findMatchingOpenEvent ((hashed loc):st) openTraces
+            (CE FunctionExit loc st) -> findMatchingOpenEvent (loc:st) openTraces
+            (CE GeneratorSuspend loc st) -> findMatchingOpenEvent (loc:st) openTraces
             (CE GeneratorYield loc st) -> findMatchingOpenEvent st openTraces
             (CE IfStmtThen _ st) -> findMatchingOpenEvent st openTraces
             (CE IfStmtElse _ st) -> findMatchingOpenEvent st openTraces

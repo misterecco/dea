@@ -40,17 +40,19 @@ runFile f = do
                 putStrLn "ERROR:"
                 putStrLn err
                 fail err
-            Done i event -> if i == B.empty
-                then do
-                    nextChunk <- B.hGet h chunkSize
-                    if nextChunk == B.empty
-                        then do
-                            let eventList = event:acc
-                            putStrLn "=============================="
-                            putStrLn $ "Number of events: " ++ show (length eventList)
-                            return $ untangleEvents (reverse eventList)
-                        else parseUntilDone (event:acc) h $ parseEvent nextChunk
-                else parseUntilDone (event:acc) h $ parseEvent i
+            Done i event -> do
+                let _ = rnf event
+                if i == B.empty
+                    then do
+                        nextChunk <- B.hGet h chunkSize
+                        if nextChunk == B.empty
+                            then do
+                                let eventList = event:acc
+                                putStrLn "=============================="
+                                putStrLn $ "Number of events: " ++ show (length eventList)
+                                return $ untangleEvents (reverse eventList)
+                            else parseUntilDone (event:acc) h $ parseEvent nextChunk
+                    else parseUntilDone (event:acc) h $ parseEvent i
             Partial (cont) -> do
                 nextChunk <- B.hGet h chunkSize
                 parseUntilDone acc h $ cont nextChunk
