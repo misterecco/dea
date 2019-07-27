@@ -1,10 +1,12 @@
 {-# LANGUAGE Strict #-}
+{-# LANGUAGE LambdaCase #-}
 
 module Main where
 
 import Control.DeepSeq
 import Control.Monad
 import Data.Attoparsec.ByteString
+import Data.Attoparsec.ByteString.Char8 (endOfLine)
 import Data.List ( isSuffixOf )
 import Data.Map ( (!) )
 import Data.IORef
@@ -18,30 +20,40 @@ import qualified Data.ByteString.Char8 as B
 import Alignment
 import Parser
 
+chunkSize :: Int
+chunkSize = 1024
 
 runFile :: FilePath -> IO [CallTrace]
 runFile f = do
-    res <- withFile f ReadMode $ \h -> do
-        hSetBinaryMode h True
-        fileContent <- B.hGetContents h
-        return $! parseOnly callTraceParser fileContent
-    case res of
-        Left err -> fail err
-        -- Fail remainder context err -> do
-        --     putStrLn "REMAINDER:"
-        --     B.putStrLn remainder
-        --     putStrLn "CONTEXT:"
-        --     mapM_ putStrLn context
-        --     putStrLn "ERROR:"
-        --     putStrLn err
-        --     fail err
-        Right events -> do
-        -- Done _ events -> do
-            -- mapM_ print events
-            putStrLn $ "Number of events: " ++ show (length events)
-            putStrLn "=============================="
-            return $! untangleEvents events
-            -- mapM_ putStrLn (formatTraces traces)
+    h <- openFile f ReadMode
+    hSetBinaryMode h True
+    firstChunk <- B.hGet h chunkSize
+    parseUntilDone [] h $ parseEvent firstChunk
+      where
+        parseEvent = parse (codeEventParser <* endOfLine)
+        parseUntilDone acc h = \case
+            Fail remainder context err -> do
+                putStrLn "REMAINDER:"
+                B.putStrLn remainder
+                putStrLn "CONTEXT:"
+                mapM_ putStrLn context
+                putStrLn "ERROR:"
+                putStrLn err
+                fail err
+            Done i event -> if i == B.empty
+                then do
+                    nextChunk <- B.hGet h chunkSize
+                    if nextChunk == B.empty
+                        then do
+                            let eventList = event:acc
+                            putStrLn "=============================="
+                            putStrLn $ "Number of events: " ++ show (length eventList)
+                            return $ untangleEvents (reverse eventList)
+                        else parseUntilDone (event:acc) h $ parseEvent nextChunk
+                else parseUntilDone (event:acc) h $ parseEvent i
+            Partial (cont) -> do
+                nextChunk <- B.hGet h chunkSize
+                parseUntilDone acc h $ cont nextChunk
 
 
 getTrace :: [FilePath] -> IO [CallTrace]
