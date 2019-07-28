@@ -207,6 +207,11 @@ def collect_traces(website, traces_dir):
     logging.info(f"[COLLECTION] FINISHED {website}")
 
 
+def escape_shell(path):
+    return path.replace(";", "\;").replace("(", "\(").replace(")", "\)") \
+        .replace("<", "\<").replace(">", "\>").replace("&", "\&")
+
+
 def analyze_traces(website, traces_dir, results_dir):
     logging.info(f"[ANALYSIS] {website}")
 
@@ -226,12 +231,14 @@ def analyze_traces(website, traces_dir, results_dir):
     try:
         cmd = "stack exec dea-exe -- "
         for i in range(3):
-            cmd += f"{website_traces_path}/p_{i}.tr "
+            cmd += escape_shell(f"{website_traces_path}/p_{i}.tr ")
         for i in range(3):
-            cmd += f"{website_traces_path}/n_{i}.tr "
+            cmd += escape_shell(f"{website_traces_path}/n_{i}.tr ")
 
-        cmd += f"> {website_results_path}/analysis.out "
-        cmd += f"2> {website_results_path}/analysis.err "
+        out_file = escape_shell(f"{website_results_path}/analysis.out")
+        err_file = escape_shell(f"{website_results_path}/analysis.err")
+        cmd += f"> {out_file} "
+        cmd += f"2> {err_file} "
         cmd += "+RTS -M14G -RTS "
 
         analysis = subprocess.Popen(cmd, shell=True)

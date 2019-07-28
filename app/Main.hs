@@ -87,6 +87,8 @@ runFiles fs = do
             traceB <- getTrace str fsB
             size <- getSize str
             putStrLn $ "Size of strings map: " ++ show size
+            putStrLn $ "Number of left traces: " ++ show (length traceA)
+            putStrLn $ "Number of right traces: " ++ show (length traceB)
             diffTraces traceA traceB
 
 

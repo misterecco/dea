@@ -3,7 +3,7 @@
 module Alignment where
 
 import Control.Monad.State
-import qualified Data.Map.Strict as M ( Map, empty, insertWith, insert, (!),
+import qualified Data.Map as M ( Map, empty, insertWith, insert, (!),
         size, keys, elemAt, null, delete, assocs, member )
 import Data.List ( nub, (\\), sort, partition )
 import Debug.Trace
@@ -183,8 +183,9 @@ retrieveMatches = do
 
 findDiffs :: [LeanCallTrace] -> [LeanCallTrace] -> SMPMonad ([TraceDiff], [LeanCallTrace], [LeanCallTrace])
 findDiffs leftTraces rightTraces = do
-    mapM_ addProposer leftTraces
-    mapM_ addAcceptor rightTraces
+    let (leftTr, rightTr) = removeDuplicateTraces leftTraces rightTraces
+    mapM_ addProposer leftTr
+    mapM_ addAcceptor rightTr
     fillAllPreferences
     initFreeProposers
     initEngagedAcceptors
