@@ -9,6 +9,7 @@ module Lean where
 import Control.DeepSeq
 import Control.Monad
 import Data.ByteString.Short (ShortByteString)
+import Data.Int
 import Data.IORef
 import GHC.Generics (Generic)
 import System.IO
@@ -19,15 +20,15 @@ import Parser
 
 
 data LeanLoc = LL {
-    llFunName :: !Int,
-    llFilePath :: !Int,
-    llLn :: !Int,
-    llCol :: !Int
+    llFunName :: {-# UNPACK #-} !Int,
+    llFilePath :: {-# UNPACK #-} !Int,
+    llLn :: {-# UNPACK #-} !Int,
+    llCol :: {-# UNPACK #-} !Int
 } deriving (Eq, Generic, Ord, NFData, Show)
 
 type LeanStack = [LeanLoc]
 
-data LeanCodeEvent = LCE EventType !LeanLoc !LeanStack
+data LeanCodeEvent = LCE !EventType {-# UNPACK #-} !LeanLoc !LeanStack
    deriving (Eq, Generic, Ord, NFData, Show)
 
 type LeanCallTrace = [LeanCodeEvent]
@@ -70,7 +71,9 @@ toLeanLoc :: IORef StringsMap -> Loc -> IO LeanLoc
 toLeanLoc mRef (CL fn fp l c) = do
     fnId <- getId mRef fn
     fpId <- getId mRef fp
-    return $! LL fnId fpId l c
+    return $! LL (fi fnId) (fi fpId) (fi l) (fi c)
+      where
+        fi = fromIntegral
 
 toLeanStack :: IORef StringsMap -> Stack -> IO LeanStack
 toLeanStack mRef = mapM (toLeanLoc mRef)
