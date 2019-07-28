@@ -3,7 +3,7 @@
 module Alignment where
 
 import Control.Monad.State
-import qualified Data.Map as M ( Map, empty, insertWith, insert, (!),
+import qualified Data.Map.Strict as M ( Map, empty, insertWith, insert, (!),
         size, keys, elemAt, null, delete, assocs, member )
 import Data.List ( nub, (\\), sort, partition )
 import Debug.Trace
