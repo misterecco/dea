@@ -6,27 +6,29 @@ import Control.Monad.State
 import qualified Data.Map as M ( Map, empty, insertWith, insert, (!),
         size, keys, elemAt, null, delete, assocs, member )
 import Data.List ( nub, (\\), sort, partition )
+import Debug.Trace
 
+import Lean
 import Parser
 
-import Debug.Trace
-import GHC.Stack
 
-
-data EventDiff = EDLeft CodeEvent | EDCommon CodeEvent | EDRight CodeEvent
+data EventDiff = EDLeft LeanCodeEvent
+               | EDCommon LeanCodeEvent
+               | EDRight LeanCodeEvent
     deriving (Eq, Ord)
+
 type TraceDiff = [EventDiff]
 type Score = Integer
 
 instance Show EventDiff where
-    show (EDLeft (CE eventType loc _)) =
+    show (EDLeft (LCE eventType loc _)) =
         unlines ["     LEFT: ", "Event: " ++ show eventType, "Loc: " ++ show loc]
-    show (EDCommon (CE eventType loc _)) =
+    show (EDCommon (LCE eventType loc _)) =
         unlines ["                    COMMON: ", "Event: " ++ show eventType, "Loc: " ++ show loc]
-    show (EDRight (CE eventType loc _)) =
+    show (EDRight (LCE eventType loc _)) =
         unlines ["                                   RIGHT: ", "Event: " ++ show eventType, "Loc: " ++ show loc]
 
-alignTraces :: CallTrace -> CallTrace -> (Score, TraceDiff)
+alignTraces :: LeanCallTrace -> LeanCallTrace -> (Score, TraceDiff)
 alignTraces leftTrace rightTrace =
     if null leftTrace || null rightTrace || (head leftTrace) /= (head rightTrace)
         then (-1, [])
@@ -37,7 +39,7 @@ alignTraces leftTrace rightTrace =
             align [] rightTrace (score, ((EDRight event):acc))
         align (event:leftTrace) [] (score, acc) =
             align leftTrace [] (score, ((EDLeft event):acc))
-        align (leftEv@(CE _ _ leftSt):leftTr) (rightEv@(CE _ _ rightSt):rightTr) (score, acc) =
+        align (leftEv@(LCE _ _ leftSt):leftTr) (rightEv@(LCE _ _ rightSt):rightTr) (score, acc) =
             if leftEv == rightEv
                 then align leftTr rightTr (score + 1, ((EDCommon leftEv):acc))
             else if (length leftSt) <= (length rightSt)
@@ -53,7 +55,7 @@ flipDiff = map flipEvent
     flipEvent (EDCommon ev) = (EDCommon ev)
 
 
-removeDuplicateTraces :: [CallTrace] -> [CallTrace] -> ([CallTrace], [CallTrace])
+removeDuplicateTraces :: [LeanCallTrace] -> [LeanCallTrace] -> ([LeanCallTrace], [LeanCallTrace])
 removeDuplicateTraces leftTraces rightTraces = do
     let leftUnique = leftTraces
     let rightUnique = rightTraces
@@ -61,8 +63,8 @@ removeDuplicateTraces leftTraces rightTraces = do
 
 
 data SMPState = SMP {
-    proposers :: M.Map Integer CallTrace,
-    acceptors :: M.Map Integer CallTrace,
+    proposers :: M.Map Integer LeanCallTrace,
+    acceptors :: M.Map Integer LeanCallTrace,
     preferences :: M.Map (Integer, Integer) (Score, TraceDiff),
     freeProposers :: M.Map Integer [(Score, Integer)],
     engagedProposers :: M.Map Integer [(Score, Integer)],
@@ -72,30 +74,30 @@ data SMPState = SMP {
 
 type SMPMonad = State SMPState
 
-initialSMPState :: HasCallStack => SMPState
+initialSMPState :: SMPState
 initialSMPState = SMP M.empty M.empty M.empty M.empty M.empty M.empty []
 
-addProposer :: HasCallStack => CallTrace -> SMPMonad ()
+addProposer :: LeanCallTrace -> SMPMonad ()
 addProposer tr = do
     st <- get
     let prop = proposers st
     let id = fromIntegral $ M.size prop
     put $ st { proposers = M.insert id tr prop }
 
-addAcceptor :: HasCallStack => CallTrace -> SMPMonad ()
+addAcceptor :: LeanCallTrace -> SMPMonad ()
 addAcceptor tr = do
     st <- get
     let acc = acceptors st
     let id = fromIntegral $ M.size acc
     put $ st { acceptors = M.insert id tr acc }
 
-fillAllPreferences :: HasCallStack => SMPMonad ()
+fillAllPreferences :: SMPMonad ()
 fillAllPreferences = do
     st <- get
     let pairs = [(prop, acc) | prop <- M.keys (proposers st), acc <- M.keys (acceptors st)]
     mapM_ (uncurry fillPreference) pairs
 
-fillPreference :: HasCallStack => Integer -> Integer -> SMPMonad ()
+fillPreference :: Integer -> Integer -> SMPMonad ()
 fillPreference propId accId = do
     st <- get
     let prop = (proposers st) M.! propId
@@ -103,12 +105,12 @@ fillPreference propId accId = do
     let newPref@(score, _) = alignTraces prop acc
     put $ st { preferences = M.insert (propId, accId) newPref (preferences st)}
 
-initFreeProposers :: HasCallStack => SMPMonad ()
+initFreeProposers :: SMPMonad ()
 initFreeProposers = do
     st <- get
     mapM_ initFreeProposer $ M.keys (proposers st)
 
-initFreeProposer :: HasCallStack => Integer -> SMPMonad ()
+initFreeProposer :: Integer -> SMPMonad ()
 initFreeProposer prop = do
     st <- get
     let prefMap = preferences st
@@ -116,17 +118,17 @@ initFreeProposer prop = do
     let newFp = M.insert prop ((reverse . sort) prefs) (freeProposers st)
     put $ st { freeProposers = newFp }
 
-initEngagedAcceptors :: HasCallStack => SMPMonad ()
+initEngagedAcceptors :: SMPMonad ()
 initEngagedAcceptors = do
     st <- get
     mapM_ initEngagedAcceptor $ M.keys (acceptors st)
 
-initEngagedAcceptor :: HasCallStack => Integer -> SMPMonad ()
+initEngagedAcceptor :: Integer -> SMPMonad ()
 initEngagedAcceptor acc = do
     st <- get
     put $ st { engagedAcceptors = M.insert acc (0, -1) (engagedAcceptors st)}
 
-findMatches :: HasCallStack => SMPMonad ([TraceDiff], [CallTrace], [CallTrace])
+findMatches :: SMPMonad ([TraceDiff], [LeanCallTrace], [LeanCallTrace])
 findMatches = do
     st <- get
     let fp = freeProposers st
@@ -166,7 +168,7 @@ findMatches = do
                                     put $ st { freeProposers = newFp, engagedProposers = newEp, engagedAcceptors = newEa }
                             findMatches
 
-retrieveMatches :: HasCallStack => SMPMonad ([TraceDiff], [CallTrace], [CallTrace])
+retrieveMatches :: SMPMonad ([TraceDiff], [LeanCallTrace], [LeanCallTrace])
 retrieveMatches = do
     st <- get
     let ea = engagedAcceptors st
@@ -179,7 +181,7 @@ retrieveMatches = do
     where
         filterByScore (acc, (score, prop)) = score /= 0
 
-findDiffs :: HasCallStack => [CallTrace] -> [CallTrace] -> SMPMonad ([TraceDiff], [CallTrace], [CallTrace])
+findDiffs :: [LeanCallTrace] -> [LeanCallTrace] -> SMPMonad ([TraceDiff], [LeanCallTrace], [LeanCallTrace])
 findDiffs leftTraces rightTraces = do
     mapM_ addProposer leftTraces
     mapM_ addAcceptor rightTraces
@@ -197,6 +199,6 @@ filterNodiffs = filter isNotAllCommon
         EDCommon _ -> False
         _ -> True
 
-analyzeTraces :: HasCallStack => [CallTrace] -> [CallTrace] -> ([TraceDiff], [CallTrace], [CallTrace])
+analyzeTraces :: [LeanCallTrace] -> [LeanCallTrace] -> ([TraceDiff], [LeanCallTrace], [LeanCallTrace])
 analyzeTraces leftTraces rightTraces = evalState (findDiffs leftTraces rightTraces) initialSMPState
 

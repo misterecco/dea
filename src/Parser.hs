@@ -11,8 +11,7 @@ import Control.DeepSeq
 import Control.Monad.Writer
 import Data.Attoparsec.ByteString
 import Data.Attoparsec.ByteString.Char8 (decimal, char, endOfLine, space)
-import Data.Hashable
-import Data.List ( isInfixOf, find, delete )
+import Data.ByteString.Short (toShort, ShortByteString)
 import Debug.Trace
 import GHC.Generics (Generic)
 
@@ -21,11 +20,11 @@ import qualified Data.ByteString.Char8 as C
 import qualified Data.ByteString.Short as SB
 
 data Loc = CL {
-    functionName :: !SB.ShortByteString,
-    filePath :: !SB.ShortByteString,
+    functionName :: !ShortByteString,
+    filePath :: !ShortByteString,
     line :: !Int,
     column :: !Int
-} deriving (Eq, Generic, Hashable, Ord, NFData)
+} deriving (Eq, Generic, Ord, NFData)
 
 instance Show Loc where
     show (CL fun path line col) =
@@ -70,7 +69,7 @@ parseLoc l = do
     let (path, (_:loc:_)) = span (/= "@@") rest
     (line, restLoc) <- C.readInt loc
     (col, _) <- C.readInt (C.tail restLoc)
-    return $! CL (SB.toShort $! C.unwords name) (SB.toShort $! C.unwords path) line col
+    return $! CL (toShort $! C.unwords name) (toShort $! C.unwords path) line col
 
 eventTypeParser :: Parser EventType
 eventTypeParser =
@@ -105,43 +104,6 @@ codeEventParser = do
 callTraceParser :: Parser CallTrace
 callTraceParser = many' $ codeEventParser <* endOfLine
 
-
-untangleEvents :: [CodeEvent] -> [CallTrace]
-untangleEvents events = untangle [] [] events (length events)
-    where
-        untangle results [] [] _ = reverse results
-        untangle results openTraces (event:events) left = do
-            -- let (ev, ot) = trace (show (length openTraces) ++ " " ++ show left) (event, openTraces)
-            let (ev, ot) = (event, openTraces)
-            case findMatchingTrace ot ev of
-                Just (matchingTrace, newOpenTraces) -> do
-                    let newTrace = ev:matchingTrace
-                    case ev of
-                        (CE FunctionExit _ []) -> untangle ((reverse newTrace):results) newOpenTraces events (left-1)
-                        _ -> untangle results (newTrace:newOpenTraces) events (left-1)
-                Nothing -> do
-                    let newOpenTraces = trace ("Didn't find proper predecessor for: " ++ show ev ++ " in " ++ (show $ map head openTraces)) openTraces
-                    untangle results newOpenTraces events (left-1)
-        -- should not happen in complete trace
-        untangle results openTraces [] _ = reverse (openTraces ++ results)
-        findMatchingTrace openTraces event = case event of
-            (CE FunctionEnter _ [_]) -> Just ([], openTraces)
-            (CE FunctionEnter _ st) -> findMatchingOpenEvent (tail st) openTraces
-            (CE GeneratorEnter _ st) -> findMatchingOpenEvent (tail st) openTraces
-            (CE FunctionExit loc st) -> findMatchingOpenEvent (loc:st) openTraces
-            (CE GeneratorSuspend loc st) -> findMatchingOpenEvent (loc:st) openTraces
-            (CE GeneratorYield loc st) -> findMatchingOpenEvent st openTraces
-            (CE IfStmtThen _ st) -> findMatchingOpenEvent st openTraces
-            (CE IfStmtElse _ st) -> findMatchingOpenEvent st openTraces
-        findMatchingOpenEvent st [e] = Just (e, [])
-        findMatchingOpenEvent st openTraces =
-            case (find (isStackMatching st) openTraces) of
-                Nothing -> Nothing
-                Just e -> Just (e, delete e openTraces)
-        isStackMatching st trace = case trace of
-            [] -> False
-            (CE _ _ st1):_ -> st1 == st
-
 showEvent :: CodeEvent -> Writer [String] ()
 showEvent (CE eventType loc st) = do
     tell [ "Event: " ++ show eventType ++ ", Loc: " ++ show loc ]
@@ -154,12 +116,5 @@ showTrace events = do
 showTraces :: [CallTrace] -> Writer [String] ()
 showTraces = mapM_ showTrace
 
-removeStack :: CodeEvent -> CodeEvent
-removeStack (CE t l _) = CE t l []
-
-removeStacks :: CallTrace -> CallTrace
-removeStacks = map removeStack
-
 formatTraces :: [CallTrace] -> [String]
 formatTraces traces = execWriter (showTraces traces)
-

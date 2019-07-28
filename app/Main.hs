@@ -8,7 +8,6 @@ import Control.Monad
 import Data.Attoparsec.ByteString
 import Data.Attoparsec.ByteString.Char8 (endOfLine)
 import Data.List ( isSuffixOf )
-import Data.Map ( (!) )
 import Data.IORef
 import System.IO
 import System.Environment ( getArgs )
@@ -18,13 +17,15 @@ import System.Process
 import qualified Data.ByteString.Char8 as B
 
 import Alignment
+import Lean
 import Parser
+import Untangling
 
 chunkSize :: Int
 chunkSize = 1024
 
-runFile :: FilePath -> IO [CallTrace]
-runFile f = do
+runFile :: IORef StringsMap -> FilePath -> IO [LeanCallTrace]
+runFile str f = do
     h <- openFile f ReadMode
     hSetBinaryMode h True
     firstChunk <- B.hGet h chunkSize
@@ -40,7 +41,8 @@ runFile f = do
                 putStrLn "ERROR:"
                 putStrLn err
                 fail err
-            Done i event -> do
+            Done i ev -> do
+                event <- toLeanCodeEvent str ev
                 let _ = rnf event
                 if i == B.empty
                     then do
@@ -58,13 +60,13 @@ runFile f = do
                 parseUntilDone acc h $ cont nextChunk
 
 
-getTrace :: [FilePath] -> IO [CallTrace]
-getTrace fs = do
-    firstTrace <- runFile (head fs)
+getTrace :: IORef StringsMap -> [FilePath] -> IO [LeanCallTrace]
+getTrace str fs = do
+    firstTrace <- runFile str (head fs)
     let _ = rnf firstTrace
     result <- newIORef firstTrace
     forM (tail fs) $ \f -> do
-        nextTrace <- runFile f
+        nextTrace <- runFile str f
         currentResult <- readIORef result
         let nextResult = commonElements nextTrace currentResult
         let _ = rnf nextResult
@@ -79,9 +81,12 @@ runFiles fs = do
         then fail "Please provide even number of traces"
         else do
             let (fsA, fsB) = splitAt (n `div` 2) fs
-            traceA <- getTrace fsA
+            str <- newIORef $ emptyStringsMap
+            traceA <- getTrace str fsA
             putStrLn "==========================================="
-            traceB <- getTrace fsB
+            traceB <- getTrace str fsB
+            size <- getSize str
+            putStrLn $ "Size of strings map: " ++ show size
             diffTraces traceA traceB
 
 
@@ -89,7 +94,7 @@ commonElements :: Eq a => [a] -> [a] -> [a]
 commonElements l = filter (`elem` l)
 
 
-diffTraces :: [CallTrace] -> [CallTrace] -> IO ()
+diffTraces :: [LeanCallTrace] -> [LeanCallTrace] -> IO ()
 diffTraces tracesA tracesB = do
     let (matched, unmatchedLeft, unmatchedRight) = if (length tracesA) <= (length tracesB)
         then analyzeTraces tracesA tracesB
