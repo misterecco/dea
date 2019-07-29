@@ -73,7 +73,7 @@ Good overview of the method is presented by Johnson et al. \cite{ieee:alignment-
 
 The analysis is usually performed by collecting an execution trace for each run and then comparing
 them using trace alignment. Trace alignment is a process of identifying which fragments of execution traces
-are common, where they diverge and when the converge again. The exact algorithm is discussed in \ref{trace-alignment}.
+are common, where they diverge and when the converge again. The exact algorithm is discussed in section \ref{trace-alignment}.
 
 The results can be useful in various scenarios, i.e. debugging a program or during security analyses.
 
@@ -94,7 +94,7 @@ First, trace collection is not a trivial task, especially when there is interest
 The authors instrument V8 to achieve the task, but do not provide much details, apart from briefly stating that
 their instrumentation is embedded into native code generation process.
 
-Second, due to JavaScript execution model, described in detail in \ref{js-exec-model}, execution traces of different
+Second, due to JavaScript execution model, described in detail in section \ref{js-exec-model}, execution traces of different
 events are interleaved. To battle this issue, traces have to be sliced into subtraces and analyzed pairwise.
 In a language with a simpler execution model this step would be unnecessary.
 Authors also do not explain their method of how to pair the subtraces. They just mention that all $m \times n$ pairs 
@@ -118,4 +118,4 @@ Furthermore, all callbacks attached to DOM events (e.g. \emph{onClick}) are exec
 It is worth noting that execution of functions can be intertwined, e.g. when generators are used.
 This is the reason why trace slicing is needed and why it requires at least a bit of thought.
 
-Each iframe and browser tab has it's own message loop, more on that in \ref{v8-in-chrome}.
+Each iframe and browser tab has it's own message loop, more on that in section \ref{v8-in-chrome}.

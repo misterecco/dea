@@ -84,8 +84,10 @@
 
 \usepackage{xcolor}
 \newcommand{\todo}[1]{\colorbox{yellow}{ \color{red} \textbf{TODO}: {#1}}}
+
 \usepackage{cite}
 \usepackage{url}
+
 \usepackage{hyperref}
 \hypersetup{
   colorlinks   = true,    % Colours links instead of ugly boxes
@@ -93,6 +95,42 @@
   linkcolor    = blue,    % Colour of internal links
   citecolor    = red      % Colour of citations
 }
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.95}
+
+\usepackage{listings}
+\lstdefinelanguage{JavaScript}{
+  keywords={typeof, new, true, false, catch, function, return, null, catch, 
+  					    switch, var, if, in, of, for, const, let, while, do, else, case, break},
+  ndkeywords={class, export, boolean, throw, implements, import, this},
+  sensitive=false,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  morestring=[b]',
+  morestring=[b]"
+}
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\bf\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=mystyle}
 
 % koniec definicji
 
@@ -116,59 +154,19 @@ on Polish websites or to build an extension capable of circumventing such script
 %\listoffigures
 %\listoftables
 
-\chapter*{Introduction}
-\addcontentsline{toc}{chapter}{Introduction}
 
-In modern-era Internet most webpages operate for profit. Most of them, however, choose to provide free content
-in exchange for displaying paid ads. Unfortunately, not all websites play fair. Some of them
-concentrate on displaying as many ads as possible and generate traffic by using click-baits 
-and other shady practices. Even websites with valuable content can have overwhelming amount 
-of ads. This leads to grave dissatisfaction of some portion of users. To make their browsing experience better,
-they turn to use of ad-blocking extensions.
-
-The amount of users doing that cannot be ignored. In 2019 there was over 615 million devices worldwide
-with adblocker installed \cite{internet-facts}. This, in turn, leads to loss of revenue for many businesses.
-To combat this, some of them choose to deploy anti-adblockers, which generate warnings 
-or even block content entirely for users with adblockers.
-
+\include{intro}
 
 \include{basic_concepts}
 
-
-\chapter{Trace collection}
-
-\section{Methods overview}
-There are a few distinct ways to obtain execution trace of JavaScript code. 
-
-The simplest (and most limited) methods use only mechanisms present in the language.
-More elaborate inject special tracing code to analyzed script. The last kind modify the engine to produce
-the desired data.
-
-\section{Dynamic in-JS code injection}
-JavaScript is a very dynamic language. For this reason it is relatively easy to write code that will
-modify each function present in the environment to log each entry and exit,
-possibly along with all the arguments and return value \cite{stack:js-console-log}.
-
-Snippet \todo{add snippet showing how to do that} is an example of a code that does just that.
-It replaces function definition with new one that logs its arguments before calling the old function and logs return
-the return value after that. 
-
-It is also possible to traverse recursively the entire global object and replace each function this way.
-
-However, this is not enough for the needs of Differential Execution Analysis. 
-The most obvious limitation is that it's not possible to instrument control statements.
-Another major shortcoming is that function can be instrumented only after they are defined. 
-It is quite an obstacle, because JavaScript allows to define function practically anywhere and it is very common
-to use anonymous functions as callbacks. It is not possible to instrument such callback 
-without modyfing the instumented code, which brings us to the next method
-
-\section{Static code injection}
-Less limited approach is to statically rewrite the instrumented code and inject tracing code wherever it is needed.
+\include{trace_collection}
 
 
-\section{Engine instrumentation}
+
 
 \chapter{Trace collection by V8 instrumentation}
+\label{v8-instrumentation}
+
 \section{V8 architecture}
 \subsection{JS built-in functions}
 \section{V8 usage in chromium}
@@ -194,6 +192,8 @@ Less limited approach is to statically rewrite the instrumented code and inject 
 \section{Evaluated websites}
 \section{Detected anti-adblockers}
 
+\lstlistoflistings
+\addcontentsline{toc}{chapter}{Listings}
 
 \bibliography{sources}{}
 \addcontentsline{toc}{chapter}{Bibliography}

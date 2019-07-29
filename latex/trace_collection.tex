@@ -1,0 +1,81 @@
+\chapter{Trace collection}
+
+\section{Methods overview}
+There are a few distinct ways to obtain execution trace of JavaScript code. 
+
+The simplest (and most limited) methods use only mechanisms present in the language.
+More elaborate inject special tracing code to analyzed script. The last kind modify the engine to produce
+the desired data.
+
+\section{Dynamic in-JS code injection}
+JavaScript is a very dynamic language. For this reason it is relatively easy to write code that will
+modify each function present in the environment to log each entry and exit,
+possibly along with all the arguments and return value \cite{stack:js-console-log}.
+
+\lstinputlisting[language=JavaScript, caption=Dynamic instrumentation in JavaScript, label=js-instrumentation]{js/instrument.js}
+
+Listing \ref{js-instrumentation} is an example of a code that instruments all functions in selected object
+to log their name and arguments when they are called.
+Function \emph{instrument} simply goes trough all properties of an object and 
+replaces each function with new function that first logs function
+name and all provided arguments and then calls the original function.
+This function can be easily extended to also log return value and instrument all subobjects recursively.
+
+However, this is not enough for the needs of Differential Execution Analysis. 
+The most obvious limitation is that it's not possible to instrument control statements.
+Another major shortcoming is that function can be instrumented only after they are defined. 
+It is quite an obstacle, because JavaScript allows to define function practically anywhere and it is very common
+to use anonymous functions as callbacks. It is not possible to instrument such callbacks 
+without modifying the instrumented code.
+
+\section{Static code injection}
+Less limited approach is to statically rewrite the instrumented code and inject tracing code wherever it is needed.
+The upside of such approach is that there are several ready to use frameworks.
+The downsides will be pointed out when discussing each solution.
+
+\subsection{Web Tracing Framework}
+One notable solution is Web Tracing Framework developed by Google \cite{google:wtf}.
+The main use of this framework is to profile web applications to find performance bottlenecks.
+The functionality is similar to that of \emph{Performance} tab in Chromium developer tools.
+
+Notwithstanding, one of its advanced features is closer to our needs. 
+It allows the user to first instrument JavaScript sources and then 
+collect execution traces and see them in a special app.
+
+Having to instrument all source code is cumbersome, especially when we try to analyze code on some
+arbitrary website. For this reason Web Tracing Framework also offers an extension and proxy server 
+that cooperate to instrument all JavaScript code when it is loaded into browser.
+
+Unfortunately, this solution has a few deal-breaking downsides:
+\begin{itemize}
+  \item It logs only function entry and exit events.
+  \item Logging format is not public
+  \item It is a bit dated, new JavaScript features may not be traced properly
+  \item Function defined using \emph{eval} or \emph{Function} will not be traced
+\end{itemize}
+
+\subsection{Iroh}
+Iroh \cite{iroh} is the most complete solution based on static code injection.
+Just like Web Tracing Framework, Iroh also needs to patch the code first, but its capabilities go well
+beyond what the previous solution offers. It allows the user to register arbitrary callbacks to practically any
+element of JavaScript's Abstract Syntax Tree (AST). It means that this tool is able to instrument \emph{if} statements.
+This use case is even included in the official examples.
+
+Unfortunately, the framework does not offer proxy that could instrument code loaded into browser on the fly.
+There is also one more general concern -- performance of such solution may not be acceptable.
+
+\section{Engine instrumentation}
+The last option is to modify the JavaScript engine itself to produce execution traces.
+The most striking benefit is that the engine already has all required info and the solution does not require the code
+to be modified.
+Another advantage is the performance. Implementing tracing code directly in the engine means 
+that there is less indirection. The code does not need to be interpreted by the engine, it is a native code
+that is called from JavaScript.
+
+Unfortunately, such instrumentation has to written almost from scratch. 
+Nevertheless, due to the most flexibility and performance advantages, this solution has been chosen 
+for this implementation.
+
+The same choice has been made by Zhu et al. \cite{DBLP:conf/ndss/ZhuHQSY18} for their implementation, but they did not share their code.
+
+More details on how to instrument the engine in chapter \ref{v8-instrumentation}.
