@@ -132,80 +132,7 @@ To combat this, some of them choose to deploy anti-adblockers, which generate wa
 or even block content entirely for users with adblockers.
 
 
-
-\chapter{Basic concepts}
-\section{Definitions}
-
-\begin{itemize}
-  \item Execution event -- each occurence of control executing some statement, entering or leaving a control structure etc.
-  \item Execution trace -- a series of execution events collected during program execution. 
-           It is dependent both on program structure and it's input (also implicit such as randomly generated numbers)
-  \item Execution index -- a concept formally introduced by Xin et al. \cite{sigplan:execution-indexing}. 
-                                         For our purposes it is any function that uniquely identifies execution points. In our case it will
-                                         be a statement source map information with the current function stack
-  \item Stable marriage problem -- given equallly sized sets of men and women and their matrimonial preferences,
-                                                       find a stable matching, i.e. matching in which there exists no pair of man and woman 
-                                                       in which they both would have better partner than currently assigned.
-                                                       It can be solved using Gale-Shapley algorithm \cite{wiki:smp}
-\end{itemize}
-
-\section{Adblockers}
-\todo{References?}
-
-Ads are the main source of income for numerous websites. By displaying ads, authors are able to provide
-valuable content free of charge. 
-
-However, there are multiple reasons why users may not want to see ads: 
-\begin{itemize}
-  \item There are websites which sole purpose is to earn money by displaying as many ads 
-           as possible without providing any interesting or original content
-           They often generate traffic using click-baits and similar shady practices.
-  \item Ads often lenghten pages loading times. The slower the connection, the more frustrating it becomes.
-  \item Ads increase webpage payload size, which generates higher cost in case of mobile connections.
-  \item Some ads track users, which raises privacy concerns
-  \item Ads can be used to spread malware
-\end{itemize}
-
-One of the solutions is to use special browser extensions, called ad blockers, that prevent ads from being displayed.
-Their work is based on community-curated list of filters. Those filters are used to first identify some portions
-of website as ads and later remove.
-
-The removal depends on the type of ad. Whole page overlay can simply be not shown without disrupting
-website UI. On the other hand, after removing banners, there remain some blank space, which is usually
-fixed by repositioning adjacent elements. In some cases, particularly when ads are served from domain
-of some ad provider, the requests loading ads can be blocked, thus saving the bandwidth and data usage.
-
-There is some controversy concerning morality of use of such extensions.
-One of the most popular ad-blocking extension, uBlock Origin states in its manifesto,
-that users should have control over what content should be accepted in their browser \cite{ublock:manifesto}.
-
-
-
-\section{Anti-adblockers}
-As mentioned earlier, ads are the main source of income for numerous websites, including some 
-news services. Users using AdBlock deprive such websites of their rightful income.
-To recover lost revenue, many websites started deploying anti-adblocking scripts.
-Their goal is simple -- when they detect that content blocking extension is present, 
-they take some action, potentially mitigating the problem.
-The action can vary from simply just reporting the use of extension to the backend to blocking 
-the content entirely.
-
-Anti-adblockers come in many variants. There are simple, custom scripts written 
-specifically for one service, but there are also some sophisticated scripts 
-provided by third parties, designed to be run on any site.
-
-One rather simple example is presented by company offering "Adblock Analytics" service.
-Their example includes 
-
-\section{JavaScript execution model}
-Event loop \cite{mozilla:event-loop}
-
-\section{Differential Execution Analysis}
-
-\section{Detecting anti-adblockers}
-Paper "Measuring and Disrupting Anti-Adblockers Using Differential Execution Analysis" 
-by Zhu et al. \cite{DBLP:conf/ndss/ZhuHQSY18} introduced a method of detecting anti-adblockers
-using Differential Execution Analysis.
+\include{basic_concepts}
 
 
 \chapter{Trace collection}
@@ -245,6 +172,8 @@ Less limited approach is to statically rewrite the instrumented code and inject 
 \section{V8 architecture}
 \subsection{JS built-in functions}
 \section{V8 usage in chromium}
+\label{v8-in-chrome}
+
 \subsection{Extensions model}
 \section{Chrome's extensions architecture}
 \section{V8's \emph{-{}-trace} flag}
@@ -254,6 +183,10 @@ Less limited approach is to statically rewrite the instrumented code and inject 
 \chapter{Trace analysis}
 \section{Trace untangling using execution index}
 \subsection{Optimizations}
+
+\section{Trace alignment}
+\label{trace-alignment}
+
 \section{Trace matching using SMP}
 \section{Noise filtering}
 
