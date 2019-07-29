@@ -1,0 +1,49 @@
+\chapter{Trace collection by V8 instrumentation}
+\label{v8-instrumentation}
+
+\section{V8 architecture}
+Most modern browsers do not implement JavaScript interpreter directly. Most of them rely on 
+a separate module called JavaScript engine.
+
+V8 is an engine used by the most popular browser, Chrome \cite{v8:main-page}, which in June 2019 
+had over 80\% market share  \cite{w3:browsers}.
+
+\todo{Isolate, Context, Snapshots}
+
+V8 processes JavaScript code in several steps. In this thesis we will focus on steps
+directly related to implementing trace collection.
+
+In short, JS code is first parsed into AST, which contatins source map information. 
+In the next step V8 traverses the entire AST and emits bytecode for each node.
+The bytecode is V8-specific and reflects the architecture of V8's abstract machine.
+More on that in section \ref{v8-bytecode}.
+
+It is worth noting that while user-defined function are translated to bytecode,
+most built-in functions are implemented in a different way. We will take a closer look at them
+in section \ref{v8-builtins}.
+
+Only after the code is translated into bytecode, it is finally executed. At this stage there are two
+kinds of functions. First -- those defined in JavaScript, represented in bytecode, second -- builtins
+defined in other ways and already compiled into native code. This distinction is not important 
+to the user, as those functions do not differ in JavaScript, and can easily call each other.
+It is, however, important when we try to add instrumentation code.
+
+At some point during execution, functions that are called very often, and with the same argument types, can
+be compiled into native code by its TurboFan Just In Time compiler \cite{v8:turbofan-jit}.
+
+The engine's architecture is focused on achieving superior performance, while conforming to all
+standards and not jeopardizing security. 
+
+\subsection{JS bytecode}
+\label{v8-bytecode}
+
+\subsection{JS built-in functions}
+\label{v8-builtins}
+
+\section{V8 usage in chromium}
+\label{v8-in-chrome}
+
+\section{Chrome's extensions architecture}
+\section{V8's \emph{-{}-trace} flag}
+\section{Bytecode injection}
+\section{Controlling Chrome programatically}
