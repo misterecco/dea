@@ -80,8 +80,8 @@ def run_chrome(trace_file=None, profile_path=None, debug_port=None):
     return subprocess.Popen(cmd, shell=True)
 
 
-def open_website_and_quit(website, browser, webdriver, prep_time):
-    sleep(prep_time)
+def open_website_and_quit(website, browser, webdriver):
+    sleep(3)
     try:
         webdriver.get(website)
         sleep(30)
@@ -109,20 +109,20 @@ def get_random_port():
     return port
 
 
-def collect_trace(website, trace_file, profile_path, prep_time):
+def collect_trace(website, trace_file, profile_path):
     os.system("killall -9 chromium")
     port = get_random_port()
     chrome = run_chrome(debug_port=port, trace_file=trace_file, profile_path=profile_path)
     webdriver = connect_to_chrome(debug_port=port)
-    open_website_and_quit(website, chrome, webdriver, prep_time)
+    open_website_and_quit(website, chrome, webdriver)
 
 
 def collect_positive_trace(website, trace_file):
-    collect_trace(website, trace_file, PROFILE_UBLOCK, 50)
+    collect_trace(website, trace_file, PROFILE_UBLOCK)
 
 
 def collect_negative_trace(website, trace_file):
-    collect_trace(website, trace_file, PROFILE_NO_UBLOCK, 10)
+    collect_trace(website, trace_file, PROFILE_NO_UBLOCK)
 
 
 def url_to_path(url):
