@@ -3,10 +3,12 @@
 module Alignment where
 
 import Control.Monad.State
+import Data.IORef
 import qualified Data.Map as M ( Map, empty, insertWith, insert, (!),
         size, keys, elemAt, null, delete, assocs, member )
 import Data.List ( nub, (\\), sort, partition )
 import Debug.Trace
+import System.IO
 
 import Lean
 import Parser
@@ -27,6 +29,24 @@ instance Show EventDiff where
         unlines ["                    COMMON: ", "Event: " ++ show eventType, "Loc: " ++ show loc]
     show (EDRight (LCE eventType loc _)) =
         unlines ["                                   RIGHT: ", "Event: " ++ show eventType, "Loc: " ++ show loc]
+
+printEventDiff :: IORef StringsMap -> EventDiff -> IO ()
+printEventDiff mRef (EDLeft ce) = do
+    putStrLn "     LEFT: "
+    printCodeEvent mRef ce
+printEventDiff mRef (EDCommon ce) = do
+    putStrLn "                    COMMON: "
+    printCodeEvent mRef ce
+printEventDiff mRef (EDRight ce) = do
+    putStrLn "                                   RIGHT: "
+    printCodeEvent mRef ce
+
+printTraceDiff :: IORef StringsMap -> TraceDiff -> IO ()
+printTraceDiff mRef td = do
+    putStrLn "----------------------------"
+    mapM_ (printEventDiff mRef) td
+    putStrLn "----------------------------"
+
 
 alignTraces :: LeanCallTrace -> LeanCallTrace -> (Score, TraceDiff)
 alignTraces leftTrace rightTrace =

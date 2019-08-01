@@ -66,6 +66,20 @@ printAllStrings mRef = do
     forM_ (M.keys stToId) $ \k -> do
         putStrLn $ show k ++ " " ++ show (stToId M.! k)
 
+printLoc :: IORef StringsMap -> LeanLoc -> IO ()
+printLoc mRef (LL fn fp ln cl) = do
+    (idToSt, _) <- readIORef mRef
+    putStrLn $ show (idToSt M.! fn) ++ " at " ++ show (idToSt M.! fp) ++ " @@ "
+       ++ show ln ++ "," ++ show cl
+
+printCodeEvent :: IORef StringsMap -> LeanCodeEvent -> IO ()
+printCodeEvent mRef (LCE et loc _) = do
+    putStrLn $ "Event: " ++ show et
+    printLoc mRef loc
+
+printCallTrace :: IORef StringsMap -> LeanCallTrace -> IO ()
+printCallTrace mRef = mapM_ $ printCodeEvent mRef
+
 
 toLeanLoc :: IORef StringsMap -> Loc -> IO LeanLoc
 toLeanLoc mRef (CL fn fp l c) = do

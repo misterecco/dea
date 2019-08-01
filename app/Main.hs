@@ -89,15 +89,15 @@ runFiles fs = do
             putStrLn $ "Size of strings map: " ++ show size
             putStrLn $ "Number of left traces: " ++ show (length traceA)
             putStrLn $ "Number of right traces: " ++ show (length traceB)
-            diffTraces traceA traceB
+            diffTraces str traceA traceB
 
 
 commonElements :: Eq a => [a] -> [a] -> [a]
 commonElements l = filter (`elem` l)
 
 
-diffTraces :: [LeanCallTrace] -> [LeanCallTrace] -> IO ()
-diffTraces tracesA tracesB = do
+diffTraces :: IORef StringsMap -> [LeanCallTrace] -> [LeanCallTrace] -> IO ()
+diffTraces str tracesA tracesB = do
     let (matched, unmatchedLeft, unmatchedRight) = if (length tracesA) <= (length tracesB)
         then analyzeTraces tracesA tracesB
         else let (m, ul, ur) = analyzeTraces tracesB tracesA in (map flipDiff m, ur, ul)
@@ -107,7 +107,7 @@ diffTraces tracesA tracesB = do
     putStrLn "=============== Aligned - filtered ==============="
     putStrLn $ "Number of all matched traces: " ++ show (length matched)
     putStrLn $ "Number of diffing traces: " ++ show (length interestingMatched)
-    mapM_ (putStrLn . show) interestingMatched
+    mapM_ (printTraceDiff str) interestingMatched
     -- putStrLn "=============== Unmatched left ==============="
     -- mapM_ (putStrLn . show) (formatTraces unmatchedLeft)
     -- putStrLn "=============== Unmatched right ==============="
