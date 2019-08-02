@@ -1,0 +1,505 @@
+diff --git a/src/flag-definitions.h b/src/flag-definitions.h
+index 71b0c94c0e..ea6a3c7cb2 100644
+--- a/src/flag-definitions.h
++++ b/src/flag-definitions.h
+@@ -905,6 +905,8 @@ DEFINE_BOOL(inline_new, true, "use fast inline allocation")
+ 
+ // codegen-ia32.cc / codegen-arm.cc
+ DEFINE_BOOL(trace, false, "trace function calls")
++DEFINE_BOOL(trace_dea, false, "trace calls and branching statements for DEA")
++DEFINE_STRING(trace_dea_file, nullptr, "file output for DEA tracing")
+ 
+ // codegen.cc
+ DEFINE_BOOL(lazy, true, "use lazy compilation")
+diff --git a/src/frames.cc b/src/frames.cc
+index 09f5a37d4b..72925fe26a 100644
+--- a/src/frames.cc
++++ b/src/frames.cc
+@@ -1120,30 +1120,38 @@ int JavaScriptFrame::LookupExceptionHandlerInTable(
+ }
+ 
+ void JavaScriptFrame::PrintFunctionAndOffset(JSFunction function,
+-                                             AbstractCode code, int code_offset,
++                                             AbstractCode code, int source_pos,
+                                              FILE* file,
+                                              bool print_line_number) {
+-  PrintF(file, "%s", function->IsOptimized() ? "*" : "~");
++  // PrintF(file, "%s", function->IsOptimized() ? "*" : "~");
++  PrintF(file, "~");
+   function->PrintName(file);
+-  PrintF(file, "+%d", code_offset);
++  // PrintF(file, "+%d", source_pos);
+   if (print_line_number) {
+     SharedFunctionInfo shared = function->shared();
+-    int source_pos = code->SourcePosition(code_offset);
++    // int source_pos = code->SourcePosition(code_offset);
+     Object maybe_script = shared->script();
+     if (maybe_script->IsScript()) {
+       Script script = Script::cast(maybe_script);
+-      int line = script->GetLineNumber(source_pos) + 1;
++      // int line = script->GetLineNumber(source_pos) + 1;
++      // int column = script->GetColumnNumber(source_pos) + 1;
++      int line = source_pos;
++      int column = -1;
+       Object script_name_raw = script->name();
+       if (script_name_raw->IsString()) {
+         String script_name = String::cast(script->name());
+         std::unique_ptr<char[]> c_script_name =
+             script_name->ToCString(DISALLOW_NULLS, ROBUST_STRING_TRAVERSAL);
+-        PrintF(file, " at %s:%d", c_script_name.get(), line);
++        if (strlen(c_script_name.get()) > 0) {
++          PrintF(file, " at %s @@ %d,%d ", c_script_name.get(), line, column);
++        } else {
++          PrintF(file, " at <empty> @@ %d,%d ", line, column);
++        }
+       } else {
+-        PrintF(file, " at <unknown>:%d", line);
++        PrintF(file, " at <unknown> @@ %d,%d ", line, column);
+       }
+     } else {
+-      PrintF(file, " at <unknown>:<unknown>");
++      PrintF(file, " at <unknown> @@ -1,-1 ");
+     }
+   }
+ }
+@@ -1158,15 +1166,8 @@ void JavaScriptFrame::PrintTop(Isolate* isolate, FILE* file, bool print_args,
+       JavaScriptFrame* frame = it.frame();
+       if (frame->IsConstructor()) PrintF(file, "new ");
+       JSFunction function = frame->function();
+-      int code_offset = 0;
+-      if (frame->is_interpreted()) {
+-        InterpretedFrame* iframe = reinterpret_cast<InterpretedFrame*>(frame);
+-        code_offset = iframe->GetBytecodeOffset();
+-      } else {
+-        Code code = frame->unchecked_code();
+-        code_offset = static_cast<int>(frame->pc() - code->InstructionStart());
+-      }
+-      PrintFunctionAndOffset(function, function->abstract_code(), code_offset,
++      int source_pos = function->shared()->StartPosition();
++      PrintFunctionAndOffset(function, function->abstract_code(), source_pos,
+                              file, print_line_number);
+       if (print_args) {
+         // function arguments
+@@ -1187,6 +1188,23 @@ void JavaScriptFrame::PrintTop(Isolate* isolate, FILE* file, bool print_args,
+   }
+ }
+ 
++void JavaScriptFrame::PrintFunOffset(Isolate* isolate, FILE* file, int stmt_offset) {
++  // constructor calls
++  DisallowHeapAllocation no_allocation;
++  JavaScriptFrameIterator it(isolate);
++  while (!it.done()) {
++    if (it.frame()->is_java_script()) {
++      JavaScriptFrame* frame = it.frame();
++      if (frame->IsConstructor()) PrintF(file, "new ");
++      JSFunction function = frame->function();
++      PrintFunctionAndOffset(function, function->abstract_code(), stmt_offset,
++                             file, true);
++      break;
++    }
++    it.Advance();
++  }
++}
++
+ void JavaScriptFrame::CollectFunctionAndOffsetForICStats(JSFunction function,
+                                                          AbstractCode code,
+                                                          int code_offset) {
+diff --git a/src/frames.h b/src/frames.h
+index 8c1d34d729..00b037e7b0 100644
+--- a/src/frames.h
++++ b/src/frames.h
+@@ -753,6 +753,9 @@ class JavaScriptFrame : public StandardFrame {
+ 
+   static void PrintTop(Isolate* isolate, FILE* file, bool print_args,
+                        bool print_line_number);
++  static void PrintStack(Isolate* isolate, FILE* file, bool print_args,
++                         bool print_line_number);
++  static void PrintFunOffset(Isolate* isolate, FILE* file, int stmt_offset);
+ 
+   static void CollectFunctionAndOffsetForICStats(JSFunction function,
+                                                  AbstractCode code,
+diff --git a/src/interpreter/bytecode-generator.cc b/src/interpreter/bytecode-generator.cc
+index 5ef725f77a..b2dbe5a824 100644
+--- a/src/interpreter/bytecode-generator.cc
++++ b/src/interpreter/bytecode-generator.cc
+@@ -1119,6 +1119,7 @@ void BytecodeGenerator::GenerateBytecodeBody() {
+ 
+   // Emit tracing call if requested to do so.
+   if (FLAG_trace) builder()->CallRuntime(Runtime::kTraceEnter);
++  if (FLAG_trace_dea) builder()->CallRuntime(Runtime::kTraceDeaEnter);
+ 
+   // Emit type profile call.
+   if (info()->collect_type_profile()) {
+@@ -1393,14 +1394,21 @@ void BytecodeGenerator::VisitIfStatement(IfStatement* stmt) {
+       builder(), block_coverage_builder_, stmt);
+   builder()->SetStatementPosition(stmt);
+ 
++  // FLAG_trace_dea
++  RegisterAllocationScope register_scope(this);
++  Register stmt_offset = register_allocator()->NewRegister();
++  builder()->LoadLiteral(stmt->position()).StoreAccumulatorInRegister(stmt_offset);
++
+   if (stmt->condition()->ToBooleanIsTrue()) {
+     // Generate then block unconditionally as always true.
+     conditional_builder.Then();
++    if (FLAG_trace_dea) builder()->CallRuntime(Runtime::kTraceDeaIfStmtThen, stmt_offset);
+     Visit(stmt->then_statement());
+   } else if (stmt->condition()->ToBooleanIsFalse()) {
+     // Generate else block unconditionally if it exists.
+     if (stmt->HasElseStatement()) {
+       conditional_builder.Else();
++      if (FLAG_trace_dea) builder()->CallRuntime(Runtime::kTraceDeaIfStmtElse, stmt_offset);
+       Visit(stmt->else_statement());
+     }
+   } else {
+@@ -1411,11 +1419,13 @@ void BytecodeGenerator::VisitIfStatement(IfStatement* stmt) {
+                  conditional_builder.else_labels(), TestFallthrough::kThen);
+ 
+     conditional_builder.Then();
++    if (FLAG_trace_dea) builder()->CallRuntime(Runtime::kTraceDeaIfStmtThen, stmt_offset);
+     Visit(stmt->then_statement());
+ 
+     if (stmt->HasElseStatement()) {
+       conditional_builder.JumpToEnd();
+       conditional_builder.Else();
++      if (FLAG_trace_dea) builder()->CallRuntime(Runtime::kTraceDeaIfStmtElse, stmt_offset);
+       Visit(stmt->else_statement());
+     }
+   }
+@@ -2844,6 +2854,13 @@ void BytecodeGenerator::BuildReturn(int source_position) {
+     builder()->StoreAccumulatorInRegister(result).CallRuntime(
+         Runtime::kTraceExit, result);
+   }
++  if (FLAG_trace_dea) {
++    RegisterAllocationScope register_scope(this);
++    Register result = register_allocator()->NewRegister();
++    // Runtime returns {result} value, preserving accumulator.
++    builder()->StoreAccumulatorInRegister(result).CallRuntime(
++        Runtime::kTraceDeaExit, result);
++  }
+   if (info()->collect_type_profile()) {
+     builder()->CollectTypeProfile(info()->literal()->return_position());
+   }
+@@ -3722,6 +3739,13 @@ void BytecodeGenerator::VisitCompoundAssignment(CompoundAssignment* expr) {
+ void BytecodeGenerator::BuildSuspendPoint(int position) {
+   const int suspend_id = suspend_count_++;
+ 
++  if (FLAG_trace_dea) {
++    RegisterAllocationScope register_scope(this);
++    Register result = register_allocator()->NewRegister();
++    // Runtime returns {result} value, preserving accumulator.
++    builder()->StoreAccumulatorInRegister(result).CallRuntime(
++        Runtime::kTraceDeaGenSuspend, result);
++  }
+   RegisterList registers = register_allocator()->AllLiveRegisters();
+ 
+   // Save context, registers, and state. This bytecode then returns the value
+@@ -3732,6 +3756,8 @@ void BytecodeGenerator::BuildSuspendPoint(int position) {
+   // Upon resume, we continue here.
+   builder()->Bind(generator_jump_table_, suspend_id);
+ 
++  if (FLAG_trace_dea) builder()->CallRuntime(Runtime::kTraceDeaGenEnter);
++
+   // Clobbers all registers and sets the accumulator to the
+   // [[input_or_debug_pos]] slot of the generator object.
+   builder()->ResumeGenerator(generator_object(), registers);
+@@ -3760,6 +3786,15 @@ void BytecodeGenerator::VisitYield(Yield* expr) {
+       // value into IteratorResult.
+       RegisterAllocationScope register_scope(this);
+       RegisterList args = register_allocator()->NewRegisterList(2);
++      if (FLAG_trace_dea) {
++        RegisterAllocationScope register_scope(this);
++        RegisterList regs = register_allocator()->NewRegisterList(2);
++        // Runtime returns {result} value, preserving accumulator.
++        builder()->StoreAccumulatorInRegister(regs[0] /*result*/)
++            .LoadLiteral(expr->position())
++            .StoreAccumulatorInRegister(regs[1]/*expr_offset*/)
++            .CallRuntime(Runtime::kTraceDeaGenYield, regs);
++      }
+       builder()
+           ->StoreAccumulatorInRegister(args[0])  // value
+           .LoadFalse()
+@@ -4229,6 +4264,17 @@ void BytecodeGenerator::VisitCall(Call* expr) {
+   Expression* callee_expr = expr->expression();
+   Call::CallType call_type = expr->GetCallType();
+ 
++/*
++  builder()->SetExpressionPosition(expr);
++
++  // FLAG_trace_dea
++  RegisterAllocationScope register_scope(this);
++  Register expr_offset = register_allocator()->NewRegister();
++  builder()->LoadLiteral(expr->position()).StoreAccumulatorInRegister(expr_offset);
++
++  if (FLAG_trace_dea) builder()->CallRuntime(Runtime::kTraceDeaCall, expr_offset);
++*/
++
+   if (call_type == Call::SUPER_CALL) {
+     return VisitCallSuper(expr);
+   }
+diff --git a/src/runtime/runtime-test.cc b/src/runtime/runtime-test.cc
+index b367044269..901d2f9254 100644
+--- a/src/runtime/runtime-test.cc
++++ b/src/runtime/runtime-test.cc
+@@ -6,6 +6,7 @@
+ 
+ #include <memory>
+ #include <sstream>
++#include <unistd.h>
+ 
+ #include "src/api-inl.h"
+ #include "src/arguments-inl.h"
+@@ -26,6 +27,7 @@
+ #include "src/runtime-profiler.h"
+ #include "src/snapshot/natives.h"
+ #include "src/trap-handler/trap-handler.h"
++#include "src/v8threads.h"
+ #include "src/wasm/memory-tracing.h"
+ #include "src/wasm/module-compiler.h"
+ #include "src/wasm/wasm-engine.h"
+@@ -771,8 +773,218 @@ void PrintIndentation(Isolate* isolate) {
+   }
+ }
+ 
++// void PrintIndentation(FILE* file, Isolate* isolate) {
++//   const int nmax = 80;
++//   int n = StackSize(isolate);
++//   if (n <= nmax) {
++//     PrintF(file, "%4d:%*s", n, n, "");
++//   } else {
++//     PrintF(file, "%4d:%*s", n, nmax, "...");
++//   }
++// }
++
++void PrintStackDea(Isolate* isolate, FILE* file) {
++  // constructor calls
++  DisallowHeapAllocation no_allocation;
++  JavaScriptFrameIterator it(isolate);
++  int i = 0;
++  while (!it.done()) {
++    if (it.frame()->is_java_script()) {
++      PrintF(file, "%4d: ", i++);
++      JavaScriptFrame* frame = it.frame();
++      if (frame->IsConstructor()) PrintF(file, "new ");
++      JSFunction function = frame->function();
++      int source_pos = function->shared()->StartPosition();
++      it.frame()->PrintFunctionAndOffset(function,
++                             function->abstract_code(), source_pos,
++                             file, true /* print_line_number */);
++      PrintF(file, "()\n");
++    }
++    it.Advance();
++  }
++}
++
++void PrintStmtWithStack(FILE* file, Isolate* isolate, Smi& stmt_offset) {
++  int n = StackSize(isolate);
++  PrintF(file, "%4d: ", n);
++  JavaScriptFrame::PrintFunOffset(isolate, file, stmt_offset->value());
++  PrintF(file, "\n");
++  PrintStackDea(isolate, file);
++  return;
++}
++
++class DeaBuffer {
++public:
++  static bool inUblock;
++
++  DeaBuffer(Isolate* isolate) {
++    constexpr size_t BUFFER_SIZE = 1000000;
++    buffer = (char*) malloc(sizeof(char) * BUFFER_SIZE);
++    bufferFile = fmemopen(buffer, BUFFER_SIZE, "w");
++  }
++
++  ~DeaBuffer() {
++    CloseFile(bufferFile);
++    // if (strstr(buffer, "cjpalhdlnbpafiamejdnhcphjbkeiagm") == nullptr) {
++      WriteToDeaFile();
++    // }
++    free(buffer);
++  }
++
++  FILE* GetBufferFile() {
++    return bufferFile;
++  }
++
++  void CheckUBlock() {
++    constexpr char uBlockSource[] =
++       "chrome-extension://cjpalhdlnbpafiamejdnhcphjbkeiagm/js/console.js";
++
++    if (DeaBuffer::inUblock) return;
++
++    fflush(bufferFile);
++    if (strstr(buffer, uBlockSource) != nullptr) {
++      DeaBuffer::inUblock = true;
++    }
++  }
++
++private:
++  void CloseFile(FILE* file) {
++    fflush(file);
++    if (file == stdout) return;
++    fclose(file);
++  }
++
++  void WriteToDeaFile() {
++    deaFile = GetDeaFile();
++    fprintf(deaFile, "%s", buffer);
++    CloseFile(deaFile);
++  }
++
++  FILE* GetDeaFile() {
++    if (FLAG_trace_dea_file == nullptr) {
++      return stdout;
++    } else {
++      std::ostringstream oss;
++      oss << FLAG_trace_dea_file;
++      oss << getpid();
++      oss << ".tr";
++      FILE* file = fopen(oss.str().c_str(), "a");
++      // LockFile(file);
++      return file;
++    }
++  }
++
++  void LockFile(FILE* file) {
++    int fd = fileno(file);
++    if (lockf(fd, F_LOCK, 0) == -1) {
++      fprintf(stderr, "File lock FAILED!\n");
++    }
++  }
++
++  FILE* deaFile = nullptr;
++  FILE* bufferFile = nullptr;
++  char* buffer = nullptr;
++};
++
++bool DeaBuffer::inUblock = false;
++
++
++Object traceStmtEvent(Isolate* isolate, Arguments& args, const char* eventName) {
++  SealHandleScope shs(isolate);
++  if (DeaBuffer::inUblock) return ReadOnlyRoots(isolate).undefined_value();
++  DCHECK_EQ(1, args.length());
++  CONVERT_ARG_CHECKED(Smi, stmt_offset, 0);
++  auto deaBuf = DeaBuffer(isolate);
++  FILE* file = deaBuf.GetBufferFile();
++  PrintF(file, "%s\n", eventName);
++  PrintStmtWithStack(file, isolate, stmt_offset);
++  PrintF(file, "=\n--\n");
++  return ReadOnlyRoots(isolate).undefined_value();
++}
++
++Object traceEnterEvent(Isolate* isolate, Arguments& args, const char* eventName) {
++  SealHandleScope shs(isolate);
++  if (DeaBuffer::inUblock) return ReadOnlyRoots(isolate).undefined_value();
++  DCHECK_EQ(0, args.length());
++  auto deaBuf = DeaBuffer(isolate);
++  FILE* file = deaBuf.GetBufferFile();
++  PrintF(file, "%s\n", eventName);
++  PrintStackDea(isolate, file);
++  PrintF(file, "=\n--\n");
++  deaBuf.CheckUBlock();
++  return ReadOnlyRoots(isolate).undefined_value();
++}
++
++Object traceReturnEvent(Isolate* isolate, Arguments& args,
++                        const char* eventName, bool printReturnVal=true) {
++  SealHandleScope shs(isolate);
++  DCHECK_EQ(1, args.length());
++  CONVERT_ARG_CHECKED(Object, obj, 0);
++  if (DeaBuffer::inUblock) return obj;
++  auto deaBuf = DeaBuffer(isolate);
++  FILE* file = deaBuf.GetBufferFile();
++  PrintF(file, "%s\n", eventName);
++  PrintStackDea(isolate, file);
++  if (printReturnVal) {
++    PrintF(file, "-> ");
++    obj->ShortPrint(file);
++    PrintF(file, "\n");
++  }
++  PrintF(file, "=\n--\n");
++  return obj;  // return TOS
++}
++
++Object traceYieldEvent(Isolate* isolate, Arguments& args,
++                         const char* eventName) {
++  SealHandleScope shs(isolate);
++  DCHECK_EQ(2, args.length());
++  CONVERT_ARG_CHECKED(Object, obj, 0);
++  CONVERT_ARG_CHECKED(Smi, stmt_offset, 1);
++  if (DeaBuffer::inUblock) return obj;
++  auto deaBuf = DeaBuffer(isolate);
++  FILE* file = deaBuf.GetBufferFile();
++  PrintF(file, "%s\n", eventName);
++  PrintStmtWithStack(file, isolate, stmt_offset);
++  PrintF(file, "-> ");
++  obj->ShortPrint(file);
++  PrintF(file, "\n=\n--\n");
++  return obj;  // return TOS
++}
++
+ }  // namespace
+ 
++RUNTIME_FUNCTION(Runtime_TraceDeaEnter) {
++  return traceEnterEvent(isolate, args, "FUNCTION ENTER");
++}
++
++RUNTIME_FUNCTION(Runtime_TraceDeaExit) {
++  return traceReturnEvent(isolate, args, "FUNCTION EXIT");
++}
++
++RUNTIME_FUNCTION(Runtime_TraceDeaGenEnter) {
++  return traceEnterEvent(isolate, args, "GENERATOR ENTER");
++}
++
++RUNTIME_FUNCTION(Runtime_TraceDeaGenSuspend) {
++  return traceReturnEvent(isolate, args, "GENERATOR SUSPEND", false);
++}
++
++RUNTIME_FUNCTION(Runtime_TraceDeaGenYield) {
++  return traceYieldEvent(isolate, args, "GENERATOR YIELD");
++}
++
++RUNTIME_FUNCTION(Runtime_TraceDeaIfStmtThen) {
++  return traceStmtEvent(isolate, args, "IF STMT - THEN");
++}
++
++RUNTIME_FUNCTION(Runtime_TraceDeaIfStmtElse) {
++  return traceStmtEvent(isolate, args, "IF STMT - ELSE");
++}
++
++RUNTIME_FUNCTION(Runtime_TraceDeaCall) {
++  return traceStmtEvent(isolate, args, "CALL");
++}
++
+ RUNTIME_FUNCTION(Runtime_TraceEnter) {
+   SealHandleScope shs(isolate);
+   DCHECK_EQ(0, args.length());
+@@ -782,7 +994,6 @@ RUNTIME_FUNCTION(Runtime_TraceEnter) {
+   return ReadOnlyRoots(isolate).undefined_value();
+ }
+ 
+-
+ RUNTIME_FUNCTION(Runtime_TraceExit) {
+   SealHandleScope shs(isolate);
+   DCHECK_EQ(1, args.length());
+diff --git a/src/runtime/runtime.h b/src/runtime/runtime.h
+index 39aee6b3af..7c0d80badc 100644
+--- a/src/runtime/runtime.h
++++ b/src/runtime/runtime.h
+@@ -512,6 +512,14 @@ namespace internal {
+   F(SystemBreak, 0, 1)                        \
+   F(TraceEnter, 0, 1)                         \
+   F(TraceExit, 1, 1)                          \
++  F(TraceDeaEnter, 0, 1)                      \
++  F(TraceDeaExit, 1, 1)                       \
++  F(TraceDeaCall, 1, 1)                       \
++  F(TraceDeaGenEnter, 0, 1)                   \
++  F(TraceDeaGenSuspend, 2, 1)                 \
++  F(TraceDeaGenYield, 1, 1)                   \
++  F(TraceDeaIfStmtThen, 1, 1)                 \
++  F(TraceDeaIfStmtElse, 1, 1)                 \
+   F(UnblockConcurrentRecompilation, 0, 1)     \
+   F(WasmGetNumberOfInstances, 1, 1)           \
+   F(WasmNumInterpretedCalls, 1, 1)            \

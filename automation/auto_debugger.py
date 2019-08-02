@@ -239,7 +239,7 @@ def analyze_traces(website, traces_dir, results_dir):
         err_file = escape_shell(f"{website_results_path}/analysis.err")
         cmd += f"> {out_file} "
         cmd += f"2> {err_file} "
-        cmd += "+RTS -M14G -RTS "
+        cmd += "+RTS -M26G -RTS "
 
         analysis = subprocess.Popen(cmd, shell=True)
         analysis.wait()
