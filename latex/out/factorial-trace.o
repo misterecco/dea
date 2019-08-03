@@ -1,0 +1,9 @@
+   1: ~(this=0x1bd8e6501521 <JSGlobal Object>) {
+   2:  ~factorial(this=0x1bd8e6501521 <JSGlobal Object>, 3) {
+   3:   ~factorial(this=0x1bd8e6501521 <JSGlobal Object>, 2) {
+   4:    ~factorial(this=0x1bd8e6501521 <JSGlobal Object>, 1) {
+   4:    } -> 1
+   3:   } -> 2
+   2:  } -> 6
+6
+   1: } -> 0x1bc7923804d1 <undefined>
