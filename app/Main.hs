@@ -52,6 +52,7 @@ runFile str f = do
                                 let eventList = event:acc
                                 putStrLn "=============================="
                                 putStrLn $ "Number of events: " ++ show (length eventList)
+                                hFlush stdout
                                 return $ untangleEvents (reverse eventList)
                             else parseUntilDone (event:acc) h $ parseEvent nextChunk
                     else parseUntilDone (event:acc) h $ parseEvent i

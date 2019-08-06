@@ -65,6 +65,7 @@ locParser = do
 
 parseLoc :: B.ByteString -> Maybe Loc
 parseLoc l = do
+    -- let l = traceShowId lll
     let (name, (_:rest)) = span (/= "at") (C.words l)
     let (path, (_:loc:_)) = span (/= "@@") rest
     (line, restLoc) <- C.readInt loc

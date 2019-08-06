@@ -1,6 +1,7 @@
 import argparse
 import logging
 import os
+import shutil
 import socket
 import subprocess
 import random
@@ -110,7 +111,7 @@ def get_random_port():
 
 
 def collect_trace(website, trace_file, profile_path):
-    os.system("killall -9 chromium")
+    os.system("killall -9 chrome")
     port = get_random_port()
     chrome = run_chrome(debug_port=port, trace_file=trace_file, profile_path=profile_path)
     webdriver = connect_to_chrome(debug_port=port)
@@ -207,6 +208,15 @@ def collect_traces(website, traces_dir):
     logging.info(f"[COLLECTION] FINISHED {website}")
 
 
+def remove_traces(website, traces_dir):
+    logging.info(f"[CLEANUP] Delete traces of {website}")
+
+    website_path = get_website_path(traces_dir, website)
+    logging.debug(f"[CLEANUP] Delete directory {website_path}")
+
+    shutil.rmtree(website_path, ignore_errors=True)
+
+
 def escape_shell(path):
     return path.replace(";", "\;").replace("(", "\(").replace(")", "\)") \
         .replace("<", "\<").replace(">", "\>").replace("&", "\&")
@@ -244,6 +254,10 @@ def analyze_traces(website, traces_dir, results_dir):
         analysis = subprocess.Popen(cmd, shell=True)
         analysis.wait()
         logging.info(f"[ANALYSIS] return code: {analysis.returncode}")
+
+        if analysis.returncode == 0:
+            remove_traces(website, traces_dir)
+
     except Exception as e:
         logging.error(e)
         return
@@ -259,11 +273,15 @@ if __name__ == "__main__":
     parser.add_argument('--log-file', help="Where to save the log", default=None)
     parser.add_argument('--verbose', '-v', help="Verbose logging",
                         default=False, action='store_true')
+    parser.add_argument('--skip-first', help="Number of websites to skip",
+                        default='0', type=int)
 
     action = parser.add_argument_group('Actions', "Actions that script should perform")
     action.add_argument('--collect', help="Trace collection",
                         default=False, action='store_true')
     action.add_argument('--analyze', help="Trace analysis",
+                        default=False, action='store_true')
+    action.add_argument('--remove-traces', help="Remove traces after analysis",
                         default=False, action='store_true')
 
     source = parser.add_mutually_exclusive_group()
@@ -287,20 +305,19 @@ if __name__ == "__main__":
     logging.basicConfig(**logger_config)
     logging.debug(args)
 
-    if args.collect:
-        if args.website is not None:
-            collect_traces(args.website, args.traces_dir)
+    website_list = [args.website] if args.website is not None else list(open(args.list_file))
 
-        if args.list_file:
-            for line in tqdm(list(open(args.list_file))):
-                website = line.strip()
-                collect_traces(website, args.traces_dir)
+    for line in tqdm(website_list[args.skip_first:]):
+        website = line.strip()
+        if args.analyze:
+            results_path = get_website_path(args.results_dir, website)
+            if os.path.exists(results_path):
+                logging.info(f"[COLLECTION][ANALYSIS] SKIP {website}")
+                continue
 
-    if args.analyze:
-        if args.website is not None:
-            analyze_traces(args.website, args.traces_dir, args.results_dir)
-
-        if args.list_file:
-            for line in tqdm(list(open(args.list_file))):
-                website = line.strip()
-                analyze_traces(website, args.traces_dir, args.results_dir)
+        if args.collect:
+            collect_traces(website, args.traces_dir)
+        if args.analyze:
+            analyze_traces(website, args.traces_dir, args.results_dir)
+        if args.remove_traces:
+            remove_traces(website, args.traces_dir)
