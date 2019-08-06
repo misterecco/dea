@@ -57,7 +57,7 @@
 % ew. Wydział ew. Uczelnia (jeżeli nie MIM UW))
 \opiekun{dr Konrad Durnoga\\
  Institute of Informatics
-  }
+}
 
 % miesiąc i~rok:
 \date{August 2019}
@@ -87,6 +87,7 @@
 
 \usepackage{cite}
 \usepackage{url}
+\usepackage{csquotes}
 
 \usepackage{hyperref}
 \hypersetup{
@@ -110,6 +111,14 @@
   comment=[l]{//},
   morecomment=[s]{/*}{*/},
   morestring=[b]',
+  morestring=[b]"
+}
+\lstdefinelanguage{Pseudocode}{
+  keywords={def, for, while, in, if, else, return, case, of},
+  ndkeywords={},
+  sensitive=false,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
   morestring=[b]"
 }
 \lstdefinestyle{mystyle}{

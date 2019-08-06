@@ -18,6 +18,6 @@ const o = {
     }
 };
 
-instrument(o, console.log)
+instrument(o, console.log);
 
 o.f("hello");

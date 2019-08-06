@@ -2,23 +2,23 @@
 Parameter count 2
 Register count 3
 Frame size 24
-   18 E> 0x162d4f41eafa @    0 : a5                StackCheck
-   79 S> 0x162d4f41eafb @    1 : 0c 01             LdaSmi [1]
-   88 E> 0x162d4f41eafd @    3 : 6b 02 00          TestLessThanOrEqual a0, [0]
-         0x162d4f41eb00 @    6 : 99 06             JumpIfFalse [6] (0x162d4f41eb06 @ 12)
-         0x162d4f41eb02 @    8 : 0c 01             LdaSmi [1]
-         0x162d4f41eb04 @   10 : 8b 15             Jump [21] (0x162d4f41eb19 @ 31)
-   99 E> 0x162d4f41eb06 @   12 : 13 00 02          LdaGlobal [0], [2]
-         0x162d4f41eb09 @   15 : 26 fa             Star r1
-         0x162d4f41eb0b @   17 : 25 02             Ldar a0
-  115 E> 0x162d4f41eb0d @   19 : 41 01 04          SubSmi [1], [4]
-         0x162d4f41eb10 @   22 : 26 f9             Star r2
-  103 E> 0x162d4f41eb12 @   24 : 5d fa f9 05       CallUndefinedReceiver1 r1, r2, [5]
-  101 E> 0x162d4f41eb16 @   28 : 36 02 01          Mul a0, [1]
-  120 S> 0x162d4f41eb19 @   31 : a9                Return
+   18 E> 0x167d37c1eb2a @    0 : a5                StackCheck
+   28 S> 0x167d37c1eb2b @    1 : 0c 01             LdaSmi [1]
+   37 E> 0x167d37c1eb2d @    3 : 6b 02 00          TestLessThanOrEqual a0, [0]
+         0x167d37c1eb30 @    6 : 99 06             JumpIfFalse [6] (0x167d37c1eb36 @ 12)
+         0x167d37c1eb32 @    8 : 0c 01             LdaSmi [1]
+         0x167d37c1eb34 @   10 : 8b 15             Jump [21] (0x167d37c1eb49 @ 31)
+   48 E> 0x167d37c1eb36 @   12 : 13 00 02          LdaGlobal [0], [2]
+         0x167d37c1eb39 @   15 : 26 fa             Star r1
+         0x167d37c1eb3b @   17 : 25 02             Ldar a0
+   64 E> 0x167d37c1eb3d @   19 : 41 01 04          SubSmi [1], [4]
+         0x167d37c1eb40 @   22 : 26 f9             Star r2
+   52 E> 0x167d37c1eb42 @   24 : 5d fa f9 05       CallUndefinedReceiver1 r1, r2, [5]
+   50 E> 0x167d37c1eb46 @   28 : 36 02 01          Mul a0, [1]
+   69 S> 0x167d37c1eb49 @   31 : a9                Return
 Constant pool (size = 1)
-0x162d4f41eaa9: [FixedArray] in OldSpace
- - map: 0x3f9cc96807b1 <Map>
+0x167d37c1ead9: [FixedArray] in OldSpace
+ - map: 0x0a0b39f807b1 <Map>
  - length: 1
-           0: 0x162d4f41e741 <String[#9]: factorial>
+           0: 0x167d37c1e741 <String[#9]: factorial>
 Handler Table (size = 0)
