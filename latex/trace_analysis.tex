@@ -14,56 +14,73 @@ Last but not least, automatically derived instances
 object-oriented languages, e.g. class \emph{Ord} defines objects that can be compared}
 help avoid writing tedious code and focus on implementing non-trivial parts.
 
-All that being said, Haskell is a bit like C++ -- inexperienced used can easily make grave mistakes
+All that being said, Haskell is a bit like C++ -- inexperienced user can easily make mistakes
 that render the code slow and memory-greedy.
 
 The logging format was described in section \ref{v8-bytecode-injection}.
-Each entry consist of event type, and several location. Each location comprises
+Each entry consist of event type, and several locations. Each location comprises
 function name, source file and position in the file.
 
 At first, internal format for the event was exactly the same. One object consisted of
 two strings and two numbers (it could be one number, but this way line and column info
 logging can be turned on any time).
 
-The first Haskell-based mistake was to use \emph{String} types to represent function and file
+The first mistake, specific to Haskell, was to use \emph{String} type to represent function and file
 names. The use of default \emph{String} to represent textual data makes the code inefficient 
 because it is a linked lists of \emph{Char}s, i.e. to store one character 9 bytes of memory are used.
 It is so wrong and inefficient to use this type that it is not worth trying to profile such implementation.
 
-That error was fixed by changing the representation to \emph{ByteString} from \emph{bytesting} 
-package \cite{haskell:bytestring}, which 
-is a class of immutable byte arrays (perfect for ASCII-based texts). 
-This change was accompanied by rewrite of the parsing code to \emph{attoparsec} \cite{haskell:attoparsec}.
+That error was fixed by changing the representation to \emph{ByteString} type from \emph{bytesting} 
+package \cite{haskell:bytestring}. \emph{ByteString}s are represented internally as real byte arrays,
+not linked lists. 
+This change was accompanied by rewrite of the parsing code to \emph{attoparsec} \cite{haskell:attoparsec},
+which can operate of \emph{ByteString}s as an input.
 
 The code was now much less memory-consuming and faster, but it still seemed to consume too much memory.
-Profiling proved that suspicions were warranted.
+Profiling proved that suspicions were warranted. The profiling diagram is shown on figure \ref{fig:bytestring-lazy}. 
+All profiling diagrams in this section were collected by running the analyzing program on the same set of 6 input files.
+First three occupy 48MB each, the last three 4MB each.
+All files combined occupy around 150MB, while peak memory usage of the program is above 900MB.
 
-\todo{Insert profiling graph}
+\begin{figure}[hbt!]
+ \centering
+ \includegraphics[width=\textwidth]{png/bytestring-lazy}
+ \caption{Memory usage of the first implementation using ByteStrings as internal strings representation}
+ \label{fig:bytestring-lazy}
+\end{figure}
 
-Pinned memory seemed to be never freed during the execution. Also, traces seemed to reside in memory
-for too long and occupy too much space. 
+Looking at the diagram, pinned memory seemed to be never freed during the execution. 
+Also, traces seemed to reside in memory for too long and occupy too much space. 
 
-First problem was a reflection of how Haskell keeps \emph{ByteString}s.
+The first problem was a reflection of how Haskell keeps \emph{ByteString}s.
 They are stored in pinned memory, which is kept on a heap but 
-not managed by garbage collector \cite{haskell:shortbytestring-and-text}. 
+not managed by garbage collector \cite{haskell:shortbytestring-and-text} and cannot be moved around.
 As a result, it leads to fragmentation of the heap and cannot be effectively managed.
-The fix turned out to be simple. The is more suitable storage format -- \emph{ShortByteString} 
+The fix turned out to be simple. There is a more suitable storage format -- \emph{ShortByteString} 
 (also part of the \emph{bytestring} package). It is managed
-by GC and kept just usual heap object, so the memory can be better managed.
-\footnote{So why even use \emph{ByteString}? Because it stored in pinned memory, it can be passed to foreign functions.
-Also, it is more efficient when the strings are really long}
+by GC and stored just like usual heap object, which can be moved around and easily garbage collected.
+\footnote{So why even use \emph{ByteString}? Because it is stored in pinned memory, it can be passed to foreign functions.
+Also, it is more efficient when the strings are really long and have long livespan}
 
-The second problem was harder to track down. This time the reason was the laziness.
-Laziness can improve the perfomance when some objects are never used and the language never completes
-computing them. However, when we know that all objects will eventually be used, it is more efficient
+The second problem was harder to track down. This time the cause was the laziness.
+Laziness can improve the perfomance when some objects are never used and the language never needs to fully compute them. 
+However, when we know that all objects will eventually be used, it is more efficient
 to calculate them as soon as possible. The enforcement of eager evaluation seems to be an obscure
 feature, but when we know what is going on, it is fine.
-The improvement was visible, but it was not the end.
+The improvement was visible (figure \ref{fig:shortbytestring-strict}) but it was not the end, 
+as peak usage of almost 240MB is still greater than 150MB.
 
-\todo{Profiling graph}
+\begin{figure}[hbt!]
+ \centering
+ \includegraphics[width=\textwidth]{png/shortbytestring-strict}
+ \caption{Memory usage after switching to ShortByteString and forcing eager evaluation}
+ \label{fig:shortbytestring-strict}
+\end{figure}
 
-It seems suspicious that the entire file has to be kept in memory to be parsed. After all, if it was written in C++,
-probably one line at a time would be read and processed. So why this parser consumes so much memory?
+It seems suspicious that the entire file has to be kept in memory to be parsed 
+(pinned memory on figure \ref{fig:shortbytestring-strict} represents input files read into memory). 
+After all, if it was written in C++, probably one line at a time would be read and processed. 
+So why this parser consumes so much memory?
 
 This is what \emph{attoparsec} states about incremental input:
 
@@ -76,10 +93,18 @@ if you feed incremental input to a parser, it will require memory proportional t
 
 So, our parser keeps the whole file contents in memory to be able to backtrack. But it is not necessary with
 such a simple format. Fortunately, it is possible to improve this behaviour.
-Currently, the parser tries to parse the entire file into list of events. To be sure that it can backtrack,
+Currently, the parser tries to parse the entire file into a list of events. To be sure that it can backtrack,
 it keeps the whole input in memory. Instead, we can ask the parser to parse only one event. 
 It will do it and return the part of the input that was not parsed yet. We can repeat that in a loop
-and parser will never keep more memory that just a few kilobytes.
+and parser will never keep more memory that just a few kilobytes. 
+Figure \ref{fig:single-event} shows the improvement.
+
+\begin{figure}[hbt!]
+ \centering
+ \includegraphics[width=\textwidth]{png/single-event}
+ \caption{Memory usage after preventing parser from keeping the entire input file in the memory}
+ \label{fig:single-event}
+\end{figure}
 
 Last, but not least, the internal representation of the event can be greatly improved.
 Locations consist of file names and function names. But both sets are limited!
@@ -89,9 +114,15 @@ Just 4 numbers instead of 2 strings and 2 numbers!
 
 This representation also has another major benefit -- comparisons of such objects are much fasters.
 
-The final memory consumption is presented in figure
+The final memory consumption is presented in figure \ref{fig:strings-map}
 
-\todo{Profiling graph}
+\begin{figure}[hbt!]
+ \centering
+ \includegraphics[width=\textwidth]{png/strings-map}
+ \caption{Final memory usage}
+ \label{fig:strings-map}
+\end{figure}
+
 
 \section{Trace untangling}
 Due to the nature of JavaScript execution model (see section \ref{js-exec-model}), execution events
@@ -101,18 +132,18 @@ For this reason, all events forming a trace have to be untangled into subtraces,
 to one script or callback. 
 
 Let us recall that all events are logged by our instumented Chromium with their call stacks.
-Now, we have two cases:
+Now, we have three cases:
 \begin{itemize}
-  \item The event is a function entry with an empty call stack -- it starts a new subtrace
+  \item The event is a function enter with an empty call stack -- it starts a new subtrace
   \item The event is a function exit removing the last item from the stack -- it ends a subtrace
   \item Any other event -- it is a continuation of a subtrace, whose last event has the same call stack
 \end{itemize}
 
 Naturally, some care has to be taken to ensure that the right stack is compared. Some events change the
 call stack, e.g. function enter and exit, some do not, e.g. "if statement -- then".
-Here, the stack \emph{after} the event is always saved and it is appopriately modified 
+Here, the stack \emph{after} the event occured is saved and it is appopriately modified 
 (one location can be added, removed or nothing is changed) when comparing
-with past events' stacks.
+with past events stacks.
 
 Listing \ref{alg-untangling} presents the pseudocode of the algorithm.
 
@@ -126,8 +157,8 @@ To make it faster, two things were done:
            one or two orders of magnitude faster
   \item Open traces are kept in a map indexed by stack of the last event. 
   			The lookup becomes logarithmic instead of linear. This optimization is especially important when there are lots
-  			of intertwined subtraces. It also must be noted that this optimization alone wouldn't help much if the comparisons 
-  			between stack were slow
+  			of intertwined subtraces. It also must be noted that this optimization alone would not help much if the comparisons 
+  			between stacks were slow
 \end{itemize} 
 
 \section{Trace alignment}
