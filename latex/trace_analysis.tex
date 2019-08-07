@@ -145,9 +145,9 @@ Here, the stack \emph{after} the event occured is saved and it is appopriately m
 (one location can be added, removed or nothing is changed) when comparing
 with past events stacks.
 
-Listing \ref{alg-untangling} presents the pseudocode of the algorithm.
+Listing \ref{alg:untangling} presents the pseudocode of the algorithm.
 
-\lstinputlisting[language=Pseudocode, caption=Trace untangling, label=alg-untangling, mathescape=true]{algorithms/untangling.alg}
+\lstinputlisting[language=Pseudocode, caption=Pseudocode of the trace untangling algorithm, label=alg:untangling, mathescape=true]{algorithms/untangling.alg}
 
 The above code is rather uncomplicated, but it is slow when implemented naively.
 The most wasteful part is finding the trace with the right stack in \emph{findMatchingSubtrace}.
@@ -161,12 +161,50 @@ To make it faster, two things were done:
   			between stacks were slow
 \end{itemize} 
 
+
 \section{Trace alignment}
 \label{trace-alignment}
 
-\cite{ieee:alignment-and-slicing}
+Trace alignment is a technique of identyfing execution differences of two runs of the same program.
+To be able to align two traces, events in both have to be assigned execution indices.
+In our the execution index is the event type, its location and stack at the time of its occurence.
+In this thesis execution event is often used interchangeably execution event as everything that is
+logged when an event occurs is the index.
+
+The algorithm used in this implementation is based on an article by Johnson et al. \cite{ieee:alignment-and-slicing}
+The result of trace alignment is an execution trace diff. It is a list of events of three kinds:
+\begin{itemize}
+  \item Common -- an event that occured in both traces
+  \item Left -- an event that occured only in the left trace
+  \item Right -- an event that occured only in the right trace
+\end{itemize}
+
+Each diff event includes the assiciated execution event.
+Listing \ref{alg:alignment} present the pseudocode of the algorithm.
+
+\lstinputlisting[language=Pseudocode, caption=Pseudocode of the trace alignment algorithm, 
+                       label=alg:alignment, mathescape=true]{algorithms/alignment.alg}
+                       
+The algorithm output includes a score, which is a number of common events.
+This concept was not present in the original article and its purpose 
+will be explained in section \ref{trace-matching}.
+
+The algorithm is rather simple. We assume that matching traces have to start with the same
+event. If they do not (lines 5-6), we just terminate and return score of -1, 
+which signifies that traces do not match.
+
+Apart from the case when one of the traces ends, there are only two cases:
+\begin{itemize}
+  \item Both unprocessed traces start with the same event (that includes stacks equality), line 20 -- in that case
+  			we add an event of type Common and remove one event from both lists
+  \item The top events do not match (lines 25 and 28) -- in that case the event with longer stack is removed first.
+           The reason is if we repeat that long enough, eventually the that stack will shrink and the traces will reconverge.
+           
+           \todo{Explain better why larger stack has to be processed first}
+\end{itemize}
 
 \section{Trace matching using SMP}
+\label{trace-matching}
 
 \section{Noise filtering}
 
