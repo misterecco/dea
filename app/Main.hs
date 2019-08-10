@@ -53,7 +53,7 @@ runFile str f = do
                                 putStrLn "=============================="
                                 putStrLn $ "Number of events: " ++ show (length eventList)
                                 hFlush stdout
-                                return $ untangleEvents (reverse eventList)
+                                return $ untangleEvents str (reverse eventList)
                             else parseUntilDone (event:acc) h $ parseEvent nextChunk
                     else parseUntilDone (event:acc) h $ parseEvent i
             Partial (cont) -> do

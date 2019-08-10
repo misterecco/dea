@@ -72,13 +72,29 @@ printLoc mRef (LL fn fp ln cl) = do
     putStrLn $ show (idToSt M.! fn) ++ " at " ++ show (idToSt M.! fp) ++ " @@ "
        ++ show ln ++ "," ++ show cl
 
+printStack :: IORef StringsMap -> LeanStack -> IO ()
+printStack mRef st = do
+    putStrLn "---------------------"
+    mapM_ (printLoc mRef) st
+    putStrLn "---------------------"
+
 printCodeEvent :: IORef StringsMap -> LeanCodeEvent -> IO ()
 printCodeEvent mRef (LCE et loc _) = do
     putStrLn $ "Event: " ++ show et
     printLoc mRef loc
 
+printCodeEventWithStack :: IORef StringsMap -> LeanCodeEvent -> IO ()
+printCodeEventWithStack mRef (LCE et loc st) = do
+    putStrLn $ "Event: " ++ show et
+    printLoc mRef loc
+    putStrLn "------"
+    printStack mRef st
+
 printCallTrace :: IORef StringsMap -> LeanCallTrace -> IO ()
-printCallTrace mRef = mapM_ $ printCodeEvent mRef
+printCallTrace mRef tr = do
+    putStrLn "---------------------"
+    mapM_ (printCodeEvent mRef) tr
+    putStrLn "---------------------"
 
 
 toLeanLoc :: IORef StringsMap -> Loc -> IO LeanLoc

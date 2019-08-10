@@ -2,16 +2,18 @@
 
 module Untangling where
 
-import Data.List ( find, delete )
+import Data.IORef
+import Data.List ( find, delete, tails )
 import qualified Data.Map.Strict as M
 import Debug.Trace
+import System.IO.Unsafe
 
 import Parser
 import Lean
 
 
-untangleEvents :: [LeanCodeEvent] -> [LeanCallTrace]
-untangleEvents events = untangle [] M.empty events (length events)
+untangleEvents :: IORef StringsMap -> [LeanCodeEvent] -> [LeanCallTrace]
+untangleEvents mRef events = untangle [] M.empty events (length events)
     where
         untangle results openTraces (event:events) left = do
             let (LCE _ _ st) = event
@@ -26,7 +28,15 @@ untangleEvents events = untangle [] M.empty events (length events)
                         (LCE FunctionExit _ []) -> untangle ((reverse newTrace):results) newOpenTraces events (left-1)
                         _ -> untangle results (M.insert st newTrace newOpenTraces) events (left-1)
                 Nothing -> do
-                    let newOpenTraces = trace ("Didn't find proper predecessor for: " ++ show ev) openTraces
+                    let newOpenTraces = unsafePerformIO $ do
+                            putStrLn "|||||||||||||||||||"
+                            putStrLn "Didn't find proper predecessor for: "
+                            printCodeEventWithStack mRef ev
+                            putStrLn "//////////////////"
+                            mapM_ (printStack mRef) (M.keys openTraces)
+                            putStrLn "|||||||||||||||||||"
+                            return ot
+                    -- fail $ "Improper trace" ++ show ev
                     untangle results newOpenTraces events (left-1)
         -- should not happen in complete trace
         untangle results openTraces [] _ = reverse ((M.elems openTraces) ++ results)
@@ -40,5 +50,7 @@ untangleEvents events = untangle [] M.empty events (length events)
             (LCE IfStmtThen _ st) -> findMatchingOpenEvent st openTraces
             (LCE IfStmtElse _ st) -> findMatchingOpenEvent st openTraces
         findMatchingOpenEvent st openTraces = case openTraces M.!? st of
-            Nothing -> Nothing
+            Nothing -> case find (\s -> st `elem` (tails s)) (M.keys openTraces) of
+                Nothing -> Nothing
+                Just s -> Just (openTraces M.! s, M.delete s openTraces)
             Just tr -> Just (tr, M.delete st openTraces)
