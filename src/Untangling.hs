@@ -26,20 +26,20 @@ untangleEvents mRef events = untangle [] M.empty events (length events)
                     let newTrace = ev:matchingTrace
                     case ev of
                         (LCE FunctionExit _ []) -> untangle ((reverse newTrace):results) newOpenTraces events (left-1)
-                        _ -> untangle results (M.insert st newTrace newOpenTraces) events (left-1)
+                        _ -> untangle results (M.insertWith (++) st [newTrace] newOpenTraces) events (left-1)
                 Nothing -> do
-                    let newOpenTraces = unsafePerformIO $ do
-                            putStrLn "|||||||||||||||||||"
-                            putStrLn "Didn't find proper predecessor for: "
-                            printCodeEventWithStack mRef ev
-                            putStrLn "//////////////////"
-                            mapM_ (printStack mRef) (M.keys openTraces)
-                            putStrLn "|||||||||||||||||||"
-                            return ot
-                    -- fail $ "Improper trace" ++ show ev
+                    -- let newOpenTraces = unsafePerformIO $ do
+                    --         putStrLn "|||||||||||||||||||"
+                    --         putStrLn "Didn't find proper predecessor for: "
+                    --         printCodeEventWithStack mRef ev
+                    --         putStrLn "//////////////////"
+                    --         mapM_ (printStack mRef) (M.keys openTraces)
+                    --         putStrLn "|||||||||||||||||||"
+                    --         return $ M.insertWith (++) st [[ev]] ot
+                    let newOpenTraces = M.insertWith (++) st [[ev]] ot
                     untangle results newOpenTraces events (left-1)
         -- should not happen in complete trace
-        untangle results openTraces [] _ = reverse ((M.elems openTraces) ++ results)
+        untangle results openTraces [] _ = reverse (((concat . M.elems) openTraces) ++ results)
         findMatchingTrace openTraces event = case event of
             (LCE FunctionEnter _ [_]) -> Just ([], openTraces)
             (LCE FunctionEnter _ st) -> findMatchingOpenEvent (tail st) openTraces
@@ -52,5 +52,8 @@ untangleEvents mRef events = untangle [] M.empty events (length events)
         findMatchingOpenEvent st openTraces = case openTraces M.!? st of
             Nothing -> case find (\s -> st `elem` (tails s)) (M.keys openTraces) of
                 Nothing -> Nothing
-                Just s -> Just (openTraces M.! s, M.delete s openTraces)
-            Just tr -> Just (tr, M.delete st openTraces)
+                Just s -> case openTraces M.! s of
+                    [tr] -> Just (tr, M.delete s openTraces)
+                    (tr:_) -> Just (tr, M.adjust tail st openTraces)
+            Just [tr] -> Just (tr, M.delete st openTraces)
+            Just (tr:_) -> Just (tr, M.adjust tail st openTraces)

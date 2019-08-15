@@ -78,6 +78,8 @@ def run_chrome(trace_file=None, profile_path=None, debug_port=None):
 
     logging.debug(cmd)
 
+    os.remove(f"{profile_path}/Default/Cookies")
+
     return subprocess.Popen(cmd, shell=True)
 
 
@@ -256,6 +258,7 @@ def analyze_traces(website, traces_dir, results_dir):
         logging.info(f"[ANALYSIS] return code: {analysis.returncode}")
 
         if analysis.returncode == 0:
+            pass
             remove_traces(website, traces_dir)
 
     except Exception as e:

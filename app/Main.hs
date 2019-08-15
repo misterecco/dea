@@ -108,11 +108,13 @@ diffTraces str tracesA tracesB = do
     putStrLn "=============== Aligned - filtered ==============="
     putStrLn $ "Number of all matched traces: " ++ show (length matched)
     putStrLn $ "Number of diffing traces: " ++ show (length interestingMatched)
+    putStrLn $ "Number of unmatched left traces: " ++ show (length unmatchedLeft)
+    putStrLn $ "Number of unmatched right traces: " ++ show (length unmatchedRight)
     mapM_ (printTraceDiff str) interestingMatched
-    -- putStrLn "=============== Unmatched left ==============="
-    -- mapM_ (putStrLn . show) (formatTraces unmatchedLeft)
-    -- putStrLn "=============== Unmatched right ==============="
-    -- mapM_ (putStrLn . show) (formatTraces unmatchedRight)
+    putStrLn "=============== Unmatched left ==============="
+    mapM_ (printCallTrace str) unmatchedLeft
+    putStrLn "=============== Unmatched right ==============="
+    mapM_ (printCallTrace str) unmatchedRight
     putStrLn "========================================"
 
 
