@@ -1,0 +1,35 @@
+FUNCTION ENTER
+   0: ~ at map.js @@ 0,-1 ()
+=
+--
+FUNCTION ENTER
+   0: ~multiplyByTwo at map.js @@ 22,-1 ()
+   1: ~map at <unknown> @@ -1,-1 ()
+   2: ~ at map.js @@ 0,-1 ()
+=
+--
+FUNCTION EXIT
+   0: ~multiplyByTwo at map.js @@ 22,-1 ()
+   1: ~map at <unknown> @@ -1,-1 ()
+   2: ~ at map.js @@ 0,-1 ()
+-> 0
+=
+--
+FUNCTION ENTER
+   0: ~multiplyByTwo at map.js @@ 22,-1 ()
+   1: ~map at <unknown> @@ -1,-1 ()
+   2: ~ at map.js @@ 0,-1 ()
+=
+--
+FUNCTION EXIT
+   0: ~multiplyByTwo at map.js @@ 22,-1 ()
+   1: ~map at <unknown> @@ -1,-1 ()
+   2: ~ at map.js @@ 0,-1 ()
+-> 2
+=
+--
+FUNCTION EXIT
+   0: ~ at map.js @@ 0,-1 ()
+-> 0x16b85a5004d1 <undefined>
+=
+--

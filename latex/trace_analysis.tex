@@ -161,6 +161,14 @@ To make it faster, two things were done:
   			between stacks were slow
 \end{itemize} 
 
+One last caveat -- it is possible to enter a function in JavaScript and never return.
+When an exception is thrown and there is no catch block in a function, the error will
+be propagated higher and control can possibly leave multiple functions without any of them returning any value.
+Those throw events will not be logged, therefore this situation has to be taken care of
+in the analyzing program. The solution is the following: when there is no open subtrace with a matching stack,
+the program will check if some stack will match with any number of elements removed from the top.
+If yes, then we assume that it is due to the try-catch block.
+
 
 \section{Trace alignment}
 \label{trace-alignment}
@@ -197,15 +205,143 @@ Apart from the case when one of the traces ends, there are only two cases:
 \begin{itemize}
   \item Both unprocessed traces start with the same event (that includes stacks equality), line 20 -- in that case
   			we add an event of type Common and remove one event from both lists
-  \item The top events do not match (lines 25 and 28) -- in that case the event with longer stack is removed first.
-           The reason is if we repeat that long enough, eventually the that stack will shrink and the traces will reconverge.
-           
-           \todo{Explain better why larger stack has to be processed first}
+  \item The top events do not match (lines 25 and 28) -- in that case the event with larger stack is removed first.
+           The reasoning is the following. The bottom of the larger stack is the same as the shorter stack.
+           If we first process the shorter stack and if it shrinks, we lose some common events later.
+           It we process the larger stack first, the shorter one is "frozen". The larger stack may grow, but it doesn't matter
+           since it is already divergent. When it shrinks to the size of the shorter stack, it will be a reconvergence point.
 \end{itemize}
 
-\section{Trace matching using SMP}
+
+\section{Trace matching using Stable Marriage Problem}
 \label{trace-matching}
 
+We already know how to align two traces (section \ref{trace-alignment}), but we have not
+answered a different question -- which pair of subtraces should we align?
+
+This thesis presents a novel approach, which uses Stable Marriage Problem to answer this question.
+First, we should define what SMP is and later explain how it is adapted to our needs.
+
+The original statement of the problem is the following \cite{wiki:smp}: 
+given equallly sized sets of men and women and their matrimonial preferences,
+find a stable matching, i.e. matching in which there exists no pair of man and woman 
+in which they both would have better partner than the currently assigned one.
+
+The problem can be solved using Gale-Shapley algorithm. Listing \ref{alg:gale-shapley} presents its pseudocode.
+
+\lstinputlisting[language=Pseudocode, caption=Pseudocode of the Gale-Shapley (deferred acceptance) algorithm, 
+                       label=alg:gale-shapley, mathescape=true]{algorithms/gale-shapley.alg}
+
+This is how SMP is used to solve subtrace matching problem:
+\begin{itemize}
+  \item In the first phase all pair of subtraces are aligned and similarity score (number of common events) 
+  		    is calculated -- the score is the marital preference
+  \item In the second phase, adapted Gale-Shapley algorithm is run and only matched subtraces
+           are used. Their diff is simply retrived from a special map as it was calculated already in the first phase.
+\end{itemize}
+
+All men have a list of women sorted by their preferences (from highest to lowest).
+At the beginning everyone is free. Then, in each round each free man m proposes to first woman w he has not yet proposed to.
+Woman can reply "maybe" if she is free or is engaged to m' and prefers m over m'. Otherwise she rejects.
+So women only "trade up" and men propose whenever they are free to the best possible partner.
+In the end everybody is engaged and the marriages are stable.
+
+Time complexity of this algorithm is $O(n^2)$, where $n$ is the number of men or women.
+There is at most $n$ rounds (some man proposes to every woman) and in each round
+there are at most $n$ proposals made.
+
+In the original problem statement the number of woman is equal to the number of men
+and everybody gets engaged in the end.
+In our case the number of men and women does not have to the same. We assume that
+the more numerous group has the role of women. 
+We allow some pairs of men and women to not match to each other (preference score equal to -1),
+therefore in the end some people may not be engaged.
+
+Let us see what happens with these two changes and the same procedure as in the original version:
+\begin{itemize}
+  \item The men should still propose in the order from highest preference to the lowest. 
+  			All man will still get the best possible match this way, 
+  			because all women that rejected must have had some better options.
+  \item The women should accept anybody when they do not have any tentative match and
+           only trade up later. If there is a man that a woman prefers over a current match and he did not
+           propose, he must have had someone who he preferred more and who accepted.
+\end{itemize}
+
+Consequently, the algoritm is almost the same. The only exception is that men do not propose to women with score -1.
+Also, the result is different -- in the end there usually will be many people without a pair. 
+However, those who have a pair will form a stable marriage.
+
+Such usage of Stable Matching Algorithm allows us to form the best pairs of subtraces to align.
+There is no point in aligning the traces that do not have the same initial event (the aligning algoritm has to
+start from an anchor point), so we skip those pairs with assigning score -1. Further, the best pairs are
+selected by the number of common event. If two traces A and B are exactly the same, the only possibility that they will
+not be matched is when there is one longer trace C that contain entire A and B. But, it there is also a longer trace D
+that contains entire A and B, it is very likely that the extra part will be matched with extra part of C and,
+is consequence, C and D will be matched. If there is no such trace D and C is matched is either A or B, it is still
+fine, as we have more calls to some function in one group and we cannot be sure which subtraces truly
+correspond to each other.
+
+
+\section{Artificial examples}
+
+This section presents the algorithm work on some simple, hand-crafted examples run in standalone V8.
+
+First example is based on our already-familiar example of \emph{factorial} (listing \ref{js-factorial}).
+
+First, we will call the function with $n=3$, then with $n=4$ and compare the traces.
+This demonstrates how "if-then-else" divergences are detected.
+Listing \ref{diff:factorial} shows the output of the program.
+
+We see that after 3 \emph{factorial} calls the traces diverge and one of them takes the "else"
+path and makes one more recursive call (lines 19-30). The other taken the "then" path (lines 31-33).
+After than one extra recursive call both traces immediately reconverge (line 34).
+
+\lstinputlisting[language=TraceDiff, caption={Trace diff of \emph{factorial} run with n=3 and n=4},  label=diff:factorial]{out/factorial.diff}
+
+The next example demonstrates that sometimes it is possible to find a divergence even when
+built-in functions are involved. Listing \ref{js:map} is a short example involving \emph{Array.prototype.map}.
+In the first run it was called with an array of length 3, in the second the array had one less item.
+Listing \ref{diff:map} shows the diff. We can see that in one run \emph{multiplyByTwo} is entered 2 times and in the
+other 3 times. Naturally, if the arrays were of the same length, but with different content, this difference would not
+be caught this way.
+
+\lstinputlisting[language=JavaScript, caption=Simple JavaScript example of \emph{Array.prototype.map} usage, label=js:map]{js/map.js}
+
+\lstinputlisting[language=TraceDiff, caption={Trace diff of \emph{Array.prototype.map} run with array of length 3 and 2},  
+						label=diff:map]{out/map.diff}
+						
+The last example example demonstrates generator-related events in action.
+Listing \ref{js:generators} shows an example of factorial rewritten to use generators. It was run two times, with $n=2$ and $n=3$.
+Listing \ref{diff:generators} shows the resulting diff. We can see that when the generator is created, "Function Enter" event
+is emitted, followed by "Generator Suspend" (lines 7-12). Events "Generator Enter" and "Generator Yield" are used 
+only when \emph{Generator.prototype.next} is called. Last, but not least, "Generator Yield" is always followed by "Generator Suspend".
+
+\lstinputlisting[language=JavaScript, caption=Example of JavaScript code using generators, label=js:generators]{js/generators.js}
+
+\lstinputlisting[language=TraceDiff, caption={Trace diff of generator-using \emph{factorial} run with n=2 and n=3},  
+						label=diff:generators]{out/generators.diff}
+
 \section{Noise filtering}
+
+One of the biggest challenges in the entire method is filtering the noise.
+The noise on the website comes in many different flavours:
+\begin{itemize}
+  \item Some content can based on Random Number Generators.
+  \item Content may be dynamic and different with each refresh of the page, e.g. Facebook feed.
+  \item Code that is not related to the website, e.g. trackers, analytics
+\end{itemize}
+
+The difficult part is to filter out as much data as possible without removing valuable information.
+
+In the original article authors collected redundant traces, diffed together all positive traces (and then also negative traces)
+and generated a blacklist of execution differences that are guaranteed to be noise.
+
+Here the approach is different. The positive traces are all put together and the common subtraces are extracted.
+The same thing is done with the negative traces. 
+At the end the whole SMP and alignment analysis (see sections \ref{trace-alignment} and \ref{trace-matching}) 
+is run only on those common subtraces.
+
+The effectiveness and limitations of this approach will be discussed in the chapter \ref{evaluation}.
+
 
 

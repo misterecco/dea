@@ -1,0 +1,16 @@
+Event: FunctionEnter
+"~" at "https://s.fotoblogia.pl/assets/js/frontend.js?v=175" @@ 94652,-1
+Event: FunctionEnter
+"~l" at "https://s.fotoblogia.pl/assets/js/frontend.js?v=175" @@ 51169,-1
+Event: FunctionExit
+"~l" at "https://s.fotoblogia.pl/assets/js/frontend.js?v=175" @@ 51169,-1
+Event: FunctionEnter
+"~Service.showAdBlockPopup" at "https://s.fotoblogia.pl/assets/js/frontend.js?v=175" @@ 95327,-1
+Event: FunctionEnter
+"~v" at "https://s.fotoblogia.pl/js/jquery-1.8.3.min.js?v=2" @@ 9441,-1
+Event: FunctionEnter
+"new ~init" at "https://s.fotoblogia.pl/js/jquery-1.8.3.min.js?v=2" @@ 10098,-1
+Event: IfStmtThen
+"new ~init" at "https://s.fotoblogia.pl/js/jquery-1.8.3.min.js?v=2" @@ 10199,-1
+Event: IfStmtThen
+"new ~init" at "https://s.fotoblogia.pl/js/jquery-1.8.3.min.js?v=2" @@ 10309,-1

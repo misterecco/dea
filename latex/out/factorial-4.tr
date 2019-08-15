@@ -1,0 +1,95 @@
+FUNCTION ENTER
+   0: ~ at factorial.js @@ 0,-1 ()
+=
+--
+FUNCTION ENTER
+   0: ~factorial at factorial.js @@ 18,-1 ()
+   1: ~ at factorial.js @@ 0,-1 ()
+=
+--
+IF STMT - ELSE
+   2: ~factorial at factorial.js @@ 35,-1
+   0: ~factorial at factorial.js @@ 18,-1 ()
+   1: ~ at factorial.js @@ 0,-1 ()
+=
+--
+FUNCTION ENTER
+   0: ~factorial at factorial.js @@ 18,-1 ()
+   1: ~factorial at factorial.js @@ 18,-1 ()
+   2: ~ at factorial.js @@ 0,-1 ()
+=
+--
+IF STMT - ELSE
+   3: ~factorial at factorial.js @@ 35,-1
+   0: ~factorial at factorial.js @@ 18,-1 ()
+   1: ~factorial at factorial.js @@ 18,-1 ()
+   2: ~ at factorial.js @@ 0,-1 ()
+=
+--
+FUNCTION ENTER
+   0: ~factorial at factorial.js @@ 18,-1 ()
+   1: ~factorial at factorial.js @@ 18,-1 ()
+   2: ~factorial at factorial.js @@ 18,-1 ()
+   3: ~ at factorial.js @@ 0,-1 ()
+=
+--
+IF STMT - ELSE
+   4: ~factorial at factorial.js @@ 35,-1
+   0: ~factorial at factorial.js @@ 18,-1 ()
+   1: ~factorial at factorial.js @@ 18,-1 ()
+   2: ~factorial at factorial.js @@ 18,-1 ()
+   3: ~ at factorial.js @@ 0,-1 ()
+=
+--
+FUNCTION ENTER
+   0: ~factorial at factorial.js @@ 18,-1 ()
+   1: ~factorial at factorial.js @@ 18,-1 ()
+   2: ~factorial at factorial.js @@ 18,-1 ()
+   3: ~factorial at factorial.js @@ 18,-1 ()
+   4: ~ at factorial.js @@ 0,-1 ()
+=
+--
+IF STMT - THEN
+   5: ~factorial at factorial.js @@ 35,-1
+   0: ~factorial at factorial.js @@ 18,-1 ()
+   1: ~factorial at factorial.js @@ 18,-1 ()
+   2: ~factorial at factorial.js @@ 18,-1 ()
+   3: ~factorial at factorial.js @@ 18,-1 ()
+   4: ~ at factorial.js @@ 0,-1 ()
+=
+--
+FUNCTION EXIT
+   0: ~factorial at factorial.js @@ 18,-1 ()
+   1: ~factorial at factorial.js @@ 18,-1 ()
+   2: ~factorial at factorial.js @@ 18,-1 ()
+   3: ~factorial at factorial.js @@ 18,-1 ()
+   4: ~ at factorial.js @@ 0,-1 ()
+-> 1
+=
+--
+FUNCTION EXIT
+   0: ~factorial at factorial.js @@ 18,-1 ()
+   1: ~factorial at factorial.js @@ 18,-1 ()
+   2: ~factorial at factorial.js @@ 18,-1 ()
+   3: ~ at factorial.js @@ 0,-1 ()
+-> 2
+=
+--
+FUNCTION EXIT
+   0: ~factorial at factorial.js @@ 18,-1 ()
+   1: ~factorial at factorial.js @@ 18,-1 ()
+   2: ~ at factorial.js @@ 0,-1 ()
+-> 6
+=
+--
+FUNCTION EXIT
+   0: ~factorial at factorial.js @@ 18,-1 ()
+   1: ~ at factorial.js @@ 0,-1 ()
+-> 24
+=
+--
+FUNCTION EXIT
+   0: ~ at factorial.js @@ 0,-1 ()
+-> 0x17d7a2c004d1 <undefined>
+=
+--

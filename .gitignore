@@ -4,4 +4,4 @@ dea.cabal
 .vscode/
 traces
 logs
-results
+results*

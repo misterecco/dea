@@ -1,0 +1,45 @@
+                    COMMON:
+Event: FunctionEnter
+"~" at "generators.js" @@ 0,-1
+                    COMMON:
+Event: FunctionEnter
+"~print_factorial" at "generators.js" @@ 143,-1
+                    COMMON:
+Event: FunctionEnter
+"~factorial" at "generators.js" @@ 19,-1
+                    COMMON:
+Event: GeneratorSuspend
+"~factorial" at "generators.js" @@ 19,-1
+                    COMMON:
+Event: GeneratorEnter
+"~factorial" at "generators.js" @@ 19,-1
+                    COMMON:
+Event: GeneratorYield
+"~factorial" at "generators.js" @@ 96,-1
+                    COMMON:
+Event: GeneratorSuspend
+"~factorial" at "generators.js" @@ 19,-1
+                    COMMON:
+Event: GeneratorEnter
+"~factorial" at "generators.js" @@ 19,-1
+                                   RIGHT:
+Event: GeneratorYield
+"~factorial" at "generators.js" @@ 96,-1
+                                   RIGHT:
+Event: GeneratorSuspend
+"~factorial" at "generators.js" @@ 19,-1
+                                   RIGHT:
+Event: GeneratorEnter
+"~factorial" at "generators.js" @@ 19,-1
+                    COMMON:
+Event: FunctionExit
+"~factorial" at "generators.js" @@ 19,-1
+                    COMMON:
+Event: IfStmtThen
+"~print_factorial" at "generators.js" @@ 231,-1
+                    COMMON:
+Event: FunctionExit
+"~print_factorial" at "generators.js" @@ 143,-1
+                    COMMON:
+Event: FunctionExit
+"~" at "generators.js" @@ 0,-1

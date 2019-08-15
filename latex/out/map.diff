@@ -1,0 +1,24 @@
+                    COMMON:
+Event: FunctionEnter
+"~" at "map.js" @@ 0,-1
+                    COMMON:
+Event: FunctionEnter
+"~multiplyByTwo" at "map.js" @@ 22,-1
+                    COMMON:
+Event: FunctionExit
+"~multiplyByTwo" at "map.js" @@ 22,-1
+                    COMMON:
+Event: FunctionEnter
+"~multiplyByTwo" at "map.js" @@ 22,-1
+                    COMMON:
+Event: FunctionExit
+"~multiplyByTwo" at "map.js" @@ 22,-1
+                                   RIGHT:
+Event: FunctionEnter
+"~multiplyByTwo" at "map.js" @@ 22,-1
+                                   RIGHT:
+Event: FunctionExit
+"~multiplyByTwo" at "map.js" @@ 22,-1
+                    COMMON:
+Event: FunctionExit
+"~" at "map.js" @@ 0,-1

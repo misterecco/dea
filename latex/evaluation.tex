@@ -1,3 +1,250 @@
 \chapter{Evaluation}
-\section{Evaluated websites}
-\section{Detected anti-adblockers}
+\label{evaluation}
+
+\csvstyle{webisteList}{longtable= r | p{13cm} | r ,
+before reading=\footnotesize,
+late after last line=\\\hline,
+respect all=true,
+separator=tab,
+after reading=\normalsize,
+head to column names}
+
+\section{The pipeline}
+
+The goal of this work was to make most steps of the anti-adblocking analysis automatic.
+Ideally, the system should be able to read a list of websites, collect traces and analyze
+each of them. At the end a meaningful result should be returned.
+
+The entire system is brought together by a program written in Python.
+It is controlled by a extensive set of flags.
+The pipeline is the following:
+\begin{itemize}
+  \item A website to analyze is read as an argument or from a file, when special flag is provided.
+  \item If selected, 3 positive and 3 negative traces are collected for the website (before each browser run,
+           all cookies are deleted). After each all unwanted traces are deleted (extensions, iframes).
+  \item If selected, the analysis is run, the diff is saved in a selected location.
+  \item Optionally, the traces are deleted.
+  \item Each step is logged.
+\end{itemize}
+
+\todo{Maybe change that to just 0, >0}
+The system does not provide an explicit answer whether a website utilizes an anti-adblocking script.
+The result of an analysis is the diff that may be of great help when answering that question.
+
+\section{Methodology}
+
+The methodology is the same as in the original article \cite{DBLP:conf/ndss/ZhuHQSY18}.
+First, the effectiveness of the method is tested on a sets of negative and positive examples.
+Then, the system is used to conduct a larger study.
+
+One important difference from the original approach is that, unless the page has a visible anti-adblocking
+reaction on the main page, the pages are always tested on some subpage.
+
+The original authors composed negative examples set from 100 websites that do not display ads,
+The reasoning behind this is that they are guaranteed not to contain anti-adblocking scripts.
+However, such choice of examples as a benchmark seems flawed.
+One of the key challenges in this method is filtering of noise. If there are no ads, 
+then there are practically no sources of execution differences between runs with and without an adblocker.
+A better choice of websites to evaluate on would be a mix of websites without ads and sites that
+display ads, but are known not to contain anti-adblockers.
+Unfortunately, finding such websites is not easy as it entails a detailed analysis of the entire code
+served by each site. Certainly not a task for one person to be done in a reasonable timespan.
+For this reason, the negative examples are only sites that do not serve ads. There is 50 of them.
+
+The original authors had an extensive list of websites with anti-adblockers collected in their
+previous studies (almost 700 positions). Unfortunately, they do not share that list. 
+For this reason, a similar list of positive examples had to be created from scratch.
+It is a mix of websites encountered during daily browsing and sites appearing in the
+Polish anti-adblock list \cite{github:anti-adblock-list}.
+To avoid time-consuming code analysis at the stage of composing the list, 
+all selected websites contain visible anti-adblock warnings.
+Other important note -- the list contain at most handful of websites from Alexa 300 list.
+
+The adblocking extension have different policies when it comes to their official, default filters.
+AdBlock Plus behaves politely and respects publishers' right to ask users to show some support
+and disable the extension, whatever form it takes \cite{adblock:policy}.
+On the other hand, uBlock Origin employs a different rule. If the warning is not dismissible or is annoying,
+it will be blocked \cite{vice:ublock-policy}.
+
+Since usage of AdBlock Plus may expose a wider variety of adblock walls and warnings, it was chosen for the tests.
+
+\section{Negative examples}
+
+The list of websites without ads, on which the system was tested is presented in the table \ref{table:negative}.
+The number of execution differences found is listed in the last column.
+
+\csvreader[webisteList,
+table head=\caption{List of negative websites with number of traces with execution differences found}
+  \label{table:negative}\\
+  \hline & URL & \thead{Diff. \\ count}\\\hline
+]{tsv/negative.tsv}{}%
+{\thecsvrow & \url{\adr} & \cnt}%
+
+Ideally, there should be no execution differences on any website listed here. Nonetheless, a few differences were identified (positions 44-50).
+Let us have a look why.
+
+\todo{transform last points into sentences}
+
+\begin{itemize}
+  \item Kino Elektronik (position 44) -- in this case the origin of difference is unclear. There does not seem to be any element
+           blocked by AdBlocked. Also, there are no blocked network requests. But for some reasone there are differences in
+           jQuery traversals.
+  \item ETH (position 45) -- in this case the origin is tracking code.
+  \item Szkoła Impro (position 46) -- progress bar.
+  \item Papers with code (position 47) -- Sentry (error reporting) code.
+  \item White House (position 48) -- unknown.
+  \item World Animal Protection (position 49) -- jQuery.
+  \item Warsaw ZOO (position 50) -- jQuery.
+\end{itemize}
+
+\section{Positive examples}
+
+The list of websites with visible anti-adblock reaction is presented in the table \ref{table:positive}.
+Just like in the previous section, the number of execution differences found is listed in the last column.
+
+\csvreader[webisteList,
+  table head=\caption{List of positive websites with number of traces with execution differences found}
+  \label{table:positive}\\
+  \hline & URL & \thead{Diff. \\ count}\\\hline
+]{tsv/positive.tsv}{}%
+{\thecsvrow & \url{\adr} & \cnt}%
+
+In most cases the system is able to find execution traces, which is a very good sign.
+In the following sections we will analyze when the system fails and verify if the differences
+found are actually useful.
+
+\subsection{Jaki ma skład?}
+
+Brief analysis of the code shows that the site incorporates BlockAdBlock \cite{github:blockadblock}, which was
+already mentioned in the section \ref{anti-adblockers}. Turns out that the module's obfuscation if effective enough 
+to circumvent our system.
+
+\subsection{Srebrne Stawy}
+
+In this case the code that activates the warning seems very simple and there was no reason why
+it should not be detected by the system. Listing \ref{js:srebrnestawy} shows the code.
+
+\lstinputlisting[language=JavaScript, caption=Anti-adblocking script of "Srebrne Stawy" webpage, 
+                       label=js:srebrnestawy]{js/srebrnestawy.js}
+
+The reason why it was not detected is that the bait was based on file \emph{advert.js}, which is not loaded 
+even when AdBlock is disabled, due to 404 HTTP error. Consequently, the warning is displayed even 
+when AdBlock is disabled.
+
+\subsection{Audi Klub}
+\label{audiklub}
+
+The first example is "Audi Klub" website \todo{citation?}. It includes just one advertisement, but when adblocker
+is detected, the content is blocked.
+
+The pipeline is able to exactly pinpoint the location of the anti-adblocking check.
+Listing \ref{diff:audiklub} shows the diff.
+
+\lstinputlisting[language=TraceDiff, caption=Trace diff of "Audi Klub" webpage, 
+                       label=diff:audiklub]{out/audiklub.org.diff}
+
+The code is fortunately not minified so we can exaplain how it works without much effort.
+Listing \ref{js:audiklub} shows the code that diff is pointing to.
+
+\lstinputlisting[language=JavaScript, caption=Anti-adblocking script of "Audi Klub" webpage, 
+                       label=js:audiklub]{js/audiklub.org.js}
+
+The anti-adblocker is really simple. First, the trap is set up. It is a file named \emph{ads.js}.
+Its content is just one line, which sets \emph{canRunAds} variable to true.
+
+The main check is performed in the \emph{window.onload} callback. The script simply checks
+if \emph{canRunAds} variable has been set to true. If not, it replaces the content div with an anti-adblocker warning.
+
+
+\subsection{nixCraft}
+
+Anti-adblocker used on this page works almost exactly the same as the one presented in section \ref{audiklub}.
+This site, however, uses CloudFlare's Rocket Loader. \todo{citation?} 
+
+Rocket Loader is a powerful mechanism 
+\todo{citation?} developed by CloudFlare that is able to cache JavaScript code and defer its execution 
+until the entire webpage is rendered. The way it works is the following: 
+\begin{itemize}
+  \item  Before serving the page, the server inspects the website and changes all JS scripts 
+            to some type not identified by the browser as JavaScript. 
+            The type also has  to be unique so that those scripts are easy to find later.
+  \item The server also encloses a special JavaScript module that will activate when the entire webpage is loaded.
+  \item JavaScript module finds all scripts with changed type and executes them.
+\end{itemize}
+
+Since the module that executes the scripts is just some JavaScript code, the system should still be able
+to detect the anti-adblocking code. Unfortunately, it cannot and the reason why is unclear, although 
+the most probable seems to be the noise filtering. It is a bit aggressive. In a case when some function
+does many things at once, and it has to traverse the entire DOM at once and later do something else, 
+it may be easily filtered out. DOM will be different if there is a dynamic content or third-party ads.
+Rocker Loader has to find all scripts, therefore it has to traverse the DOM. Later it executes the scripts.
+
+\todo{rephrase} 
+
+
+\subsection{Fotoblogia}
+
+\todo{Kinda works, does not pin exact divergence, but can help finding the code}
+
+This website is an example of an anti-adblocker that can be detected, but the check is not directly
+shown in the resulting diff. However, using traces that were not matched, we can still
+gain insights on how the anti-adblocker works.
+
+If we look at the unmatched positive traces, one function catches the eye, namely \emph{Service.showAdBlockPopup}
+(lines 7-8 on listing \ref{tr:fotoblogia}).
+
+\lstinputlisting[language=TraceDiff, caption=\todo{Trace of Fotoblogia}, 
+                       label=tr:fotoblogia]{out/fotoblogia.tr}
+                       
+Inspection of the source code shows that it indeed activates the adblock wall (listing \ref{js:fotoblogia-show})
+
+\lstinputlisting[language=JavaScript, caption=\todo{Js of Fotoblogia}, 
+                       label=js:fotoblogia-show]{js/fotoblogia-show.js}
+                       
+But why is this function not present in the diff, i.e. there is no matching subtrace from the negative case?
+Let us have a look at its call site (listing \ref{js:fotoblogia-detect}).
+Trace analysis misses this check, because it is using an implicit control statement (laziness of "\&\&" operator).
+Moreover, when an adblocker is detected, the call to the function that reveals the overlay is not direct, but
+uses \emph{setTimeout} which is not logged because it is a built-in function.
+The callback is invoked directly from the Event Loop and it doesn't equivalent negative subtrace.
+
+\lstinputlisting[language=JavaScript, caption=\todo{Js of Fotoblogia}, 
+                       label=js:fotoblogia-detect]{js/fotoblogia-detect.js}
+                       
+
+\subsection{Pomorska}
+
+\todo{works, show result and code}
+
+\section{Small scale study}
+
+The system has later been run on 250 website from Alexa 500 list (Poland only) \todo{ref}.
+
+Even such a small scale verification is really hard for one person to do in a reasonable amount of time.
+The code on one website can easily have thounsands lines of code. To make things harder, 
+most websites deploy their code minified, which makes verification very laborious.
+
+For this reason, the idea of measuring the effectiveness on 250 websites has been abandoned.
+Instead, only the websites with visible anti-adblockers are closely inspected.
+
+
+\section{Conclusion}
+
+In the current stage, the system is useful as an aid to analyze selected websites.
+It is not ready yet to be used as an unsupervised tool that could perform a large scale study.
+
+To be able to build such a system, much more man-hours is required. Here, the next challenge
+is to analyze manually a few hundreds of websites and check when the system performs good 
+and when it fails and iterate a few times.
+
+After the study perfomed for this thesis, a few improvements come to mind:
+\begin{itemize}
+  \item The trace collection should have less overhead on the browser. For large scale study
+           spending 10 minutes on each website to collect traces is too long.
+           One idea is to, instead of constructing a strings map during analysis, have
+           Chrome construct the it. This, is conjunction with some binary format, will
+           result in much more compact files and less time wasted on writing to files.
+  \item Although the filtering was really aggressive, still a lot of differences has been found.
+           Here, a study performed on few hundreds websites could help. 
+\end{itemize}
+

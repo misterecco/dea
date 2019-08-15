@@ -1,0 +1,22 @@
+                    COMMON:
+Event: FunctionEnter
+"~window.onload" at "http://www.audiklub.org/dane/a6/c6/color/100.html" @@ 152,-1
+     LEFT:
+Event: IfStmtThen
+"~window.onload" at "http://www.audiklub.org/dane/a6/c6/color/100.html" @@ 175,-1
+     LEFT:
+Event: FunctionEnter
+"~jQuery" at "<unknown>" @@ 91,-1
+...
+     LEFT:
+Event: FunctionExit
+"~domManip" at "<unknown>" @@ 3673,-1
+     LEFT:
+Event: FunctionExit
+"~append" at "<unknown>" @@ 1854,-1
+     LEFT:
+Event: FunctionExit
+"~html" at "<unknown>" @@ 3571,-1
+                    COMMON:
+Event: FunctionExit
+"~window.onload" at "http://www.audiklub.org/dane/a6/c6/color/100.html" @@ 152,-1

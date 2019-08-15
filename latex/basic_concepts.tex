@@ -6,14 +6,12 @@
   \item Execution event -- each occurence of control evaluating some expression, entering or leaving a control statement etc.
   \item Execution trace -- a series of execution events collected during program execution. 
            It is dependent both on program structure and its input (also implicit such as randomly generated numbers).
+  \item Positive trace -- an execution trace collected with an active adblocking extension.
+  \item Negative trace -- an execution trace collected without an adblocking extension.
   \item Execution index -- a concept formally introduced by Xin et al. \cite{sigplan:execution-indexing}. 
                                          For our purposes we can define it is any function that uniquely identifies execution points. In our case it will
                                          be a statement source map information (file name and precise location of the statement) 
                                          with the current function stack.
-  \item Stable marriage problem -- given equallly sized sets of men and women and their matrimonial preferences,
-                                                       find a stable matching, i.e. matching in which there exists no pair of man and woman 
-                                                       in which they both would have better partner than currently assigned.
-                                                       It can be solved using Gale-Shapley algorithm \cite{wiki:smp}.
 \end{itemize}
 
 
@@ -65,6 +63,7 @@ Some bigger ad providers are also charged for being whitelisted.
 
 
 \section{Anti-adblockers}
+\label{anti-adblockers}
 
 In 2017 PageFair prepared a report on adblockers usage \cite{pagefair:adblock-report}.
 Worldwide, 11\% users use ad blocking solutions. This may seem small, but it is not not uncommon

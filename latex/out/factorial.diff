@@ -1,0 +1,45 @@
+                    COMMON:
+Event: FunctionEnter
+"~" at "factorial.js" @@ 0,-1
+                    COMMON:
+Event: FunctionEnter
+"~factorial" at "factorial.js" @@ 18,-1
+                    COMMON:
+Event: IfStmtElse
+"~factorial" at "factorial.js" @@ 35,-1
+                    COMMON:
+Event: FunctionEnter
+"~factorial" at "factorial.js" @@ 18,-1
+                    COMMON:
+Event: IfStmtElse
+"~factorial" at "factorial.js" @@ 35,-1
+                    COMMON:
+Event: FunctionEnter
+"~factorial" at "factorial.js" @@ 18,-1
+                                   RIGHT:
+Event: IfStmtElse
+"~factorial" at "factorial.js" @@ 35,-1
+                                   RIGHT:
+Event: FunctionEnter
+"~factorial" at "factorial.js" @@ 18,-1
+                                   RIGHT:
+Event: IfStmtThen
+"~factorial" at "factorial.js" @@ 35,-1
+                                   RIGHT:
+Event: FunctionExit
+"~factorial" at "factorial.js" @@ 18,-1
+     LEFT:
+Event: IfStmtThen
+"~factorial" at "factorial.js" @@ 35,-1
+                    COMMON:
+Event: FunctionExit
+"~factorial" at "factorial.js" @@ 18,-1
+                    COMMON:
+Event: FunctionExit
+"~factorial" at "factorial.js" @@ 18,-1
+                    COMMON:
+Event: FunctionExit
+"~factorial" at "factorial.js" @@ 18,-1
+                    COMMON:
+Event: FunctionExit
+"~" at "factorial.js" @@ 0,-1

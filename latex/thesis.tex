@@ -87,6 +87,9 @@
 
 \usepackage{cite}
 \usepackage{url}
+\makeatletter
+\g@addto@macro{\UrlBreaks}{\UrlOrds}
+\makeatother
 \usepackage{csquotes}
 
 \usepackage{hyperref}
@@ -104,27 +107,34 @@
 
 \usepackage{listings}
 \lstdefinelanguage{JavaScript}{
-  keywords={typeof, new, true, false, catch, function, return, null, catch, 
+  keywords={typeof, new, true, false, catch, function, return, null, catch, yield,
   					    switch, var, if, in, of, for, const, let, while, do, else, case, break},
   ndkeywords={class, export, boolean, throw, implements, import, this},
   sensitive=false,
   comment=[l]{//},
   morecomment=[s]{/*}{*/},
   morestring=[b]',
-  morestring=[b]"
+  morestring=[b]",
+  morestring=[b]`
 }
 \lstdefinelanguage{Pseudocode}{
-  keywords={def, for, while, in, if, else, elif, return, case, of},
+  keywords={def, for, while, in, if, else, elif, return, case, of, pass},
   ndkeywords={},
   sensitive=false,
   comment=[l]{//},
   morecomment=[s]{/*}{*/},
   morestring=[b]"
 }
+\lstdefinelanguage{TraceDiff}{
+  keywords={Event},
+  ndkeywords={COMMON, LEFT, RIGHT},
+  sensitive=false,
+  morestring=[b]"
+}
 \lstdefinestyle{mystyle}{
     backgroundcolor=\color{backcolour},   
     commentstyle=\color{codegreen},
-    keywordstyle=\bf\color{magenta},
+    keywordstyle=\color{magenta},
     numberstyle=\tiny\color{codegray},
     stringstyle=\color{codepurple},
     basicstyle=\ttfamily\footnotesize,
@@ -140,6 +150,11 @@
     tabsize=2
 }
 \lstset{style=mystyle}
+
+\usepackage{csvsimple}
+\usepackage{longtable}
+\setcounter{LTchunksize}{1}
+\usepackage{makecell}
 
 % koniec definicji
 
@@ -183,8 +198,13 @@ on Polish websites or to build an extension capable of circumventing such script
 \listoffigures
 \addcontentsline{toc}{chapter}{List of Figures}
 
-\bibliography{sources}{}
+\listoftables
+\addcontentsline{toc}{chapter}{List of Tables}
+
+\cleardoublepage
+\phantomsection
 \addcontentsline{toc}{chapter}{Bibliography}
+\bibliography{sources}{}
 \bibliographystyle{plain}
 
 \end{document}
