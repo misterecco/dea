@@ -78,7 +78,10 @@ def run_chrome(trace_file=None, profile_path=None, debug_port=None):
 
     logging.debug(cmd)
 
-    os.remove(f"{profile_path}/Default/Cookies")
+    try:
+        os.remove(f"{profile_path}/Default/Cookies")
+    except Exception as e:
+        logging.warning(e)
 
     return subprocess.Popen(cmd, shell=True)
 

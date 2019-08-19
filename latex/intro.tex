@@ -8,15 +8,56 @@ and other shady practices. Even websites with valuable content can have overwhel
 of ads. This leads to grave dissatisfaction of some portion of users. To make their browsing experience better,
 they turn to use of ad-blocking extensions.
 
-The amount of users doing that cannot be ignored. In 2019 there was over 615 million devices worldwide
+The most popular adblockers operate based on user-curated lists. They have been around for such a long
+time that they are really effective. In order to circumvent them, one has to put an ongoing effort to be able
+to catch up. It is such a common occurence that even some browser started adding some ad-blocking
+functionality (e.g. Opera).
+
+The amount of users utilizing ad-blockers cannot be ignored. In 2019 there was over 615 million devices worldwide
 with adblocker installed \cite{pagefair:adblock-report}. This, in turn, leads to loss of revenue for many businesses.
-To combat this, some of them choose to deploy anti-adblockers, which generate warnings 
-or even block content entirely for users with adblockers.
+To combat this, some of them choose to deploy anti-adblockers, i.e. scripts that detect adblocking extensions
+and react in some way. They can generate a visible warnings or even even block the website's content entirely.
 
-\todo{More on adblockers and anti-adblockers}
+The anti-adblockers come in many different fashions. Some of them are simple, custom-made scripts that 
+set up an obvious bait and check if there was a reaction typical to adblocking extension (e.g. a file names \emph{ads.js}
+has not been loaded). There are also more effective solutions that use a number of tricks to make the analysis
+and counter-action harder.
 
-\todo{Original paper}
+The people behind adblockers may or may not choose to try circumventing anti-adblockers.
+They apply various is policies. \todo{}
 
-\todo{My contribution}
+A regular study of anti-adblocking scripts can help both sides of the barricade. Knowing how such scripts behave
+can help create better methods of detecting them. That, in turn, can lead to creation of better blocking tools.
+On the other hand, being able to automatically detect some scripts usually means that it is possible
+to block them. Thus, studying different solution and detection methods can lead to better anti-adblockers as well.
+
+In 2018 Zhu et al. \cite{DBLP:conf/ndss/ZhuHQSY18} proposed a sophisticated method of automatically detecting such
+scripts. This method used what is called a Differention Execution Analysis. The whole approach consists of several steps.
+First, at least two JavaScript execution traces have to be collected. One being the website's code executed
+in an environment without any abblocking extensions and second with such plugin active.
+Those two traces are later compared and checked if there are any differences between them.
+If there are, they can be attributed to anti-adblocking scripts.
+
+There are lots of difficulties in getting the whole mechanism to work. First of all, trace collection has
+to be hand-made. There is off-the-shelf solution that would the requirements of this methods.
+Second, JavaScript event-based execution model makes it problematic to compare execution traces
+as the order and number of events can greatly differ. This issue is solved by what is called (in this thesis)
+by processes called trace untangling and trace matching. The former is a method of gathering 
+execution events into subtraces that correspond to different events. The latter is a proccess of
+pairing subtraces from two different execution traces.
+Third, a website can incorporate tons of noise. The webpage can utilize some Random Number Generators, 
+there can be network errors, the content can be generated or selected dynamically.
+
+The authors of the method give a glimpse of how to battle each of the difficulties, but leave a lot of details 
+in most cases. The contibution of this thesis are the following:
+\begin{itemize}
+  \item The entire method has been implemented end-to-end and each step explained in detail.
+  \item A novel approach based on Stable Marriage Problem to solve trace matching problem
+           has been introduced.
+  \item A new approach to filtering execution noises has been introduced and tested.
+  \item The entire pipeline has been evaluated and used to conduct a small-scale study on the most
+           popular websites in Poland.
+  \item A section of anti-adblocking scripts has been presented based on the pipeline evaluation.
+\end{itemize}
 
 \todo{Evaluation}

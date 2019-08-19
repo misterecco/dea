@@ -1,51 +1,51 @@
-adr	cnt
-http://jakimasklad.pl/	0
-http://www.srebrnestawy.pl/	0
-http://www.jednoslad.pl/kupic-nowy-czy-uzywany-motocykl-podpowiadamy/	1
-http://www.nadajemy.pl/	1
-http://zmiksowani.pl/	1
-https://darkw.pl/	1
-https://gragieldowa.pl/notowania/akcje/GR_WIG20	1
-https://komorkomania.pl/37730,dji-osmo-mobile-3-oficjalnie-jest-skladany-i-tanszy-od-poprzednika?src01=c801b	1
-https://torrentcity.pl/torrenty/opis/id/326075/age_of_wonders_planetfall_-_premium_edition_2019_-_v1_004_36544_dlcs__bonus_content_multi8-pl_gog_exe	1
-https://waw4free.pl/	1
-https://www.cyberciti.biz/faq/ram-size-linux/	1
-https://www.gry-planszowe.pl/forum/	1
-https://zw.pl	1
-http://www.audiklub.org/dane/a6/c6/color/100.html	2
-https://e-dokument.org/sadowe-zazalenia/zazalenie-powoda-na-postanowienie-sadu-odmawiajace-podjecia-zawieszonego-postepowania/	2
-https://kursbootstrap.pl/tutorial/	2
-https://napisy24.pl/	2
-https://who-called.eu/pl/178533310	3
-https://www.pajacyk.pl	3
-https://www.wgrane.pl/	3
-https://wzory-cv.com/przyklady.html	3
-https://megane.com.pl/	4
-https://polscygracze.pl/	4
-https://ogloszenia.plock.pl/	5
-https://take-kino.pl/	5
-https://maciejgalas.fotoblogia.pl/11821,leica-summicron-m-35-mm-f-2-asph	6
-https://polskiedzieje.pl/polecane-ksiazki/po-dolary-i-wolnosc-dariusz-terlecki.html	8
-https://www.comperia.pl/	8
-https://manjaro.pl/kilka-slow-o-nieoficjalnych-repozytoriach-arch-linux/	9
-https://www.magazynbieganie.pl/fotostory/bieganie-dla-poczatkujacych-3-proste-sposoby-na-poprawe-formy/	10
-https://kulturalnemedia.pl/muzyka/lindsey-stirling-na-dwoch-koncertach-w-polsce/	11
-https://www.filmweb.pl/film/John+Wick-2014-698144	11
-https://www.telepolis.pl/artykuly/testy-sprzetu/honor-20-pro-smartfon-telefon-test-recenzja	12
-http://lubliniec.info/artykul/12377/ostrzezenie-meteorologiczne-drugiego-stopnia-dla-powiatu-lublinieckiego	13
-http://www.krs-online.com.pl/	13
-http://www.serialosy.pl/zagraniczne-seriale9/agenci-tarczy/24685-agenci-tarczy-s06e11-napisy-pl.html	13
-https://kimcartoon.to/Cartoon/Squidbillies-Season-12	15
-https://pomorska.pl/100-najpopularniejszych-stron-internetowych-w-polsce-lista/ar/7198080	16
-https://www.businessinsider.com/cheapest-michelin-star-lunch-new-york-city-2018-10	19
-https://jbzdy.net/	24
-http://psychologia-ogolna.wyklady.org/	25
-https://burzowo.info/	41
-https://www.cinemablend.com/	46
-http://chelmski.eu/bedzie-wiecej-polaczen-kolejowych/	49
-https://player.pl/seriale-online/na-wspolnej-1001-1500-odcinki,5134/odcinek-1163,S03E1163,149527	53
-https://mmorpg.org.pl/	57
-https://www.polska-ie.com/	94
-https://www.motocykl-online.pl/artykuly/Prawo-jazdy-na-motocykl-2019-kat-A-A1-A2-Jak-je-zrobic,12709,1	170
-https://www.sonyalpharumors.com/the-first-sony-a7riv-versus-a7riii-size-comparison/	181
-https://www.pasazer.com/	215
+adr	cnt	res	type	loc	cmt
+http://jakimasklad.pl/	0	N	BlockAdBlock + eval	inline	
+http://www.srebrnestawy.pl/	0	Y	Custom, var set in file	inline	404 HTTP Error
+https://www.cyberciti.biz/faq/ram-size-linux/	1	N	Custom, var set in file	inline	CloudFlare
+http://zmiksowani.pl/	1	N	Custom, element-based bait	bundle	
+https://torrentcity.pl/torrenty/opis/id/326075/age_of_wonders_planetfall_-_premium_edition_2019_-_v1_004_36544_dlcs__bonus_content_multi8-pl_gog_exe	1	N	Custom, element-based bait + error handler	bundle	Describe?
+http://www.nadajemy.pl/	1	Y	Custom, var set in file	inline	
+https://darkw.pl/	1	Y	Custom, check ads visibility	inline	
+https://gragieldowa.pl/notowania/akcje/GR_WIG20	1	Y	Custom, check ads visibility	inline	
+https://waw4free.pl/	1	Y	Adblock Detect	inline	copy-paste
+https://www.gry-planszowe.pl/forum/	1	Y	Custom, element-based bait	inline	
+https://zw.pl	1	Y	Custom, element-based bait	inline	
+http://www.audiklub.org/dane/a6/c6/color/100.html	2	Y	Custom, var set in file	inline	
+https://e-dokument.org/sadowe-zazalenia/zazalenie-powoda-na-postanowienie-sadu-odmawiajace-podjecia-zawieszonego-postepowania/	2	Y	BlockAdBlock + eval	inline	
+https://kursbootstrap.pl/tutorial/	2	Y	Custom, element added in file	inline	
+https://napisy24.pl/	2	Y	BlockAdBlock	inline	
+https://who-called.eu/pl/178533310	3	Y	Custom, check ads visibility	bundle	
+https://www.wgrane.pl/	3	Y	Custom, element added in file	inline	
+https://wzory-cv.com/przyklady.html	3	Y	BlockAdBlock + eval	inline	
+https://megane.com.pl/	4	Y	Custom, check ads visibility	bundle	
+https://polscygracze.pl/	4	Y	BlockAdBlock + fallback	bundle	
+https://ogloszenia.plock.pl/	5	Y	Custom, var set in file	bundle	
+https://take-kino.pl/	5	Y	Custom, check ads visibility	inline	network request
+https://www.pajacyk.pl	7	Y	Custom, element added in file	bundle	
+https://www.comperia.pl/	8	N	Custom, check ads visibility	bundle	
+https://komorkomania.pl/37730,dji-osmo-mobile-3-oficjalnie-jest-skladany-i-tanszy-od-poprzednika?src01=c801b	9	Y	Custom, check ads visibility	bundle	
+https://manjaro.pl/kilka-slow-o-nieoficjalnych-repozytoriach-arch-linux/	9	Y	Abd_Detector, element-based bait	bundle	
+https://maciejgalas.fotoblogia.pl/11821,leica-summicron-m-35-mm-f-2-asph	10	Y	Custom, check ads visibility	bundle	
+https://www.magazynbieganie.pl/fotostory/bieganie-dla-poczatkujacych-3-proste-sposoby-na-poprawe-formy/	10	Y	Abd_Detector, element-based bait	bundle	
+https://kulturalnemedia.pl/muzyka/lindsey-stirling-na-dwoch-koncertach-w-polsce/	11	Y	an_message_display, check ads visibility	bundle	
+https://www.filmweb.pl/film/John+Wick-2014-698144	11	Y	Custom, var set in file	bundle	
+https://www.telepolis.pl/artykuly/testy-sprzetu/honor-20-pro-smartfon-telefon-test-recenzja	12	Y	Custom, var set in file	inline	
+http://lubliniec.info/artykul/12377/ostrzezenie-meteorologiczne-drugiego-stopnia-dla-powiatu-lublinieckiego	13	Y	Custom, var set in file	inline	
+http://www.krs-online.com.pl/	13	Y	Custom, var set in file	inline	
+http://www.serialosy.pl/zagraniczne-seriale9/agenci-tarczy/24685-agenci-tarczy-s06e11-napisy-pl.html	13	Y	BlockAdBlock + eval	inline	
+https://kimcartoon.to/Cartoon/Squidbillies-Season-12	15	Y	Custom, loads scripts	inline	Describe
+https://pomorska.pl/100-najpopularniejszych-stron-internetowych-w-polsce-lista/ar/7198080	16	Y	Custom, element added in file	build	
+https://www.businessinsider.com/cheapest-michelin-star-lunch-new-york-city-2018-10	19	Y	BlockAdBlock	build	
+https://polskiedzieje.pl/polecane-ksiazki/po-dolary-i-wolnosc-dariusz-terlecki.html	23	Y	an_message_display, check ads visibility	bundle	
+https://jbzdy.net/	24	Y	Custom, var set in file	bundle	GA logging
+http://psychologia-ogolna.wyklady.org/	25	Y	BlockAdBlock + eval	inline	
+https://mmorpg.org.pl/	35	N	BlockAdBlock + fallback	bundle	
+https://applemobile.pl/recenzja-bose-sleepbuds-1200-zlotych-za-sluchawki-przez-ktore-nie-posluchasz-wlasnej-muzyki/	36	Y	an_message_display, check ads visibility	bundle	
+https://burzowo.info/	41	Y	Custom, check ads visibility	inline	
+https://www.cinemablend.com/	46	Y	Admiral	bundle	
+http://chelmski.eu/bedzie-wiecej-polaczen-kolejowych/	49	Y	KillAdBlock	inline	
+https://player.pl/seriale-online/na-wspolnej-1001-1500-odcinki,5134/odcinek-1163,S03E1163,149527	60	N	Custom, loads scripts	bundle	
+https://www.polska-ie.com/	94	N	Custom, element-based bait	bundle	
+https://www.motocykl-online.pl/artykuly/Prawo-jazdy-na-motocykl-2019-kat-A-A1-A2-Jak-je-zrobic,12709,1	170	Y	BlockAdBlock	bundle	
+https://www.sonyalpharumors.com/the-first-sony-a7riv-versus-a7riii-size-comparison/	181	Y	an_message_display, check ads visibility	bundle	
+https://www.pasazer.com/	215	Y	Custom, var set in file	inline	

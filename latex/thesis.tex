@@ -156,6 +156,14 @@
 \setcounter{LTchunksize}{1}
 \usepackage{makecell}
 
+\csvstyle{webisteList}{
+before reading=\footnotesize,
+late after last line=\\\hline,
+respect all=true,
+separator=tab,
+after reading=\normalsize,
+head to column names}
+
 % koniec definicji
 
 \begin{document}
@@ -206,6 +214,8 @@ on Polish websites or to build an extension capable of circumventing such script
 \addcontentsline{toc}{chapter}{Bibliography}
 \bibliography{sources}{}
 \bibliographystyle{plain}
+
+\include{appendix}
 
 \end{document}
 
