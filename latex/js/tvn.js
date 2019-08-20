@@ -16,7 +16,7 @@ var isAdBlockEnabled = function() {
     window.adBlockEnabled = !i,
     !i
 };
-...
+// ...
 v.isAdBlockEnabledAgain = function(e, t) {
     var i = nuvi.settings.accessProtocol + "//s1-player5.cdntvn.pl/advert.js";
     -1 !== i.indexOf("tvwisla.com.pl") && -1 === i.indexOf("cdntvn.stage.online") && (i = (i = i.replace("player5", "s1-player5")).replace(".stage.online", "-cdntvn.stage.online")),

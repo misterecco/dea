@@ -122,36 +122,36 @@ In the following sections we will analyze when the system fails and discuss
 a variety of solutions.
 
 The analysis of 50 websites incorporating adblock walls allows us to create a simple
-classification of anti-adblockers:
-
+classification of anti-adblockers mechanisms:
 \begin{itemize}
-  \item Mechanisms
+  \item Bait-based
     \begin{itemize}
-      \item With a bait
-        \begin{itemize}
-         \item File as a bait
-         \begin{itemize}
-           \item Variable value is changed
-           \item An element injected into DOM
-           \item Error handler on network request
-         \end{itemize}
-           \item DOM element as a bait
-        \end{itemize}
-      \item Real ads visibility checks
-      \item Real ads load check
+     \item File as a bait
+     \begin{itemize}
+       \item Variable value is changed
+       \item An element injected into DOM
+       \item Error handler on network request
+     \end{itemize}
+       \item DOM element as a bait
     \end{itemize}
-  \item Solutions:
+  \item Real ads checks
     \begin{itemize}
-      \item Custom scripts
-      \item Off the shelf modules:
-        \begin{itemize}
-          \item BlockAdBlock \cite{github:blockadblock}
-          \item Adblock Detect \cite{adblock-detect}
-          \item Kill AdBlock \cite{kill-adblock}
-          \item Admiral's Recover \cite{admiral:recover}
-          \item \emph{an\_message\_display}
-          \item \emph{Adb\_Detector}
-        \end{itemize}
+      \item Visibility inspection
+      \item Load verification
+    \end{itemize}
+\end{itemize}
+
+We can also summarize all encountered solutions:
+\begin{itemize}
+  \item Custom scripts
+  \item Off the shelf modules:
+    \begin{itemize}
+      \item BlockAdBlock \cite{github:blockadblock}
+      \item Adblock Detect \cite{adblock-detect}
+      \item Kill AdBlock \cite{kill-adblock}
+      \item Admiral's Recover \cite{admiral:recover}
+      \item \emph{an\_message\_display}
+      \item \emph{Adb\_Detector}
     \end{itemize}
 \end{itemize}
 
@@ -285,11 +285,39 @@ of the element displaying ads is empty (contains 0 non-whitespace characters).
 \lstinputlisting[language=JavaScript, caption=Anti-adblocking script of \url{who-called.eu}, 
                        label=js:whocalled]{js/whocalled.js}
                        
-\todo{BlockAdBlock + eval}
+\subsubsection{\url{kimcartoon.to}}
+This website utilizes a check based on making sure that advertising scripts
+are loaded (listing \ref{js:kimcartoon}). It seems, though, that the example has a bug.
+Perhaps it would be desirable to invert the conditional and change the variable
+only when some of the scripts fails to load.
 
-\todo{kimcartoon}
+\lstinputlisting[language=JavaScript, caption=Anti-adblocking script of \url{kimcartoon.to}, 
+                       label=js:kimcartoon]{js/kimcartoon.js}
+                       
+\subsubsection{\url{e-dokument.org} and others using BlockAdBlock with eval obfuscation}
+BlockAdBlock is one of the most popular off-the-shelf anti-adblocking solutions.
+The obfuscated code is quite unreadable to a human (listing \ref{js:edokument}).
+Fortunately, the string to be evaluated contains "BlockAdBlock" and we can be sure that it was
+the solution used. Since BlockAdBlock is an open-source module, interested reader can check 
+out its code on github \cite{github:blockadblock}.
 
-\todo{mention other off-the-shelf solutions}
+\lstinputlisting[language=JavaScript, caption=Anti-adblocking script of \url{e-dokument.org}, 
+                       label=js:edokument]{js/edokument.js}
+
+\subsubsection{\url{polscygracze.pl}}
+Another website that uses BlockAdBlock, but adds a fallback in case the module is blocked
+by an adblocker (listing \ref{js:polscygracze}). It is worth mentioning that the idea of 
+making the id of adblock warning element random is good, but it is not worth anything 
+if it is done this way. If it is static it can still be added to adblockers filter lists.
+                       
+\lstinputlisting[language=JavaScript, caption=Anti-adblocking script of \url{polscygracze.pl}, 
+                       label=js:polscygracze]{js/polscygracze.js}
+
+\subsubsection{Other off-the-shelf solutions}
+Other solutions utilize similar mechanisms to those already described.
+They can be more polished and use more that one check at once, but
+they do introduce new ideas. For this reason they are not described further here.
+Interested reader can read their documentation.
 
 
 \section{Small scale study}
@@ -304,7 +332,7 @@ websites, instead of URLs, are commented out (line starts with --).
 Some results are marked with "TO" instead of a number of differences found. This is because
 there is a limited time for each trace collection (30 seconds). After that the browser is closed.
 In some cases the browser would not close by itself and it has to be killed. It is because 
-some websites keep writing the trace and they write a lot of data (some can reach almost 50Gb in around 2 minutes).
+some websites keep writing the trace and they write a lot of data (some can reach almost 50GB in 2 minutes).
 In such cases the website is skipped.
 
 The number of webistes, social media links and similar elements was not reported, but it seems that the more 
