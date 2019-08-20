@@ -3,35 +3,37 @@
 
 \section{The pipeline}
 
-The goal of this work was to make most steps of the anti-adblocking analysis automatic.
-Ideally, the system should be able to read a list of websites, collect traces and analyze
-each of them. At the end a meaningful result should be returned.
+The goal of this work was to automate as many steps of the anti-adblocking analysis as possible.
+Ideally, the system should be able to read a list of websites, collect traces, analyze
+each of them and produce a meaningful result.
 
 The entire system is brought together by a program written in Python.
-It is controlled by a extensive set of flags.
-The pipeline is the following:
+It is controlled by an extensive set of flags and logs each step to make troubleshooting easier.
+The pipeline comprises following steps:
 \begin{itemize}
   \item A website to analyze is read as an argument or from a file, when special flag is provided.
   \item If selected, 3 positive and 3 negative traces are collected for the website (before each browser run,
-           all cookies are deleted). After each all unwanted traces are deleted (extensions, iframes).
+           all cookies are deleted). After each run, all unwanted traces are deleted (extensions, iframes).
   \item If selected, the analysis is run, the diff is saved in a selected location.
   \item Optionally, the traces are deleted.
-  \item Each step is logged.
 \end{itemize}
 
-\todo{Maybe change that to just 0, >0}
-The system does not provide an explicit answer whether a website utilizes an anti-adblocking script.
-The result of an analysis is the diff that may be of great help when answering that question.
+The system counts the number of traces with execution differences.
+If there is more than 1, we assume that it is due to anti-adblocking activities.
+Also, the output include the diff of those traces as well as all unmatched ones.
 
 \section{Methodology}
 \label{methodology}
 
 The methodology is the same as in the original article \cite{DBLP:conf/ndss/ZhuHQSY18}.
 First, the effectiveness of the method is tested on a sets of negative and positive examples.
-Then, the system is used to conduct a larger study.
+Then, the system is used to conduct a small study.
+
+\todo{Start from here}
 
 One important difference from the original approach is that, unless the page has a visible anti-adblocking
-reaction on the main page, the pages are always tested on some subpage.
+reaction on the main page, the pages are always tested on some subpage. The reason for is that
+some pages show anti-adblocking warnings only 
 
 The original authors composed negative examples set from 100 websites that do not display ads,
 The reasoning behind this is that they are guaranteed not to contain anti-adblocking scripts.
