@@ -29,39 +29,39 @@ The methodology is the same as in the original article \cite{DBLP:conf/ndss/ZhuH
 First, the effectiveness of the method is tested on a sets of negative and positive examples.
 Then, the system is used to conduct a small study.
 
-\todo{Start from here}
-
 One important difference from the original approach is that, unless the page has a visible anti-adblocking
-reaction on the main page, the pages are always tested on some subpage. The reason for is that
-some pages show anti-adblocking warnings only 
+reaction on the main page, the websites are always tested on some subpage. The reason is that
+some news pages show anti-adblocking warnings only in the articles.
 
 The original authors composed negative examples set from 100 websites that do not display ads,
 The reasoning behind this is that they are guaranteed not to contain anti-adblocking scripts.
 However, such choice of examples as a benchmark seems flawed.
-One of the key challenges in this method is filtering of noise. If there are no ads, 
+One of the key challenges in this method is noise filtration. If there are no ads, 
 then there are practically no sources of execution differences between runs with and without an adblocker.
 A better choice of websites to evaluate on would be a mix of websites without ads and sites that
 display ads, but are known not to contain anti-adblockers.
 Unfortunately, finding such websites is not easy as it entails a detailed analysis of the entire code
 served by each site. Certainly not a task for one person to be done in a reasonable timespan.
-For this reason, the negative examples are only sites that do not serve ads. There is 50 of them.
+For this reason, the negative examples are only sites that do not serve ads, exactly 50 of them.
 
 The original authors had an extensive list of websites with anti-adblockers collected in their
 previous studies (almost 700 positions). Unfortunately, they do not share that list. 
 For this reason, a similar list of positive examples had to be created from scratch.
 It is a mix of websites encountered during daily browsing and sites appearing in the
-Polish anti-adblock list \cite{github:anti-adblock-list}.
+Polish anti-adblock filter list \cite{github:anti-adblock-list}.
 To avoid time-consuming code analysis at the stage of composing the list, 
 all selected websites contain visible anti-adblock warnings.
-Other important note -- the list contain at most handful of websites from Alexa 300 list.
+Other important note -- the list contain at most handful of websites from Alexa 500 list \cite{alexa-list} to keep the list
+usable for the small scale study.
 
-The adblocking extension have different policies when it comes to their official, default filters.
+The adblocking extensions have different policies when it comes to their official, default filters.
 AdBlock Plus behaves politely and respects publishers' right to ask users to show some support
 and disable the extension, whatever form it takes \cite{adblock:policy}.
 On the other hand, uBlock Origin employs a different rule. If the warning is not dismissible or is annoying,
 it will be blocked \cite{vice:ublock-policy}.
 
-Since usage of AdBlock Plus may expose a wider variety of adblock walls and warnings, it was chosen for the tests.
+Since usage of AdBlock Plus may expose a wider variety of adblock walls and warnings, 
+it was chosen for the experiments.
 
 \section{Negative examples}
 
@@ -80,7 +80,7 @@ Ideally, there should be no execution differences on any website listed here. No
 Let us have a look why.
 
 \subsubsection{\url{kinoelektronik.pl}}
-The origin of difference is unclear. There does not seem to be any element
+The origin of the difference is unclear. There does not seem to be any element
 blocked by AdBlock. Also, there are no blocked network requests. But for some reason there are differences in
 jQuery traversals.
 
@@ -98,7 +98,7 @@ The origin of the difference is unclear.
 
 \subsubsection{\url{www.worldanimalprotection.org}}
 Similar case to \url{kinoelektronik.pl}. The difference is reflected in jQuery traversals,
-but it is unknown why the DOM trees are different
+but it is unknown why the DOM trees are different.
 
 \subsubsection{\url{zoo.waw.pl}}
 The same case as \url{kinoelektronik.pl} and \url{www.worldanimalprotection.org}.
@@ -106,10 +106,9 @@ The same case as \url{kinoelektronik.pl} and \url{www.worldanimalprotection.org}
 
 \section{Positive examples}
 
-The list of websites with visible anti-adblock reaction is presented in the table \ref{table:positive}.
-\todo{reword}
-Each row consists of the URL, number of traces with execution differences, relevance of the traces
-and anti-adblocker type.
+The list of websites with visible anti-adblock reactions is presented in the table \ref{table:positive}.
+Each row consists of the URL, number of traces with execution differences, relevance of the differences 
+and the anti-adblocker type.
 
 \csvreader[webisteList,
   longtable= r | p{8cm} | r | c | p{4cm} ,
@@ -121,10 +120,10 @@ and anti-adblocker type.
 
 In most cases the system is able to find execution differences, which is a very good sign.
 In the following sections we will analyze when the system fails and discuss
-a variety of solutions.
+how the detected solutions work.
 
 The analysis of 50 websites incorporating adblock walls allows us to create a simple
-classification of anti-adblockers mechanisms:
+classification of anti-adblocking mechanisms:
 \begin{itemize}
   \item Bait-based
     \begin{itemize}
@@ -143,7 +142,7 @@ classification of anti-adblockers mechanisms:
     \end{itemize}
 \end{itemize}
 
-We can also summarize all encountered solutions:
+We can also enumerate all encountered solutions:
 \begin{itemize}
   \item Custom scripts
   \item Off the shelf modules:
@@ -160,14 +159,16 @@ We can also summarize all encountered solutions:
 The most popular solutions are custom scripts and open-source BlockAdBlock (already mentioned in \ref{anti-adblockers}).
 Other open-source scripts include Adblock Detect and KillAdBlock. One website also used a paid solution -- Admiral platform.
 The origin of the last two solutions is unclear, but the code was clearly the same (the names listed are 
-distictive functions names)
+distinctive functions names, not the real names of those modules)
 
-Some custom scripts can be really wide-spread -- some publishers own a huge number of domains and it makes 
-sense to create one robust solution and use it in every website. One example is Wirtualna Polska group (positions 25, 27), which shares
-a framework that includes a custom anti-adblocking code.
+Some custom scripts can be really widespread -- some publishers own a number of domains and it makes 
+sense to create one robust solution and use it in every website. One example is Wirtualna Polska group (positions 25 and 27), 
+which uses their own custom anti-adblocking module.
 
-Another important note -- in most cases some of the differences found originated in third-party ads
-or tracking code (Google Analytics, AdWords, Gemius trackers, Twitter buttons, Facebook buttons etc.)
+Another important note -- in most cases a significant part of differences found originated in third-party ads
+or tracking code (Google Analytics, AdWords, Gemius trackers, Twitter buttons, Facebook buttons etc.),
+but that was not closely inspected.
+
 
 \subsection{Websites with unsatisfactory results}
 
@@ -178,45 +179,42 @@ It is interesting that a number of different websites uses the same solution and
 was able to pinpoint the differences in those cases.
 
 \subsubsection{\url{www.srebrnestawy.pl}}
-In this case the code that activates the warning seems very simple and there was no reason why
+In this case the code that activates the warning seems very simple and there is no reason why
 it should not be detected by the system. Listing \ref{js:srebrnestawy} shows the code.
 
 \lstinputlisting[language=JavaScript, caption=Anti-adblocking script of \url{www.srebrnestawy.pl}, 
                        label=js:srebrnestawy]{js/srebrnestawy.js}
 
 The reason why it was not detected is that the bait was based on file \emph{advert.js}, which is not loaded 
-even when AdBlock is disabled, due to an HTTP 404 error. Consequently, the warning is displayed even 
-when AdBlock is disabled and the system was right -- there were no execution differences.
+even when AdBlock is disabled, due to a HTTP 404 error. Consequently, the warning is displayed even 
+when AdBlock is disabled and the system is right -- there are no execution differences.
 
 \subsubsection{\url{www.cyberciti.biz}}
 In this case the difference found corresponds to PageAd reaction (it is good that is was found)
 but the check that activates the adblock warnings was not found.
 
-\todo{Don't refer audiklub or refer it more precisely}
-Anti-adblocker used on this page works almost exactly the same as the one presented in section \ref{audiklub}.
+Anti-adblocker used on this page is simple, works in the same way as the one found on site \url{www.audiklub.pl}.
 This site, however, uses Cloudflare's Rocket Loader \cite{cloud-flare:rocket-loader}.
 
 Rocket Loader is a powerful mechanism developed by Cloudflare that is able to cache JavaScript code and defer its execution 
 until the entire webpage is rendered. The way it works is the following: 
 \begin{itemize}
   \item  Before serving the page, the server inspects the website and changes all JS scripts 
-            to some type not identified by the browser as JavaScript. 
-            The type also has  to be unique so that those scripts are easy to find later.
-  \item The server also encloses a special JavaScript module that will activate when the entire webpage is loaded.
+            to some type not identified by the browser as JavaScript. code 
+            The type also has to be unique so that those scripts are easy to find later.
+  \item The server also encloses a special JavaScript module that activates when the entire webpage is loaded.
   \item JavaScript module finds all scripts with changed type and executes them.
 \end{itemize}
 
+\todo{Rephrase}
 Since the module that executes the scripts is a JavaScript code, the system should still be able
-to detect the anti-adblocking code. Unfortunately, it cannot and the reason why is unclear, although 
-the most probable seems to be the noise filtering. It is a bit aggressive. In a case when some function
-does many things at once, and it has to traverse the entire DOM and do something else later, 
-it may be filtered out. DOM may be different if there is a dynamic content 
-or ads that greatly change on each reload.
-Rocker Loader has to find all scripts and execute them. Thus, it is a DOM traversal followed by executing
-another code, which is a weak spot of the filtering technique.
+to detect the anti-adblocking code. Unfortunately, it cannot and the most probable reason seems 
+to be the noise filtering. It is a bit aggressive. If some function does a DOM traversal and
+the content changes a little on each pages load, it probable that it will be filtered out.
+It is suspected that it is the case here. i.e. Rocker Loader has to find all scripts (DOM travesal) and execute them.
 
 \subsubsection{\url{torrentcity.pl}}
-This is an example of rather sophisticated custom anti-adblocking script.
+This is an example of a rather sophisticated custom anti-adblocking script.
 Listing \ref{js:torrentcity} shows the code that performs the check.
 
 \lstinputlisting[language=JavaScript, caption=Anti-adblocking script of \url{torrentcity.pl}, 
@@ -226,19 +224,19 @@ The script first sets up a bait by injecting a new script element into DOM. It i
 a file named \emph{ads.js}, which should be blocked by any adblocker.
 
 Next, the error handler is set up to activate the reaction. If the load succeeds, it still
-makes sure that are are displayed before.
+makes sure that are are actually displayed.
 
-Functions called as event handlers or via \emph{setTimeout} are a weak spot of this method,
-not just this exact implementation as nobody yet found a good way to automatically
+Functions called as event handlers or via \emph{setTimeout} are a weak spot of Differential Exeuction Analysis method,
+not just this exact implementation and nobody has yet found a good way to automatically
 analyze such unpaired events.
 
 \subsubsection{\url{player.pl}}
-An example of a really robust solution, probably used on every site belonging to TVN.
+An example of a really robust solution, probably used on every site belonging to TVN media company.
 Listing \ref{js:tvn} shows the checks. The website utilized more than one check
 to increase detection effectiveness.
-The checks itself are similar to what we have already seen. First one creates an element as a bait 
-and check if it is visible. The second uses different bait, a file, and reacts with in callbacks.
-The system fails here because the script uses all the techniques that exploit its weak spots.
+The checks itself are similar to what we have already seen. The first one creates an element as a bait 
+and check if it is visible. The second one uses different bait, a file, and reacts within callbacks.
+The system fails here because the script uses those techniques that are the weak spot of the presented method.
 
 \lstinputlisting[language=JavaScript, caption=Anti-adblocking script of \url{player.pl}, 
                        label=js:tvn]{js/tvn.js}
@@ -250,16 +248,13 @@ in a way that filtering would discard it or callbacks were utilized.
 
 \subsection{Detected anti-adblockers}
 
-This section presents the interesting methods that have not been covered yet.
+This section presents the interesting methods that have not been covered yet, but have been detected.
 Simple examples were preferred to avoid showing a cluttered code.
 
 \subsubsection{\url{www.audiklub.pl}}
 \label{audiklub}
 This is the simplest anti-adblocking script one can think of. The website includes just one advertisement, 
-but when adblocker
-is detected, the content is blocked.
-
-Listing \ref{js:audiklub} shows the check detected by the system.
+but when an adblocker is detected, the entire content is blocked (listing \ref{js:audiklub}).
 
 \lstinputlisting[language=JavaScript, caption=Anti-adblocking script of \url{www.audiklub.pl}, 
                        label=js:audiklub]{js/audiklub.org.js}
@@ -280,8 +275,8 @@ but the check is performed by injecting an element into DOM instead of setting a
                        
 \subsubsection{\url{who-called.eu}}
 The code from this website demonstrates how anti-adblocking script can detect if real
-ads are displayed, without using bait (listing \ref{js:whocalled}).
-The detecting function is run 5 seconds after the page is loaded. It checks if the content 
+ads are displayed, without using a bait (listing \ref{js:whocalled}).
+The detecting function is run 5 seconds after the page was loaded. It then checks if the content 
 of the element displaying ads is empty (contains 0 non-whitespace characters).
 
 \lstinputlisting[language=JavaScript, caption=Anti-adblocking script of \url{who-called.eu}, 
@@ -291,12 +286,12 @@ of the element displaying ads is empty (contains 0 non-whitespace characters).
 This website utilizes a check based on making sure that advertising scripts
 are loaded (listing \ref{js:kimcartoon}). It seems, though, that the example has a bug.
 Perhaps it would be desirable to invert the conditional and change the variable
-only when some of the scripts fails to load.
+only when some of the scripts fails to load (currenlty it is enough that one of them is loaded correctly)
 
 \lstinputlisting[language=JavaScript, caption=Anti-adblocking script of \url{kimcartoon.to}, 
                        label=js:kimcartoon]{js/kimcartoon.js}
                        
-\subsubsection{\url{e-dokument.org} and others using BlockAdBlock with eval obfuscation}
+\subsubsection{\url{e-dokument.org} and others using BlockAdBlock with \emph{eval} obfuscation}
 BlockAdBlock is one of the most popular off-the-shelf anti-adblocking solutions.
 The obfuscated code is quite unreadable to a human (listing \ref{js:edokument}).
 Fortunately, the string to be evaluated contains "BlockAdBlock" and we can be sure that it was
@@ -309,61 +304,79 @@ out its code on github \cite{github:blockadblock}.
 \subsubsection{\url{polscygracze.pl}}
 Another website that uses BlockAdBlock, but adds a fallback in case the module is blocked
 by an adblocker (listing \ref{js:polscygracze}). It is worth mentioning that the idea of 
-making the id of adblock warning element random is good, but it is not worth anything 
-if it is done this way. If it is static it can still be added to adblockers filter lists.
+making the id of adblock warning element random is good, but the string should be dynamic. 
+If it is static it can still be added to adblockers' filter lists.
                        
 \lstinputlisting[language=JavaScript, caption=Anti-adblocking script of \url{polscygracze.pl}, 
                        label=js:polscygracze]{js/polscygracze.js}
 
 \subsubsection{Other off-the-shelf solutions}
 Other solutions utilize similar mechanisms to those already described.
-They can be more polished and use more that one check at once, but
-they do introduce new ideas. For this reason they are not described further here.
-Interested reader can read their documentation.
+They can be more polished and use more that one check,
+but fthey do introduce new ideas. For this reason they are not described further here.
+Interested reader can check their documentation.
 
 
 \section{Small scale study}
 
-\todo{rewrite}
+The experiment has been conducted on almost 300 top websites from Alexa 500 list (Poland only) \cite{alexa-list}.
+The list of visited websites and results is attached in Appendix A. Some webistes were skipped because they
+contain adult content or their main domain do not contain any website, e.g. content delivery networks. 
+Those websites, instead of URLs, have comments (lines starting with --).
 
-The system has later been run on almost 300 top websites from Alexa 500 list (Poland only) \cite{alexa-list}.
-The list of visited websites and results is attached in Appendix A. Some webistes were not visited because they
-contain adult content, some because they were a Content Delivery Network or something similar. Those
-websites, instead of URLs, are commented out (line starts with --).
-
-Some results are marked with "TO" instead of a number of differences found. This is because
+Some results are marked with "TO" (timeout) instead of a number of differences found. This is because
 there is a limited time for each trace collection (30 seconds). After that the browser is closed.
-In some cases the browser would not close by itself and it has to be killed. It is because 
-some websites keep writing the trace and they write a lot of data (some can reach almost 50GB in 2 minutes).
-In such cases the website is skipped.
+In some cases the browser times out instead of closing. The system then waits another 90 seconds and closes
+the browser forcefully.
+Usually this is a sign of a website producing enormously large execution trace
+(some can reach almost 50GB in 2 minutes).
+Such websites are also skipped.
 
-The number of webistes, social media links and similar elements was not reported, but it seems that the more 
-elements of this kind a website incorporate, the more likely it is that there will be anti-adblocking reaction of some kind.
-It is especially true in case of third-party ads, which more often than not report adblocker usage.
+Although the number of webistes, social media links and similar elements was not counted, it seems that the more 
+elements of this kind a website incorporates, the more likely it is that there will be an anti-adblocking reaction of some kind.
+It is especially true in case of third-party ads, which more often than not report an adblocker usage.
 
+\todo{check the numbers}
+Out of 280 visited websites, 33 contained visible anti-adblocking warnings. 
+The system detected anti-adblocking reactions in 163 of them. 102 were found to be free of anti-adblockers.
+The rest (15 pages) timed out.
 Looking at the results, it seems that anti-adblocking scripts are widespread. 
-Nevertheless, the system was not properly evaluated for false positives.
-In fact, neither was the original authors' system, see section \ref{methodology}.
-For this reason it would be advisable to verify the results and manually check at least 
-a few dozens of positions from the list to make sure that the system is not producing 
-a lot of false positives.
+Silent anti-adblocking reactions are over 5 times more popular than adblock walls
+(163 reaction detected vs 33 adblock walls detected). Over 50\% of visited websites exhibits some 
+anti-adblocking reactions. It is not that surprising if we consider that most websites contain advertisements
+and the biggest ads providers at least report adblock usage.
 
 
 \section{Conclusion}
 
-The system is certainly capable of discovering a variety of anti-adblocker solutions.
-It seems, however, that the pareto principle \footnote{80\% of work is done in 20\% of time}
-is relevant here and to increase the coverage and lower false positive rate
-much more work and research has to be done.
+The performed tests show that the system is capable of detecting anti-adblocking scripts in many scenarios.
+The exact numbers are not presented purposefully -- the tests should be conducted on larger set of websites
+and the methodology should be different when it comes to negative examples.
 
-When it comes to this system, after performing all the experiments, a few improvements come to mind:
+The presented solution certainly has some weak spots. The first one is event coverage. It is easy to hide anti-adblockers
+by utilizing callbacks. The second one is the data filtration, which in some cases may filter out too much data,
+and in some it lets through a lot of traces, which limits its usefulness (the analysis becomes much harder,
+the optimum would be to always have less that 10 trace diffs for manual analysis).
+
+Here are some ideas that might alleviate both problems:
 \begin{itemize}
-  \item The trace collection should have less overhead on the browser. For large scale study
-           spending 10 minutes on each website to collect traces is too long.
-           One idea is to, instead of constructing a strings map during analysis, have
-           Chrome construct it. This, is conjunction with a use of some binary format, will
-           result in much more compact files and less time wasted on writing to files.
-  \item Although the filtering was really aggressive, in many cases there were still too many differences.
-           Some additional method to decide which differences are relevant is needed.
+  \item Make an extension that would put a thin wrapper around some built-in functions. Such wrapper would only
+           call the original built-in function, but the entry and exit would be logged by the system.
+           It might be useful for functions such as \emph{getElementById} or direct DOM manipulations.
+  \item Manually analyze and tag the results of more traces (probably hundreds) and try some machine learning method to filter
+           resulting diffs. A first try could be to use random forests methods.
 \end{itemize}
 
+The system is also a bit too slow. The trace collection should have less overhead on the browser. For large scale study
+spending 10 minutes on each website to collect traces is too long.
+One idea is to, instead of constructing a strings map during analysis, have
+Chrome construct it. This, is conjunction with a use of some binary format, will
+result in much more compact files and less time wasted on writing to files.
+
+Last but not least, the conducted experiments give lots of insights on how to build an effective anti-adblocker.
+Here are the tips:
+\begin{itemize}
+  \item Use more than one detection method, preferable utilizing callbacks.
+  \item Obfuscate the code by using minification combined with eval to make analysis extremely hard.
+  \item Randomize ids of injected adblock warning to make it harder for adblockers to filter them out.
+\end{itemize}
