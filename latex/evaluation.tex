@@ -11,22 +11,23 @@ The entire system is brought together by a program written in Python.
 It is controlled by an extensive set of flags and logs each step to make troubleshooting easier.
 The pipeline comprises following steps:
 \begin{itemize}
-  \item A website to analyze is read as an argument or from a file, when special flag is provided.
-  \item If selected, 3 positive and 3 negative traces are collected for the website (before each browser run,
-           all cookies are deleted). After each run, all unwanted traces are deleted (extensions, iframes).
-  \item If selected, the analysis is run, the diff is saved in a selected location.
+  \item A website (or list of websites) to analyze is read as an argument or from a file when special flag is provided.
+  \item If selected, 3 positive and 3 negative traces are collected for each website (before each browser run,
+           all cookies are deleted). After each run, all unwanted traces are deleted (they may come from extensions 
+           or unwanted iframes).
+  \item If selected, the analysis is run and results are saved in a selected location.
   \item Optionally, the traces are deleted.
 \end{itemize}
 
 The system counts the number of traces with execution differences.
-If there is more than 1, we assume that it is due to anti-adblocking activities.
-Also, the output include the diff of those traces as well as all unmatched ones.
+If there is at least one such pair of traces found, we assume that it is due to anti-adblocking activities.
+The output includes the diff of those traces as well as all unmatched ones.
 
 \section{Methodology}
 \label{methodology}
 
 The methodology is the same as in the original article \cite{DBLP:conf/ndss/ZhuHQSY18}.
-First, the effectiveness of the method is tested on a sets of negative and positive examples.
+First, the effectiveness of the method is tested on sets of negative and positive examples.
 Then, the system is used to conduct a small study.
 
 One important difference from the original approach is that, unless the page has a visible anti-adblocking
@@ -42,7 +43,7 @@ A better choice of websites to evaluate on would be a mix of websites without ad
 display ads, but are known not to contain anti-adblockers.
 Unfortunately, finding such websites is not easy as it entails a detailed analysis of the entire code
 served by each site. Certainly not a task for one person to be done in a reasonable timespan.
-For this reason, the negative examples are only sites that do not serve ads, exactly 50 of them.
+For this reason, here the negative examples are also only sites that do not serve ads, exactly 50 of them.
 
 The original authors had an extensive list of websites with anti-adblockers collected in their
 previous studies (almost 700 positions). Unfortunately, they do not share that list. 
@@ -76,13 +77,14 @@ The number of execution differences found is listed in the last column.
 ]{tsv/negative.tsv}{}%
 {\thecsvrow & \url{\adr} & \cnt}%
 
-Ideally, there should be no execution differences on any website listed here. Nonetheless, a few differences were identified (positions 44-50).
+Ideally, there should be no execution differences on any website listed here. Nonetheless, 
+a few differences were identified (positions 44-50).
 Let us have a look why.
 
 \subsubsection{\url{kinoelektronik.pl}}
 The origin of the difference is unclear. There does not seem to be any element
-blocked by AdBlock. Also, there are no blocked network requests. But for some reason there are differences in
-jQuery traversals.
+blocked by AdBlock. Also, there are no blocked network requests. 
+But for some reason there are differences in jQuery traversals.
 
 \subsubsection{\url{ethz.ch}}
 The cause of the difference is the tracking code.
@@ -128,12 +130,12 @@ classification of anti-adblocking mechanisms:
   \item Bait-based
     \begin{itemize}
      \item File as a bait
-     \begin{itemize}
-       \item Variable value is changed
-       \item An element injected into DOM
-       \item Error handler on network request
-     \end{itemize}
-       \item DOM element as a bait
+       \begin{itemize}
+         \item Variable value is changed
+         \item An element injected into DOM
+         \item Error handler on network request
+       \end{itemize}
+     \item DOM element as a bait
     \end{itemize}
   \item Real ads checks
     \begin{itemize}
@@ -167,7 +169,7 @@ which uses their own custom anti-adblocking module.
 
 Another important note -- in most cases a significant part of differences found originated in third-party ads
 or tracking code (Google Analytics, AdWords, Gemius trackers, Twitter buttons, Facebook buttons etc.),
-but that was not closely inspected.
+but that was not inspected further.
 
 
 \subsection{Websites with unsatisfactory results}
@@ -200,18 +202,18 @@ Rocket Loader is a powerful mechanism developed by Cloudflare that is able to ca
 until the entire webpage is rendered. The way it works is the following: 
 \begin{itemize}
   \item  Before serving the page, the server inspects the website and changes all JS scripts 
-            to some type not identified by the browser as JavaScript. code 
+            to some type not identified by the browser as JavaScript code.
             The type also has to be unique so that those scripts are easy to find later.
   \item The server also encloses a special JavaScript module that activates when the entire webpage is loaded.
   \item JavaScript module finds all scripts with changed type and executes them.
 \end{itemize}
 
-\todo{Rephrase}
 Since the module that executes the scripts is a JavaScript code, the system should still be able
 to detect the anti-adblocking code. Unfortunately, it cannot and the most probable reason seems 
-to be the noise filtering. It is a bit aggressive. If some function does a DOM traversal and
-the content changes a little on each pages load, it probable that it will be filtered out.
-It is suspected that it is the case here. i.e. Rocker Loader has to find all scripts (DOM travesal) and execute them.
+to be a bit aggressive noise filtering. If some function does a DOM traversal and
+the content changes a little on each pages load, it is probable that it will be filtered out.
+It is suspected that it is the case here. i.e. Rocker Loader has to find all scripts (DOM travesal) and execute them
+as part of one long function.
 
 \subsubsection{\url{torrentcity.pl}}
 This is an example of a rather sophisticated custom anti-adblocking script.
@@ -226,17 +228,18 @@ a file named \emph{ads.js}, which should be blocked by any adblocker.
 Next, the error handler is set up to activate the reaction. If the load succeeds, it still
 makes sure that are are actually displayed.
 
-Functions called as event handlers or via \emph{setTimeout} are a weak spot of Differential Exeuction Analysis method,
-not just this exact implementation and nobody has yet found a good way to automatically
-analyze such unpaired events.
+Functions called as event handlers or via \emph{setTimeout} are a weak spot of 
+Differential Exeuction Analysis method, not just this exact implementation 
+and there is no known way to automatically utilize such unpaired events.
 
 \subsubsection{\url{player.pl}}
 An example of a really robust solution, probably used on every site belonging to TVN media company.
-Listing \ref{js:tvn} shows the checks. The website utilized more than one check
+Listing \ref{js:tvn} shows the checks. The website utilizes more than one check
 to increase detection effectiveness.
 The checks itself are similar to what we have already seen. The first one creates an element as a bait 
 and check if it is visible. The second one uses different bait, a file, and reacts within callbacks.
-The system fails here because the script uses those techniques that are the weak spot of the presented method.
+The system fails here because the script uses those techniques 
+that are the weak spot of the presented method.
 
 \lstinputlisting[language=JavaScript, caption=Anti-adblocking script of \url{player.pl}, 
                        label=js:tvn]{js/tvn.js}
@@ -245,6 +248,7 @@ The system fails here because the script uses those techniques that are the weak
 In case of other websites where relevant execution divergence was not found 
 the reasons were the same -- either the check was intertwined between other activities
 in a way that filtering would discard it or callbacks were utilized.
+
 
 \subsection{Detected anti-adblockers}
 
@@ -286,7 +290,7 @@ of the element displaying ads is empty (contains 0 non-whitespace characters).
 This website utilizes a check based on making sure that advertising scripts
 are loaded (listing \ref{js:kimcartoon}). It seems, though, that the example has a bug.
 Perhaps it would be desirable to invert the conditional and change the variable
-only when some of the scripts fails to load (currenlty it is enough that one of them is loaded correctly)
+only when one of the scripts fails to load (currenlty it is enough that one of them is loaded correctly)
 
 \lstinputlisting[language=JavaScript, caption=Anti-adblocking script of \url{kimcartoon.to}, 
                        label=js:kimcartoon]{js/kimcartoon.js}
@@ -313,13 +317,13 @@ If it is static it can still be added to adblockers' filter lists.
 \subsubsection{Other off-the-shelf solutions}
 Other solutions utilize similar mechanisms to those already described.
 They can be more polished and use more that one check,
-but fthey do introduce new ideas. For this reason they are not described further here.
+but they do introduce new ideas. For this reason they are not described further here.
 Interested reader can check their documentation.
 
 
 \section{Small scale study}
 
-The experiment has been conducted on almost 300 top websites from Alexa 500 list (Poland only) \cite{alexa-list}.
+The experiment has been conducted on almost 300 top websites from Alexa 500 list (the version for Poland) \cite{alexa-list}.
 The list of visited websites and results is attached in Appendix A. Some webistes were skipped because they
 contain adult content or their main domain do not contain any website, e.g. content delivery networks. 
 Those websites, instead of URLs, have comments (lines starting with --).
@@ -332,19 +336,18 @@ Usually this is a sign of a website producing enormously large execution trace
 (some can reach almost 50GB in 2 minutes).
 Such websites are also skipped.
 
-Although the number of webistes, social media links and similar elements was not counted, it seems that the more 
+Although the number of ads, social media links and similar elements was not counted, it seems that the more 
 elements of this kind a website incorporates, the more likely it is that there will be an anti-adblocking reaction of some kind.
 It is especially true in case of third-party ads, which more often than not report an adblocker usage.
 
-\todo{check the numbers}
-Out of 280 visited websites, 33 contained visible anti-adblocking warnings. 
-The system detected anti-adblocking reactions in 163 of them. 102 were found to be free of anti-adblockers.
+Out of 281 visited websites, 33 contained visible anti-adblocking warnings. 
+The system detected anti-adblocking reactions in 163 of them. 103 were found to be free of anti-adblockers.
 The rest (15 pages) timed out.
 Looking at the results, it seems that anti-adblocking scripts are widespread. 
-Silent anti-adblocking reactions are over 5 times more popular than adblock walls
-(163 reaction detected vs 33 adblock walls detected). Over 50\% of visited websites exhibits some 
+Silent anti-adblocking reactions are over 5 times more frequent than adblock walls
+(163 reactions detected vs 33 adblock walls detected). Over 50\% of visited websites exhibits some 
 anti-adblocking reactions. It is not that surprising if we consider that most websites contain advertisements
-and the biggest ads providers at least report adblock usage.
+and the biggest ads providers report adblock usage.
 
 
 \section{Conclusion}
@@ -354,17 +357,18 @@ The exact numbers are not presented purposefully -- the tests should be conducte
 and the methodology should be different when it comes to negative examples.
 
 The presented solution certainly has some weak spots. The first one is event coverage. It is easy to hide anti-adblockers
-by utilizing callbacks. The second one is the data filtration, which in some cases may filter out too much data,
-and in some it lets through a lot of traces, which limits its usefulness (the analysis becomes much harder,
-the optimum would be to always have less that 10 trace diffs for manual analysis).
+by utilizing callbacks. The second one is the data filtering, which in some cases may filter out too much data,
+and in others it lets through too many traces, which limits its usefulness (the analysis becomes much harder,
+the optimum would be to always have less that 10 trace diffs for manual verification).
 
 Here are some ideas that might alleviate both problems:
 \begin{itemize}
   \item Make an extension that would put a thin wrapper around some built-in functions. Such wrapper would only
            call the original built-in function, but the entry and exit would be logged by the system.
            It might be useful for functions such as \emph{getElementById} or direct DOM manipulations.
-  \item Manually analyze and tag the results of more traces (probably hundreds) and try some machine learning method to filter
-           resulting diffs. A first try could be to use random forests methods.
+  \item Manually analyze and tag the results of more traces (at least hundreds of them) 
+           and try some machine learning method to filter
+           resulting diffs. A first try could be to use random decision forests.
 \end{itemize}
 
 The system is also a bit too slow. The trace collection should have less overhead on the browser. For large scale study
@@ -376,7 +380,7 @@ result in much more compact files and less time wasted on writing to files.
 Last but not least, the conducted experiments give lots of insights on how to build an effective anti-adblocker.
 Here are the tips:
 \begin{itemize}
-  \item Use more than one detection method, preferable utilizing callbacks.
-  \item Obfuscate the code by using minification combined with eval to make analysis extremely hard.
-  \item Randomize ids of injected adblock warning to make it harder for adblockers to filter them out.
+  \item Use more than one detection method, preferably utilizing callbacks.
+  \item Obfuscate the code by using minification combined with eval to make manual analysis extremely hard.
+  \item Randomize ids of injected adblock warnings to make it harder for adblockers to filter them out.
 \end{itemize}

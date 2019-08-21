@@ -10,7 +10,7 @@ they turn to use of ad-blocking extensions.
 
 The most popular adblockers operate based on user-curated lists. They have been around for such a long
 time that they are really effective. In order to circumvent them, one has to put an ongoing effort to be able
-to catch up. It is such a common occurence that even some browser started adding some ad-blocking
+to catch up. It is such a common occurence that even some browsers have built-in ad-blocking
 functionality (e.g. Opera).
 
 The amount of users utilizing ad-blockers cannot be ignored. In 2019 there was over 615 million devices worldwide
@@ -21,35 +21,43 @@ and react in some way. They can generate a visible warnings or even even block t
 The anti-adblockers come in many different fashions. Some of them are simple, custom-made scripts that 
 set up an obvious bait and check if there was a reaction typical to adblocking extension (e.g. a file names \emph{ads.js}
 has not been loaded). There are also more effective solutions that use a number of tricks to make the analysis
-and counter-action harder.
+and counteraction harder.
 
-The people behind adblockers may or may not choose to try circumventing anti-adblockers.
-They apply various is policies. \todo{}
+Some ad providers and publishers recognize users' discontent and start initiatives like Acceptable Ads \cite{acceptableads}.
+The idea is to whitelist ads that meet certain criteria (mostly non-intrusiveness).
+Others care less about users and just improve the anti-adblocking solutions 
+to make sure that ads continue to bring profit.
+
+The people behind adblockers have mixed approaches to anti-adblocking warnings.
+Some of them choose to let all of them be, others only if they are dismissible (and thus 
+less effective from the point of view of the site owners). Naturally, there are also other 
+players who develop extensions which block all such warnings, regardless of their
+intrusiveness. This leads to an arms race.
 
 A regular study of anti-adblocking scripts can help both sides of the barricade. Knowing how such scripts behave
 can help create better methods of detecting them. That, in turn, can lead to creation of better blocking tools.
-On the other hand, being able to automatically detect some scripts usually means that it is possible
-to block them. Thus, studying different solution and detection methods can lead to better anti-adblockers as well.
+On the other hand, being able to automatically detect some scripts usually means that it is also possible
+to block them. As a consequence, studying different solution and detection methods can lead to better anti-adblockers as well.
 
 In 2018 Zhu et al. \cite{DBLP:conf/ndss/ZhuHQSY18} proposed a sophisticated method of automatically detecting such
-scripts. This method used what is called a Differention Execution Analysis. The whole approach consists of several steps.
+scripts. This method uses what is called a Differention Execution Analysis. The whole approach consists of several steps.
 First, at least two JavaScript execution traces have to be collected. One being the website's code executed
-in an environment without any abblocking extensions and second with such plugin active.
+in an environment without any adblocking extensions and second with such plugin active.
 Those two traces are later compared and checked if there are any differences between them.
 If there are, they can be attributed to anti-adblocking scripts.
 
 There are lots of difficulties in getting the whole mechanism to work. First of all, trace collection has
-to be hand-made. There is off-the-shelf solution that would the requirements of this methods.
+to be hand-made. There is no off-the-shelf solution that would meet the requirements of this method.
 Second, JavaScript event-based execution model makes it problematic to compare execution traces
-as the order and number of events can greatly differ. This issue is solved by what is called (in this thesis)
-by processes called trace untangling and trace matching. The former is a method of gathering 
+as the order and number of events can greatly differ. This issue is solved 
+by processes called trace slicing (or untangling) and trace matching. The former is a method of gathering 
 execution events into subtraces that correspond to different events. The latter is a proccess of
 pairing subtraces from two different execution traces.
 Third, a website can incorporate tons of noise. The webpage can utilize some Random Number Generators, 
 there can be network errors, the content can be generated or selected dynamically.
 
-The authors of the method give a glimpse of how to battle each of the difficulties, but leave a lot of details 
-in most cases. The contibution of this thesis are the following:
+The authors of the method give a glimpse of how to battle each of the difficulties, 
+but leave out a lot of details in most cases. The contibution of this thesis are the following:
 \begin{itemize}
   \item The entire method has been implemented end-to-end and each step explained in detail.
   \item A novel approach based on Stable Marriage Problem to solve trace matching problem
@@ -57,7 +65,12 @@ in most cases. The contibution of this thesis are the following:
   \item A new approach to filtering execution noises has been introduced and tested.
   \item The entire pipeline has been evaluated and used to conduct a small-scale study on the most
            popular websites in Poland.
-  \item A section of anti-adblocking scripts has been presented based on the pipeline evaluation.
+  \item An overview of anti-adblocking methods has been presented, based on the pipeline evaluation.
 \end{itemize}
 
-\todo{Evaluation}
+The implementation has been manually tested on 100 websites and proved to be a useful tool 
+in detecting and analysing anti-adblocking scripts. The analysis of those websites
+resulted in identification of the most popular mechanisms and solutions.
+
+The study conducted on 300 most popular webpages in Poland revealed that anti-adblocking scripts
+are far more widespread than what can be conjectured by just studying visible reactions.
