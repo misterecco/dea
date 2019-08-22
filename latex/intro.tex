@@ -6,12 +6,14 @@ in exchange for displaying paid ads. Unfortunately, not all websites play fair. 
 concentrate on displaying as many ads as possible and generate traffic by using click-baits 
 and other shady practices. Even websites with valuable content can have overwhelming amount 
 of ads. This leads to grave dissatisfaction of some portion of users. To make their browsing experience better,
-they turn to use of ad-blocking extensions.
+they turn to ad-blocking extensions.
 
-The most popular adblockers operate based on user-curated lists. They have been around for such a long
-time that they are really effective. In order to circumvent them, one has to put an ongoing effort to be able
-to catch up. It is such a common occurence that even some browsers have built-in ad-blocking
-functionality (e.g. Opera).
+Operation of the most popular adblockers is based on user-curated lists. They have been around for such a long
+time that they became really effective. Not only they are able to block the vast majority of advertisements
+but also they rearrange the remaining content to provide seamless experience.
+In order to circumvent them, one has to put an ongoing effort to be able
+to catch up. It is such a common occurrence that even some browsers have ad-blocking
+functionality built-in (e.g. Opera).
 
 The amount of users utilizing ad-blockers cannot be ignored. In 2019 there was over 615 million devices worldwide
 with adblocker installed \cite{pagefair:adblock-report}. This, in turn, leads to loss of revenue for many businesses.
@@ -19,20 +21,24 @@ To combat this, some of them choose to deploy anti-adblockers, i.e. scripts that
 and react in some way. They can generate a visible warnings or even even block the website's content entirely.
 
 The anti-adblockers come in many different fashions. Some of them are simple, custom-made scripts that 
-set up an obvious bait and check if there was a reaction typical to adblocking extension (e.g. a file names \emph{ads.js}
-has not been loaded). There are also more effective solutions that use a number of tricks to make the analysis
-and counteraction harder.
+set up an obvious bait and check for reaction typical to adblocking extensions.
+They may check if some file was not loaded or if the advertisement banners have been tampered with.
+Some solutions perform more than one check. The most advanced ones also employ mechanisms that
+make the analysis and reverse-engineering harder. Examples include code minification
+or obfuscation involving \emph{eval} function.
 
-Some ad providers and publishers recognize users' discontent and start initiatives like Acceptable Ads \cite{acceptableads}.
-The idea is to whitelist ads that meet certain criteria (mostly non-intrusiveness).
-Others care less about users and just improve the anti-adblocking solutions 
-to make sure that ads continue to bring profit.
+Some ad providers, publishers and extension creators recognize users' discontent 
+and start initiatives like Acceptable Ads \cite{acceptableads}.
+The idea is to have a white list of ads that meet certain criteria such as non-intrusiveness.
+Such list is embedded into ad-blocking extensions and enabled by default.
+Others just focus on making sure that the ads are displayed and continue to bring profit.
+The way to do that is by constantly improving anti-adblocking solutions to stay ahead.
 
 The people behind adblockers have mixed approaches to anti-adblocking warnings.
 Some of them choose to let all of them be, others only if they are dismissible (and thus 
 less effective from the point of view of the site owners). Naturally, there are also other 
 players who develop extensions which block all such warnings, regardless of their
-intrusiveness. This leads to an arms race.
+intrusiveness. The whole conflict of interests, opinions and values leads to an arms race.
 
 A regular study of anti-adblocking scripts can help both sides of the barricade. Knowing how such scripts behave
 can help create better methods of detecting them. That, in turn, can lead to creation of better blocking tools.
@@ -41,23 +47,26 @@ to block them. As a consequence, studying different solution and detection metho
 
 In 2018 Zhu et al. \cite{DBLP:conf/ndss/ZhuHQSY18} proposed a sophisticated method of automatically detecting such
 scripts. This method uses what is called a Differention Execution Analysis. The whole approach consists of several steps.
-First, at least two JavaScript execution traces have to be collected. One being the website's code executed
-in an environment without any adblocking extensions and second with such plugin active.
+First, at least two JavaScript execution traces have to be collected. An execution trace is a list of all events such
+as function enter or leave that occurred during program execution. The first trace is of website's code executed
+in an environment without any adblocking extensions. The second one is collected with such plugin active.
 Those two traces are later compared and checked if there are any differences between them.
 If there are, they can be attributed to anti-adblocking scripts.
 
 There are lots of difficulties in getting the whole mechanism to work. First of all, trace collection has
-to be hand-made. There is no off-the-shelf solution that would meet the requirements of this method.
+to be hand-made. There is no off-the-shelf solution that would meet all requirements of this method.
 Second, JavaScript event-based execution model makes it problematic to compare execution traces
 as the order and number of events can greatly differ. This issue is solved 
 by processes called trace slicing (or untangling) and trace matching. The former is a method of gathering 
-execution events into subtraces that correspond to different events. The latter is a proccess of
+execution events into subtraces that correspond to different events. The latter is a process of
 pairing subtraces from two different execution traces.
-Third, a website can incorporate tons of noise. The webpage can utilize some Random Number Generators, 
+Third, a website can incorporate tons of noise. The webpage can utilize some random functions, 
 there can be network errors, the content can be generated or selected dynamically.
-
 The authors of the method give a glimpse of how to battle each of the difficulties, 
-but leave out a lot of details in most cases. The contibution of this thesis are the following:
+but leave out a lot of details in most cases. 
+
+This work is about implementing a similar system based on the aforementioned idea.
+The contributions of the thesis are the following:
 \begin{itemize}
   \item The entire method has been implemented end-to-end and each step explained in detail.
   \item A novel approach based on Stable Marriage Problem to solve trace matching problem
@@ -68,9 +77,13 @@ but leave out a lot of details in most cases. The contibution of this thesis are
   \item An overview of anti-adblocking methods has been presented, based on the pipeline evaluation.
 \end{itemize}
 
+First part of the system is Chromium browser with manually instrumented V8 engine that produces
+execution traces. The browser is run automatically a few times for each tested website.
+Later, the traces are filtered and analyzed to detect execution differences.
+
 The implementation has been manually tested on 100 websites and proved to be a useful tool 
-in detecting and analysing anti-adblocking scripts. The analysis of those websites
-resulted in identification of the most popular mechanisms and solutions.
+in detecting and analyzing anti-adblocking scripts. 
+The analysis of those websites resulted in identification of the most popular mechanisms and solutions.
 
 The study conducted on 300 most popular webpages in Poland revealed that anti-adblocking scripts
 are far more widespread than what can be conjectured by just studying visible reactions.
