@@ -1,10 +1,10 @@
 \chapter*{Introduction}
 \addcontentsline{toc}{chapter}{Introduction}
 
-In modern-era Internet most webpages operate for profit. Most of them, however, choose to provide free content
-in exchange for displaying paid ads. Unfortunately, not all websites play fair. Some of them
-concentrate on displaying as many ads as possible and generate traffic by using click-baits 
-and other shady practices. Even websites with valuable content can have overwhelming amount 
+In the modern-era Internet most web pages operate for profit. Most of them, however, choose to provide free content
+in exchange for displaying paid advertisements, or ads for short. Unfortunately, not all websites play fair. Some of them
+concentrate on displaying as many ads as possible, and generate traffic by using click-baits 
+and other shady practices. Even websites with valuable content can have an overwhelming amount 
 of ads. This leads to grave dissatisfaction of some portion of users. To make their browsing experience better,
 they turn to ad-blocking extensions.
 
@@ -17,7 +17,7 @@ functionality built-in (e.g. Opera).
 
 The amount of users utilizing ad-blockers cannot be ignored. In 2019 there was over 615 million devices worldwide
 with adblocker installed \cite{pagefair:adblock-report}. This, in turn, leads to loss of revenue for many businesses.
-To combat this, some of them choose to deploy anti-adblockers, i.e. scripts that detect adblocking extensions
+To combat this, some of them choose to deploy anti-adblockers, i.e., scripts that detect adblocking extensions
 and react in some way. They can generate a visible warnings or even even block the website's content entirely.
 
 The anti-adblockers come in many different fashions. Some of them are simple, custom-made scripts that 
@@ -43,32 +43,35 @@ intrusiveness. The whole conflict of interests, opinions and values leads to an 
 A regular study of anti-adblocking scripts can help both sides of the barricade. Knowing how such scripts behave
 can help create better methods of detecting them. That, in turn, can lead to creation of better blocking tools.
 On the other hand, being able to automatically detect some scripts usually means that it is also possible
-to block them. As a consequence, studying different solution and detection methods can lead to better anti-adblockers as well.
+to block them. As a consequence, studying different detection methods can lead to better anti-adblockers as well.
 
-In 2018 Zhu et al. \cite{DBLP:conf/ndss/ZhuHQSY18} proposed a sophisticated method of automatically detecting such
-scripts. This method uses what is called a Differention Execution Analysis. The whole approach consists of several steps.
+In 2018 Zhu et al. \cite{DBLP:conf/ndss/ZhuHQSY18} proposed a sophisticated method 
+of automated detection of such scripts. This method uses what is called a Differention Execution Analysis. 
+The whole approach consists of several steps.
 First, at least two JavaScript execution traces have to be collected. An execution trace is a list of all events such
 as function enter or leave that occurred during program execution. The first trace is of website's code executed
-in an environment without any adblocking extensions. The second one is collected with such plugin active.
-Those two traces are later compared and checked if there are any differences between them.
+in an environment without any adblocking extensions. The second one is collected with such a plugin active.
+These two traces are later compared and checked if there are any differences between them.
 If there are, they can be attributed to anti-adblocking scripts.
 
-There are lots of difficulties in getting the whole mechanism to work. First of all, trace collection has
+There are lots of difficulties to get the whole mechanism working. First of all, trace collection has
 to be hand-made. There is no off-the-shelf solution that would meet all requirements of this method.
 Second, JavaScript event-based execution model makes it problematic to compare execution traces
-as the order and number of events can greatly differ. This issue is solved 
+as the order and number of events can differ greatly. This issue is solved 
 by processes called trace slicing (or untangling) and trace matching. The former is a method of gathering 
 execution events into subtraces that correspond to different events. The latter is a process of
 pairing subtraces from two different execution traces.
-Third, a website can incorporate tons of noise. The webpage can utilize some random functions, 
+Third, a website can incorporate tons of noise. The web page can utilize some random functions, 
 there can be network errors, the content can be generated or selected dynamically.
 The authors of the method give a glimpse of how to battle each of the difficulties, 
 but leave out a lot of details in most cases. 
 
+\todo{transform into full sentences?}
 This work is about implementing a similar system based on the aforementioned idea.
 The contributions of the thesis are the following:
 \begin{itemize}
-  \item The entire method has been implemented end-to-end and each step explained in detail.
+  \item The entire method has been implemented \todo{explain what end-to-end means} 
+           end-to-end and each step explained in detail.
   \item A novel approach based on Stable Marriage Problem to solve trace matching problem
            has been introduced.
   \item A new approach to filtering execution noises has been introduced and tested.
@@ -85,5 +88,5 @@ The implementation has been manually tested on 100 websites and proved to be a u
 in detecting and analyzing anti-adblocking scripts. 
 The analysis of those websites resulted in identification of the most popular mechanisms and solutions.
 
-The study conducted on 300 most popular webpages in Poland revealed that anti-adblocking scripts
+The study conducted on 300 most popular web pages in Poland revealed that anti-adblocking scripts
 are far more widespread than what can be conjectured by just studying visible reactions.
