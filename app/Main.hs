@@ -120,7 +120,10 @@ diffTraces str tracesA tracesB = do
 
 printUsage :: IO ()
 printUsage =
-    mapM_ putStrLn [ "dea <path_to_input_file>" ]
+    mapM_ putStrLn [ "dea-exe <positive traces> <negative traces>"
+      , "    the number of the positive and the negative traces must be the same"
+      , "    and cannot exceed 3"
+      ]
 
 
 main :: IO ()

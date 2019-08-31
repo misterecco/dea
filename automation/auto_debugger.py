@@ -272,11 +272,11 @@ def analyze_traces(website, traces_dir, results_dir):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--traces-dir', help="Where to save the trace",
+    parser.add_argument('--traces-dir', help="Directory with the traces",
                         default=None, required=True)
-    parser.add_argument('--results-dir', help="Where to save the trace",
+    parser.add_argument('--results-dir', help="Directory with the results",
                         default=None)
-    parser.add_argument('--log-file', help="Where to save the log", default=None)
+    parser.add_argument('--log-file', help="A logging file", default=None)
     parser.add_argument('--verbose', '-v', help="Verbose logging",
                         default=False, action='store_true')
     parser.add_argument('--skip-first', help="Number of websites to skip",
@@ -293,7 +293,7 @@ if __name__ == "__main__":
     source = parser.add_mutually_exclusive_group()
     source.add_argument('website', help="Website to open", nargs="?")
     source.add_argument('--list-file', default=None,
-                        help="File with a list of websites to collect traces from")
+                        help="File with a list of websites to open")
 
     args = parser.parse_args()
 
