@@ -1,157 +1,165 @@
 \chapter{Trace collection by V8 instrumentation}
 \label{v8-instrumentation}
 
+In this chapter we give an overview of the architecture of the V8 engine
+and explain how we modify it to obtain execution traces.
+
 \section{V8 architecture}
-Most modern browsers do not implement JavaScript interpreter directly. Rather, they utilize a more
-specialized program called JavaScript engine, which they usually embed. 
+Most modern browsers do not implement a JavaScript interpreter directly. Rather, they utilize a more
+specialized program called a JavaScript engine, which they usually embed. 
 
 V8 is an engine used by the most popular browser, Chrome \cite{v8:main-page}, which in June 2019 
 had over 80\% market share  \cite{w3:browsers}.
 
 Let us start with introducing some V8-specific glossary \cite{v8:bindings}:
 \begin{itemize}
-  \item Isolate -- an instance of V8. There can be more than one Isolate used by one process of embedding application.
-  \item Context -- a concept of global variable scope in V8. Each Context has its own global variables and prototype chain.
-           Each iframe has its own separate Context. There can be multiple Context in one Isolate, but due to site isolation 
-           (see section \ref{v8-in-chrome}), each iframe is run in another process and has its own Isolate.
+  \item Isolate -- an instance of V8. There can be more than one Isolate used b a single process of the embedding application.
+  \item Context -- a concept of a global variable scope in V8. Each Context has its own global variables and prototype chain.
+           Each iframe has its own separate Context. There can be multiple Contexts in one Isolate but due to site isolation 
+           (see Section \ref{v8-in-chrome}), each iframe is run in another process and has its own Isolate.
 \end{itemize}
 
-V8 processes JavaScript code in several steps. In this thesis we will focus on steps
-directly related to implementing trace collection.
+V8 processes JavaScript code in several steps. In this thesis we focus on steps
+directly related to trace collection implementation.
 
-In short, JS code is first parsed into AST, which contatins source map information. 
-In the next step V8 traverses the entire AST and emits bytecode for each node.
-The bytecode is V8-specific and reflects the architecture of V8's abstract machine.
-More on that in section \ref{v8-bytecode}.
+In short, JavaScript code is first parsed into an AST which contains source map information. 
+In the next step, V8 traverses the entire AST and emits bytecode for each node.
+The bytecode is V8-specific and reflects the architecture of the V8's abstract machine.
+More on that can be found in Section \ref{v8-bytecode}.
 
-It is worth noting that while user-defined function are translated to bytecode,
-most built-in functions are implemented in a different way. We will take a closer look at them
-in section \ref{v8-builtins}.
+It is worth noting that while user-defined functions are translated to bytecode,
+most built-in functions are implemented in a different way. We take a closer look at them
+in Section \ref{v8-builtins}.
 
 Only after the code is translated into bytecode, it is finally executed. At this stage there are two
-kinds of functions. First -- those defined in JavaScript, represented in bytecode, second -- builtins
+kinds of functions. First -- those defined in JavaScript, represented in bytecode, second -- built-ins
 defined in other ways and already compiled into native code. This distinction is not important 
-to the user, as those functions do not differ in JavaScript, and can easily call each other.
-It it will become important once we try adding instrumentation code.
+to the user as these functions do not differ in JavaScript, i.e., there is are no syntactic differences
+and they are called in exactly the same way.
+It becomes important, though, when we try to add instrumentation code.
 
-At some point during execution, functions that are called very often with the same argument types, 
-can be compiled into native code by its TurboFan Just In Time compiler \cite{v8:turbofan-jit}.
-If later the same function is called with some argument of some other type, it simply gets deoptimized into bytecode.
+At some point during the execution, functions that are called very often with the same argument types, 
+can be compiled into native code by its TurboFan Just-In-Time compiler \cite{v8:turbofan-jit}.
+If later the same function is called with some argument of some other type, it gets deoptimized into bytecode.
 
 The engine's architecture is focused on achieving superior performance, while conforming to all
-standards and not jeopardizing security. 
+standards without jeopardizing security. 
 
 
-\subsection{JS bytecode}
+\subsection{JavaScript bytecode}
 \label{v8-bytecode}
-V8's interpreter, Ignition, is a register machine with an accumulator register \cite{medium:js-bytecode}.
+The V8's interpreter, Ignition, is a register machine with an accumulator register \cite{medium:js-bytecode}.
 While all other registers have to be specified when used as arguments, accumulating register
-is implicit, it is not specified by bytecodes that use it.
+is implicit, it is not specified by bytecode fragments that use it.
 
-This section is supposed to be only a shallow dive into V8's bytecode. We will have a look at one simple example
-to be able to understand what is going on in section \ref{v8-bytecode-injection}.
+This section is supposed to be only a shallow dive into V8's bytecode. We take a look at one simple example
+to be able to understand what is going on in Section \ref{v8-bytecode-injection}.
 
-Let us have a look at a simple JavaScript function and see the bytecode produced by Ignition.
-\footnote{V8 prints out bytecode when flag \emph{-{}-print-bytecode} is provided}
-Listing \ref{js-factorial} shows a naive implementation of a function calculating factorial.
-It includes function call (line 5) because the interpreter is lazy and otherwise the function would not be compiled.
-List \ref{bytecode-factorial} presents bytecode generated by V8's interpreter for that function.
+Let us have a look at a simple JavaScript function and see the bytecode produced by Ignition
+\footnote{V8 prints out bytecode when the \emph{-{}-print-bytecode} flag is enabled}.
+Listing \ref{js-factorial} shows a naive implementation of a function calculating the factorial.
+It includes a function call (line 5) because the interpreter is lazy and otherwise the function would not be compiled.
+Bytecode generated by the V8's interpreter for this function is presented in Listing \ref{bytecode-factorial}.
 
 \lstinputlisting[language=JavaScript, caption=Calculating factorial in JavaScript, label=js-factorial]{js/factorial.js}
-\lstinputlisting[caption=Ignition bytecode for function \emph{factorial}, label=bytecode-factorial]{bytecode/factorial.b}
+\lstinputlisting[caption=The Ignition bytecode for a \emph{factorial} function, label=bytecode-factorial]{bytecode/factorial.b}
 
-The listing starts with the parameter count, register count and frame size. The first one may be baffling at first
-since \emph{factorial} takes only one number as an argument. We have to remember 
-that all JavaScript functions also take implicit arguments \emph{this}.
+The listing starts with the parameter count, followed by the register count and the frame size. 
+The first one may be baffling at first since \emph{factorial} takes only one number as an argument. 
+We have to remember, though, 
+that all JavaScript functions also take an implicit argument -- \emph{this}.
 
-After the header, the actual bytecode is listed. The first number and letter, e.g. "18 E" in line 5 identifies expression (E)
-or statement from the source file. The number is an offset in characters.
-It is followed by the code's address in memory, offset (in bytes) from function start and the code itself in a hexadecimal form.
-All of them are rather useless for us. The most useful parts are the codes in human-readable form at the end of each line.
+After the header, the actual bytecode is listed. The first number and the letter, e.g., "18 E" in line 5, identifies an expression (E)
+or a statement (S) from the source file. The number is an offset in characters.
+It is followed by the code's address in memory, the offset (in bytes) from the function start 
+and the bytecode itself in the hexadecimal form. All of them are of secondary importance. 
+The most useful parts are the codes in a human-readable form at the end of each line.
 
-Once we recall that most codes use accumulating register, reading the code becomes relatively self-explanatory.
-To make things easier, the use of accumulating register is reflected in the code's name, e.g. 
-\emph{Ld\textbf{a}Constant [0]} loads constant numbered 0 to the accumulating register.
+Once we recall that most codes use the accumulating register, the code becomes relatively self-explanatory.
+To make things easier, the use of the accumulating register is reflected in the code's name, e.g., 
+\texttt{Ld\underline{a}Constant [0]} loads constant numbered 0 to the accumulating register.
 
-We should now be ready to interpret each line of \emph{factorial}'s bytecode.
-Upon function entry (line 5) the validity of the stack is checked. Later, integer 1 is loaded into
-accumulating register. Next, argument 0 (symbol $a0$), which happens to be $n$, is tested 
-to be less that or equal to the value stored in the accumulating register (1).
-If not, the jump (to line 11 in the listing) is performed. If the conditional was true, integer 1 is loaded
-into accumulating register, then the control jumps to the last instruction which returns from the function.
+We should now be ready to interpret each line of the \emph{factorial}'s bytecode.
+Upon the function entry (line 5) the validity of the stack is checked. Later, integer 1 is loaded into
+the accumulating register. Next, the argument numbered 0 (symbol \texttt{a0}), which happens to be $n$, is tested 
+to be less than or equal to a value stored in the accumulating register (1).
+If not, the jump to line 11 is performed. If the conditional was true, integer 1 is loaded
+into the accumulating register, then the control jumps to the last instruction which returns from the function.
 The return value is always stored in the accumulating register, so 1 is returned.
-If the conditional was true, and we are in line 11, constant 0 is loaded, which happens to be the name of our function.
-Later, that name is stored in register $r1$, argument 0 is loaded into the accumulating register, 1 is subtracted and the result
-is stored in register $r2$. Next, function of name stored in $r1$ (\emph{factorial}) is called with value stored in 
-register $r2$ ($n-1$). The result of the call, stored in the accumulating register, is then multiplied by the first argument
-($n$). The result of multiplication is already in the accumulating register and the function can now return.
+If the conditional was true, and we are at line 11, constant 0 is loaded, which happens to be the name of our function.
+Later, that name is stored in the \texttt{r1} register, the argument 0 is loaded into the accumulating register, 
+1 is subtracted, and the result is stored in the \texttt{r2} register. 
+Next, a function with a name stored in \texttt{r1} (\emph{factorial}) is called with a value stored in 
+the \texttt{r2} register ($n-1$). The result of the call, stored in the accumulating register, is then multiplied by the first argument
+($n$). The result of the multiplication is already in the accumulating register and the function can now return.
 
 
-\subsection{JS built-in functions}
+\subsection{JavaScript built-in functions}
 \label{v8-builtins}
 
-According to V8's documentation post \cite{v8:built-ins}, JavaScript built-in functions can be implemented
-in three different ways. They can be written in JavaScript directly, implemented in C++ (runtime functions)
-or defined using an abstraction called Code Stub Assembly (CSA). The post, however, is slighty dated. Since then,
-new abstraction, Torque \cite{v8:torque}, has been added.
+According to a V8's documentation post \cite{v8:built-ins}, JavaScript built-in functions can be implemented
+in three different ways. They can be written in JavaScript directly, implemented in C++ (runtime functions),
+or defined using an abstraction called \emph{CodeStubAssembler} (CSA). 
+The post, however, is slighlty dated. Since then, a new abstraction, Torque \cite{v8:torque}, has been introduced.
 
-It is not important to know how to write CSA or Torque code. It is only important to remember 
-that most built-in functions are implemented in a different way than a user-defined ones.
+It is not crucial to know the details of CSA or Torque. The important takeaway is that
+the majority of the built-in functions are implemented in a different way than the user-defined ones.
 
 
 \section{V8 usage in Chromium}
 \label{v8-in-chrome}
 
 Today's usage of V8 in Chromium is determined in large part by security concerns \cite{v8:spectre}.
-For us, the most important decision was made after discovery of Spectre \cite{Kocher2018spectre} 
+For us, the most important decision was made after a discovery of Spectre \cite{Kocher2018spectre} 
 and Meltdown \cite{Lipp2018meltdown} vulnerabilities.
-To increase protection against attacks based on those two vulnerabilites, Chrome's team decided to make
+To increase the protection against attacks based on these two vulnerabilities, Chrome's team decided to make
 Site Isolation enabled by default. \cite{chrome:site-isolation}
 
 Each website can have multiple iframes -- the default one and some embedded ones. All of them
-are run in a separate process and, as a consequence, have their own instances (Isolates) of V8.
-
+are run in separate processes and, as a consequence, have their own instances (Isolates) of V8.
+The only case when there are multiple Isolates per process is when we use Web Workers.
+Each worker has its own Isolate, but they are all run within the same process.
 
 \section{Chrome's extensions architecture}
 
 In the current model, Chrome's extensions may consist of the following components \cite{chrome:extensions}:
 \begin{itemize}
   \item Manifest -- a file describing an extension, listing all its files and capabilities.
-  \item UI Elements -- code adding extension's user interface.
+  \item UI Elements -- code adding an extension's user interface.
   \item Options Page -- a page allowing the user to customize the extension.
-  \item Background script -- a file with callbacks for browser events. Run only when an event with a registered callback occurs.
-           It runs in its own Context, in a separate process
-  \item Content script -- extension's code that is run in the page's Context. This code can read and modify DOM
-           of the website and communicate with partent extension via messages or storage.
-           It can also access a limited subset of Chrome's APIs directly, mostly those needed to communicate
-           with parent extension \cite{chrome:content-scripts}.
+  \item Background script -- a file with callbacks for browser events. It is executed only when an event with a registered callback occurs.
+           It runs in its own Context, in a separate process.
+  \item Content script -- extension's code that is run in the page's Context. This code can read and modify the DOM
+           of the website and communicate with the parent extension via messages or storage.
+           It can also directly access a limited subset of Chrome's APIs, mostly the ones needed to communicate
+           with the parent extension \cite{chrome:content-scripts}.
 \end{itemize}
 
 
 \section{V8's \emph{-{}-trace} flag}
 
-Usually the easiest way to implement some new functionality is to find a code that provides a similar
-functionality and extend it. In case of tracing, such base is provided by the V8's \emph{-{}-trace} flag.
+Usually, the easiest way to implement some new functionality is to find code that provides a similar
+functionality and extend it. In case of tracing, such a base is provided by the V8's \emph{-{}-trace} flag.
 
-First, we will inspect what this flag can do. The example from the section \ref{v8-bytecode} (Listing \ref{js-factorial}) will be reused.
-Listing shows console output of V8 with \emph{-{}-trace} flag enabled. The output is well-formated and self-explanatory.
-Unfortunately, it has some shortcomings. First, there is no source map info. Second, due to the nature of JavaScript,
-function traces can get intertwined (more on this in section \ref{js-exec-model}. And since stack information is limited to
+First, we inspect what this flag can do. The reuse the example from Section \ref{v8-bytecode} (Listing \ref{js-factorial}).
+Listing \ref{trace-factorial} shows the console output of V8 with the \emph{-{}-trace} flag enabled. The output is well-formatted and self-explanatory.
+Unfortunately, it has some shortcomings. First, there is no source map information. Second, due to the nature of JavaScript,
+function traces can get intertwined (as mentioned in Section \ref{js-exec-model}). Lastly, since stack information is limited to
 just the stack depth, it may be impossible to untangle events in some cases.
 
-\lstinputlisting[caption=V8's output for \emph{factorial} with \emph{-{}-trace} flag, label=trace-factorial]{out/factorial-trace.o}
+\lstinputlisting[caption=V8's output for a \emph{factorial} function with the \emph{-{}-trace} flag enabled, label=trace-factorial]{out/factorial-trace.o}
 
-Nevertheless, this flag is a good starting point. Let's have a deeper dive into how it works.
+Nevertheless, this flag is a good starting point. Let us have a deeper dive into how it works.
 
-We have already seen the bytecode for \emph{factorial} in listing \ref{bytecode-factorial}.
-Listing \ref{bytecode-factorial-trace} shows the bytecode for the same function when \emph{-{}-trace}
-flag is enabled. There are two differences compared to the bytecode produced without tracing flag.
-First -- there is a call to runtime function \emph{TraceEnter} before \emph{StackCheck} upon function entry. 
-Second, just before returning, the result is saved to register $r0$ and runtime function \emph{TraceExit} is called
-with return value as its argument. \emph{TraceExit} stores its argument back in accumulating register so there
+We have already seen the bytecode for \emph{factorial} in Listing \ref{bytecode-factorial}.
+Listing \ref{bytecode-factorial-trace} shows the bytecode for the same function when the \emph{-{}-trace}
+flag is enabled. There are two differences compared to the bytecode produced without the tracing flag.
+The first -- there is a call to a runtime function \emph{TraceEnter}, before \emph{StackCheck}, right after the function is entered. 
+The second -- just before returning, the result is saved to the \texttt{r0} register and a runtime function \emph{TraceExit} is called
+with the return value as its argument. \emph{TraceExit} stores its argument back in the accumulating register so there
 is no change in semantics of the inspected code.
 
-\lstinputlisting[caption=Ignition bytecode for function \emph{factorial} with \emph{-{}-trace} enabled, 
+\lstinputlisting[caption=The Ignition bytecode for a \emph{factorial} function with the \emph{-{}-trace} flag enabled, 
 	label=bytecode-factorial-trace]{bytecode/factorial-trace.b}
 
 
@@ -159,112 +167,115 @@ is no change in semantics of the inspected code.
 \label{v8-bytecode-injection}
 
 Finally, we have come to the gist of the current chapter -- tracing implementation.
-Once we have seen how \emph{-{}-trace} flag works, we can improve it to our needs.
+Once we have seen how the \emph{-{}-trace} flag works, we can improve it to our needs.
 
 The entire implementation requires a few steps:
 \begin{enumerate}
-  \item Adding two new flags -- one for turning on our tracing (\emph{-{}-trace-dea}), and one for specyfing the file with tracing info
-  \item Preparing a function that prints out the entire stack with source map information
-  \item Preparing a set of new runtime functions, one for each type of event we want to trace
-  \item Injecting calls to runtime functions in the appropriate places
+  \item Adding two new flags -- one for turning on our tracing (\emph{-{}-trace-dea}), and another one for specifying the file with tracing information.
+  \item Preparing a function that prints out the entire stack with the source map information.
+  \item Preparing a set of new runtime functions that log the runtime events with their locations and call stacks 
+        (using the function from Step 2).
+        Each type of event we want to log has its own function. These functions are called directly from the bytecode (Step 4).
+  \item Injecting calls to the runtime functions from Step 3 in the appropriate places.
 \end{enumerate}
 
-We will not delve too deeply on how to implement each part.
-Points 1 and 3 are pretty straightforward. Both of them just require adding declaration to special header files.
+We will not delve too deeply into how to implement each part.
+The first and third points are pretty straightforward. Both of them just require adding declarations to special header files.
 
-Point 2 seems the hardest, but luckily there is a similar function in the Chromium codebase.
-It is worth noting that it is possible to recover source map information during runtime
-and have the entries contain precise line and column info. However, it turned out to be too slow
-for use in Chromium, as there was a noticeable slowdown. Almost no webpage could finish loading in a reasonable time.
-The reason for such poor performance is that those locations are not stored directly in AST. Rather, only offset
-in characters is stored. To recover line and column info it is necessary to first go through
+The second point seems the hardest but luckily there is a similar function in the Chromium codebase.
+It is worth noting that it is possible to recover source map information during the runtime
+and have the entries contain the precise line and column information. However, it turned out to be too slow
+for use in Chromium, as there was a noticeable slowdown. Almost no web page could finish loading in reasonable time.
+The reason for such poor performance is that those locations are not stored directly in the AST. Rather, only offset
+in characters is stored. To recover line and column information it is necessary to first go through
 a few levels of abstraction to get the source code and then calculate the coordinates by traversing it.
-As a consequence, only character offset is displayed. It is always possible to recover more friendly
+As a consequence, only character offset is logged. It is always possible to recover the more friendly
 line, column location later, so it is not that big of a deal.
 
-The challenge of part 4 is to have the right offsets of statements/expressions.
-It is the easiest with functions, as location of beginning of their definition is stored in an 
-object representing the function during runtime. In case of usual statements it is harder 
-as their locations are available only during parsing and bytecode generation stages.
-To have those offsets accessible during runtime, they are stored as code constants
-and passed as arguments to runtime functions that print out the code events.
+The challenge of the fourth part is to have the right offsets of statements/expressions.
+It is the easiest with functions. Objects representing functions during runtime
+hold their location. In case of statements it is harder 
+as their locations are available only during the parsing and the bytecode generation stages.
+To have these offsets accessible during the runtime, we store them as code constants
+and pass as arguments to the runtime functions that log the code events.
 
-Listing \ref{bytecode-factorial-trace-dea} shows bytecode generated by Ingition with
-our tracing flag enabled. Similarly to the original tracing, there are calls to runtime functions
-upon entry (line 5) and just before returning (lines 23-24). 
+Listing \ref{bytecode-factorial-trace-dea} shows bytecode generated by Ignition with
+our tracing flag enabled. Similarly to the original tracing, there are calls to the runtime functions
+right after entering (line 5) and just before returning (lines 23-24). 
 The new part is that also the information which branch was taken is logged.
-In lines 7-8 the offset information is stored in register $r0$ which is later used by runtime
-functions that perform the actual logging (lines 12, 15)
+In lines 7-8 the offset information is stored in the \texttt{r0} register which is later used by the runtime
+functions that perform the actual logging (lines 12, 15).
 
-\lstinputlisting[caption=Ignition bytecode for function \emph{factorial} with \emph{-{}-trace-dea} enabled, 
+\lstinputlisting[caption=The Ignition bytecode for the \emph{factorial} function with the \emph{-{}-trace-dea} flag enabled, 
 	label=bytecode-factorial-trace-dea]{bytecode/factorial-trace-dea.b}
 		
-Listing \ref{trace-factorial-dea} shows the output produced by the new flag. Each execution event
-entry consists of event type, location (optional, depends on event type) and full call stack.
-Events returning value also log that value, but it is not used later in the pipeline.
-Stack is represented as a list of locations. Each location consists
-of function name, file of origin and offset in the file (in characters). The $-1$ that appers after
-the offset is a remnant of the implementation that recovers full position info (line, column).
+Listing \ref{trace-factorial-dea} shows the output produced with the new flag enabled. Each execution event
+entry consists of an event type, location (optional, depends on the event type) and a full call stack.
+Events returning a value also log that value, but it is not used later in the analysis.
+The call stack is represented as a list of locations. Each location consists
+of a function name, a file of origin, and an offset in the file (in characters). The integer $-1$ that appears after
+the offset is a remnant of the implementation that recovers the full position information (line, column).
 The next part of the pipeline expects two numbers here. This way it is easy to turn on full position recovery
 and have the pipeline still working.
 
-Execution events that are logged in the current implementation:
+In the current implementation the following execution events are logged:
 \begin{itemize}
-  \item Function enter and exit
-  \item Generator enter, suspend, yield (exit is indistinguishable from a normal function exit)
-  \item If statement then/else paths
-  \item Ternary expression truthy/falsy value (same as if statement paths)
+  \item Function enter and exit.
+  \item Generator enter, suspend, yield (exit is indistinguishable from a normal function exit).
+  \item "then"/"else" branches in conditional statements.
+  \item Truthy/falsy values in ternary expressions (the same types of events as in the "if" statement branches).
 \end{itemize}
 
 It is easy to extend the implementation to also log execution events associated with loops, but there
-is a tradeoff between coverage and size of log files created, so it was not done.
+is a trade-off between the coverage and the size of the log files created, so it was left out.
 	
-\lstinputlisting[caption=V8's output for \emph{factorial} with \emph{-{}-trace-dea} flag, label=trace-factorial-dea]{out/factorial-trace-dea.o}
+\lstinputlisting[caption=V8's output for a \emph{factorial} function with the \emph{-{}-trace-dea} flag enabled, label=trace-factorial-dea]{out/factorial-trace-dea.o}
 
-Careful reader might have noticed that in listing \ref{js-factorial} in the last line there is a call to \emph{factorial}
+A careful reader might have noticed that in Listing \ref{js-factorial} in the last line there is a call to \emph{factorial}
 and the result is passed to \emph{console.log}, but only the former call is logged.
 The reason for this is that the implemented solution works only for functions defined in JavaScript
-(it is also true for the default \emph{-{}-trace} flag)
-Functions defined in other ways (see section \ref{v8-builtins}) are not logged. It is certainly possible
-to add logging to each one of them by modyfing their code or by modifying CSA/Torque compiler,
-but it has not been done here. The amount of work required to instrument also those function
+(it is also true for the default \emph{-{}-trace} flag).
+Functions defined in other ways (see Section \ref{v8-builtins}) are not logged. It is certainly possible
+to add logging to each one of them by modifying their code or by modifying CSA and Torque compilers
+but it has not been done here. The amount of work required to instrument also these functions
 seems disproportionate to the potential improvements. Another justification is that they are
-a black box anyway, there is no JavaScript code corresponding to them 
+black boxes anyway, there is no JavaScript code corresponding to them 
 and we cannot see branch divergences happening inside them.
 
-The last obstacle worth noting is the Chrome's process separation. As explained in section \ref{v8-in-chrome}
+The last obstacle worth noting is the Chrome's process separation. As explained in Section \ref{v8-in-chrome},
 there are multiple instances of V8 running at the same time, in different processes.
-When some flag is passed to Chrome, all instances see the same value. Therefore, if some file is passed,
-all processes will write to the same file, possibly resulting in interlacing and unusable output. 
+When some flag is passed to Chrome, all the instances see the same value. Therefore, if some trace output file is passed,
+all processes will write to the same file, possibly resulting in interlacing and an unusable output. 
 An easy workaround is to create a new file for each Isolate and later just select only the interesting one 
-(the one that corresponds to the analyzed website). There will be always at most one such file 
-(theoretically a website could not contain any JavaScript code) and it is easy to select it by greping 
-by source location. All other files can be deleted.
+(the one that corresponds to the analyzed website). There is always at most one such file 
+(theoretically there could be none as a website can contain no JavaScript code) and it is easy to select it
+by filtering (using the "grep" tool) by source location. All other files can be deleted.
 
-V8 Isolate is generally pretty oblivious to what code it runs. Website code is the same to V8 
+A V8 Isolate is generally pretty oblivious to what code it runs. Website code is the same to V8 
 as extension code. After all, the environment (Web API, DOM, etc.) is provided by the browser.
 Nevertheless, it is preferable not to log adblocker events. Such extensions have really long lists of filters
-and their intialization takes 1-2 seconds when the browser is not producing execution traces.
+and their initialization takes 1-2 seconds when the browser is not producing execution traces.
 When it does, the initialization takes more than half a minute on a slow computer and the trace itself 
-occupies 4.5GB. Again, we can resort to a trick: inspect the printed event and stop tracing in a given 
+can easily grow to several gigabytes.
+Fortunately, we can resort to a trick: inspect the logged event and stop tracing in a given 
 Isolate when some extension-specific file has been encountered. As a result, extension code is not
-traced and it has no noticeable performace deterioration.
+traced and it has no noticeable performance impact.
 
 
-\section{Controlling Chrome programatically}
+\section{Controlling Chrome programmatically}
 
-Adblocking extensions need a second or two to initialize their code. Even in a stock browser,
+Ad-blocking extensions need a second or two to initialize their code. Even in a stock browser,
 opening a website immediately after the browser starts can result in ads not being blocked.
 As a consequence, simply passing the website address through console is not enough 
 when we want to collect traces automatically. The extension will simply not be fully initialized
-and website will not be blocked. Some more sophisticated solution is needed.
+and advertisements will not be blocked. A more sophisticated solution is needed.
 
-Fortunately, there is a framework for building end-to-end tests -- Selenium \cite{selenium-python}. 
-It has binding in all major languages, in our case we will use Python.
+Luckily, there is a framework for building end-to-end tests -- Selenium \cite{selenium-python}. 
+It has binding in all major languages, in our case we use Python.
 
-Selenium is capable of doing any interaction with the website that user can do.
+Selenium is capable of performing the same interactions with the website that user can do.
 It communicates directly with a specialized WebDriver, different for each browser.
-In case of Chrome it is called ChromeDriver. WebDriver issues the command to the browser through
-the debugging interface, which is a special port with well-defined communication protocol.
-And that is all we know about it, as we are not using any of its sophisticated features, 
-just connecting to the browser, opening a website and closing it after some time.
+In case of Chrome it is called ChromeDriver. A WebDriver issues commands to the browser through
+the debugging interface which is a special port with a well-defined communication protocol.
+That is all we need to know about it, as we are not using any of its sophisticated features, 
+just connecting to the browser, opening a website and closing it after some specified time.

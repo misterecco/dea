@@ -1,17 +1,21 @@
 \chapter{Basic concepts}
 
+In this chapter, we introduce the most essential concepts used throughout this thesis
+and provide the motivation for studying adblockers and anti-adblockers.
+
 \section{Definitions}
+\label{definitions}
 
 \begin{itemize}
-  \item Execution event -- each occurence of control evaluating some expression, entering or leaving a control statement etc.
+  \item Execution event -- each occurrence of some statement or expression being evaluated, e.g., entering 
+        a function or taking a "then" branch in the "if" statement.
   \item Execution trace -- a series of execution events collected during program execution. 
-           It is dependent both on program structure and its input (also implicit such as randomly generated numbers).
-  \item Positive trace -- an execution trace collected with an active adblocking extension.
-  \item Negative trace -- an execution trace collected without an adblocking extension.
-  \item Execution index -- a concept formally introduced by Xin et al. \cite{sigplan:execution-indexing}. 
-                                         For our purposes we can define it is any function that uniquely identifies execution points. In our case it will
-                                         be a statement source map information (file name and precise location of the statement) 
-                                         with the current function stack.
+           It is dependent both on program structure and its input (also implicit, such as randomly generated numbers).
+  \item Positive trace -- an execution trace collected with an active ad-blocking extension.
+  \item Negative trace -- an execution trace collected without an ad-blocking extension.
+  \item Execution index -- any function that uniquely identifies execution points. In our case
+        it is a statement source map information, i.e., file name and precise location of the statement,
+        with the current function stack. This concept was formally introduced by Xin et al. \cite{sigplan:execution-indexing}.
 \end{itemize}
 
 
@@ -21,33 +25,35 @@ Online advertising market is growing each year. The Interactive Advertising Bure
 states that the Internet advertising revenues surpassed \$100 billion annually in the US in 2018. Moreover, according the same report,
 online advertising is the biggest ad media, approximately 30\% bigger than TV.
 
-What it means for the Internet users? That there will be more and more ads. 
-Some sources estimate that an average Internet user is servered 11250 ads per month \cite{huff:too-many-ads}.
+This means that there is going to be more and more ads. 
+Some sources estimate that an average Internet user is served 11250 ads per month \cite{huff:too-many-ads}.
 
-Not surprisingly, ads are the main source of income for numerous websites. By displaying ads, authors are able to provide
+Unsurprisingly, ads are the main source of income for numerous websites. By displaying ads, authors are able to provide
 valuable content free of charge. 
 
-However, there are multiple reasons why users may not want to see online advertisements \cite{pagefair:adblock-report}: 
+However, there are multiple reasons why users may not want to see online advertisements \cite{pagefair:adblock-report, globalwebindex:report}: 
 \begin{itemize}
   \item There are websites which sole purpose is to earn money by displaying as many ads 
-           as possible without providing any interesting or original content.
+           as possible, without providing any interesting or original content.
            They often generate traffic using click-baits and similar shady practices.
-  \item Ads often lenghten pages loading times. The slower the connection, the more annoying it becomes.
-  \item Ads increase webpage payload size, which generates higher cost on mobile connections.
-  \item Some ads track users, which raises privacy concerns.
+  \item Ads often lengthen pages loading times. The slower the connection, the more annoying it becomes.
+  \item Ads increase web page payload size which incurs higher cost on mobile connections.
+  \item Some ads track users which raises privacy concerns.
   \item Ads can be used to spread malware (in this case it is called Adware) \cite{adblock:adware}.
-  \item Some of them are annoying.
+  \item Users may find some of the ads annoying. The most notorious examples include pop-ups and video ads.
+        Both are intrusive and negatively affect the comfort of using the website.
+  \item Many advertisements are irrelevant to the content of the web page.
   \item They occupy the screen space, leaving less area for the content,
            which can be especially frustrating on devices with small screens.
 \end{itemize}
 
 One of the solutions is to use special browser extensions, called ad blockers (or adblockers), 
 that prevent ads from being displayed.
-Their work is based on community-curated list of filters. Those filters are used to first identify some portions
-of website as ads and later remove them.
+Their work is based on community-curated list of filters. These filters are used to identify some portions
+of the website as ads and then to remove them.
 
-The removal depends on the type of an ad. Whole page overlays can simply be not shown without disrupting
-the website UI. On the other hand, after banners removal, there remains some blank space, which is usually
+The removal depends on the type of an ad. Whole page overlays can simply be hidden without disrupting
+the website UI. On the other hand, after banners removal, there remains some blank space which is usually
 fixed by repositioning adjacent elements. In some cases, particularly when ads are served from domain
 of some ad provider, the requests that download ads can be blocked, thus saving the bandwidth and reducing data usage.
 
@@ -56,9 +62,10 @@ One of the most popular ad-blocking extension, uBlock Origin states in its manif
 that it is the users' right to have control over what content should be accepted in their browser \cite{ublock:manifesto}.
 As if other arguments for using adblockers were not enough of a justification.
 
-Some ad-serving recognize users' frustration and create initiatives like Acceptable Ads \cite{acceptableads}.
-In this program, advertisements meeting certain criteria are whitelisted by the commitee.
-The whitelist is active by default in adblocking extensions that join the initiative.
+Some ad-serving companies and extension authors 
+recognize users' frustration and create initiatives like Acceptable Ads \cite{acceptableads}.
+In this program, advertisements meeting certain criteria are whitelisted by a special committee.
+The whitelist is active by default in all adblocking extensions that join the initiative.
 Some bigger ad providers are also charged for being whitelisted.
 
 
@@ -66,8 +73,8 @@ Some bigger ad providers are also charged for being whitelisted.
 \label{anti-adblockers}
 
 In 2017 PageFair prepared a report on adblockers usage \cite{pagefair:adblock-report}.
-Worldwide, 11\% users use ad blocking solutions. This may seem small, but it is not not uncommon
-for some markets to around 20\% or higher penetration (e.g. USA -- 18\%, Germany -- 29\%, Indonesia -- 58\%).
+Worldwide, 11\% users use ad-blocking solutions. This may seem small, but it is not not uncommon
+for some markets to reach 20\% or higher penetration (e.g. USA -- 18\%, Germany -- 29\%, Indonesia -- 58\%).
 
 Such high percentage of users not seeing ads means lost income for many businesses.
 To recover lost revenue, many websites started deploying anti-adblocking scripts.
@@ -76,38 +83,39 @@ they take some action, potentially mitigating the problem.
 The action can vary from simply just reporting the use of extension to the backend to blocking 
 the content entirely.
 
-The aforementioned PageFair report studied so-called "adblock walls", i.e. mechanism
+The aforementioned PageFair report studied so-called "adblock walls", i.e., a mechanism
 preventing users from seeing the website content when they have an adblocker enabled.
-The study shows that 90\% of ablockers users have come upon an adblock wall.
+The study shows that 90\% of ablockers users have encountered an adblock wall.
 More interestingly, 74\% of them leave the website when confronted with such a wall.
 
 Anti-adblockers come in many variants. There are simple, custom scripts written 
 specifically for one service, but there are also some sophisticated scripts 
 provided by third parties, designed to be easily integrated on any site.
 
-One rather simple example is presented by company offering "Adblock Analytics" service \cite{detect-adblock}.
-In their example they add a file named \emph{ads.js} with a short JavaScript code that adds a hidden div block with an unique id.
+One rather simple example is presented by a company offering the "Adblock Analytics" service \cite{detect-adblock}.
+In their example they add a file named \emph{ads.js} with a short JavaScript code that adds a hidden div block with a unique id.
 Ad-blocking extensions usually block files named like that. All that remains to detect the extension is to
-check whether the div element was indeed added to the DOM tree. If not, it is a sign that an adblocker is active.
+check whether the div element was indeed added to the DOM tree. 
+The lack of it indicates that an adblocker is active.
 
 Another example is the "BlockAdBlock" module \cite{github:blockadblock}.
 Similarly to the first first example, it first sets up a bait,
-i.e. a component that should look like an ad to the adblocker, 
+i.e., a component that should look like an ad to the adblocker, 
 but then the detection phase is a little bit more thorough. It runs the check several times
 and it inspects several properties of the bait to make sure it has not been tampered with.
 If something changed -- an adblocker is detected.
 It also allows to register callbacks for both outcomes of the analysis.
 
 Even people that base their websites on content managements systems have an easy access to such
-scripts. Most notably, around 1 in 3 of the top 10 million most popular website runs on WordPress \cite{wiki:wordpress}
+scripts. Most notably, around 1 in 3 out of the top 10 million most popular website runs on WordPress \cite{wiki:wordpress},
 and in this case there are multiple extensions available, varying in price and capabilities \cite{wordpress:antiadblockers}.
 
 Naturally, there are multiple users that do not want to disable their adblocker to see the website's content.
 As a reaction, there are several solutions developed to combat anti-adblockers.
-Usually, they focus on providing new filtering lists, that can be used by the existing adblocking extensions
+Usually, they focus on providing new filtering lists, that can be used by the existing ad-blocking extensions
 \cite{anti-adblock-killer, nano-defender}
 
-Unfortunately, those solutions have rather poor effectiveness, as reported by Zhu et al. \cite{DBLP:conf/ndss/ZhuHQSY18}.
+Unfortunately, these solutions have rather poor effectiveness, as reported by Zhu et al. \cite{DBLP:conf/ndss/ZhuHQSY18}.
 This inability to effectively defuse anti-blockers was their most important reason to develop a method of detecting such scripts.
 
 
@@ -115,55 +123,56 @@ This inability to effectively defuse anti-blockers was their most important reas
 
 Differential Execution Analysis is a dynamic program analysis method. Its goal is to pinpoint exact differences
 in two executions of the same program with different inputs or other conditions (e.g. network or memory errors).
-Good overview of the method is presented by Johnson et al. \cite{ieee:alignment-and-slicing}
+A good overview of the method is presented by Johnson et al. \cite{ieee:alignment-and-slicing}
 
 The analysis is usually performed by collecting an execution trace for each run and then comparing
 them using trace alignment. Trace alignment is a process of identifying which fragments of execution traces
-are common, where they diverge and when they converge again. The exact algorithm is discussed in section \ref{trace-alignment}.
+are common, where they diverge, and when they converge again. The exact algorithm is discussed in Section \ref{trace-alignment}.
 
-The results can be useful in various scenarios, i.e. debugging a program or during security analysis.
+The results can be useful in various scenarios, e.g., debugging a program or during security analysis.
 
 
 \section{Detecting anti-adblockers}
 
-Zhu et al. in their paper "Measuring and Disrupting Anti-Adblockers Using Differential Execution Analysis" 
- \cite{DBLP:conf/ndss/ZhuHQSY18} introduced a novel method of detecting anti-adblockers
-using Differential Execution Analysis. The work presented in this thesis is based on that method. 
+Zhu et al. \cite{DBLP:conf/ndss/ZhuHQSY18} introduced a novel method of detecting anti-adblockers
+using Differential Execution Analysis. The work presented here is based on this method. 
 The differences and new ideas are explained in the later sections.
 
-The premise is quite simple. They collect execution traces of JavaScript code on given website
+The approach is quite simple. They collect execution traces of JavaScript code on a given website,
 first without any content blocking and then with an adblocker turned on.
-Afterwards, they analyze such traces using Differential Execution Analysis. Any differences in execution in both cases
-are attributed to anti-adblocking activities of the website.
+Afterwards, they analyze such traces using Differential Execution Analysis. Any differences in execution
+are attributed to the anti-adblocking activities of the website.
 
 While the idea is pretty straightforward, the are multiple challenges here. 
 First, trace collection is not a trivial task, especially when the interest exceeds just function entry and exit events.
-The authors instrument V8 engine to achieve the task, but do not provide much details, apart from briefly stating that
-their instrumentation is embedded into native code generation process.
+The authors instrument the V8 JavaScript engine \cite{v8:main-page} to achieve the task but do not provide much details, apart from briefly stating that
+their instrumentation is embedded into the native code generation process.
 
-Second, due to JavaScript execution model, described in detail in section \ref{js-exec-model}, execution traces of different
+Second, due to JavaScript execution model, described in detail in Section \ref{js-exec-model}, execution traces of different
 events are interleaved. To battle this issue, traces have to be sliced into subtraces and analyzed pairwise.
 In a language with a simpler execution model this step would be unnecessary.
-Authors also do not explain their method of how to pair the subtraces. They just mention that all $m \times n$ pairs 
+Also, the authors do not explain their method of pairing the subtraces. They just mention that all $m \times n$ pairs 
 have to be analyzed.
 
-Lastly, the biggest challenge is to combat execution noises, e.g. page randomness or variable content.
-Authors solve the issue by loading the same page three times with an adblocker and three times without and
-use redundant traces to generate a black list of execution differences.
+Lastly, the biggest challenge is to combat execution noises, e.g., page randomness or variable content.
+The authors solve the issue by loading the same page three times with an adblocker and three times without it, and
+use redundant traces to generate a blacklist of execution differences.
 
 
 \section{JavaScript execution model}
 \label{js-exec-model}
 
-JavaScript concurrency model is based on an "event loop" \cite{mozilla:event-loop}. The engine is essentially single-threaded
-and concurrency is implemented by utilizing a message queue. This queue processes events one by one, to completion, i.e.
-a function corresponding to the message starts with a new, empty stack and its processing is done when the stack becomes empty.
+JavaScript concurrency model is based on an "event loop" \cite{mozilla:event-loop}. The engine is essentially single-threaded\footnote{With the exception of Web Workers introduced in HTML5. Since they are not a common occurrence, 
+we consider them to be out of the scope of this thesis}
+and concurrency is achieved by utilizing a message queue. This queue processes events one by one, 
+till completion, i.e., a function corresponding to the message starts with a new, 
+empty stack and its processing is done when the stack becomes empty.
 
 The easiest way to add new events to the queue is by calling \emph{setTimeout} or \emph{setInterval}.
 Furthermore, all callbacks attached to DOM events (e.g. \emph{onClick}) are executed by adding an event to the queue.
 
-It is worth noting that execution of functions can be intertwined, e.g. when generators are used.
+It is worth noting that execution of functions can be intertwined, e.g., when generators are used.
 This is the reason why trace slicing is needed.
 
-Each iframe and browser tab has its own execution environment that include a separate message loop, 
-more on that in section \ref{v8-in-chrome}.
+Each iframe and browser tab has its own execution environment that include a separate message loop.
+We elaborate on this in Section \ref{v8-in-chrome}.

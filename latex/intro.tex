@@ -77,7 +77,7 @@ The contributions of the thesis are the following:
 \begin{itemize}
   \item An automated system analyzing web pages has been implemented.
            It takes a list of websites, collects the traces (with and without an adblocker), 
-           filter and analyze them to find execution differences. 
+           filters and analyzes them to find execution differences. 
            Each step of the pipeline has been described in detail.
   \item A novel approach based on Stable Marriage Problem to solve trace matching problem
            has been introduced.
@@ -87,13 +87,13 @@ The contributions of the thesis are the following:
   \item A by-product of performed experiments is an overview of the anti-adblocking methods.
 \end{itemize}
 
-First part of the system is Chromium browser with manually instrumented V8 engine \cite{v8:main-page}.
+The first part of the system is Chromium browser with manually instrumented V8 engine \cite{v8:main-page}.
 Modified V8 produces JavaScript execution traces. 
 The browser is run automatically a few times for each tested website.
 After each run, saved traces are filtered. When all traces are collected, 
 the analysis is run to detect execution differences.
 
-The implementation has been tested on 100 websites and the results manually verified. 
+The implementation has been tested on 100 websites and the results verified manually. 
 Half of the examples were positive ones (pages with anti-adblockers).
 The system proved to be a useful tool in detecting and analyzing anti-adblocking scripts. 
 The analysis of those websites resulted in identification of the most popular 
