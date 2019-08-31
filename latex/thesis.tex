@@ -84,7 +84,14 @@
 
 \usepackage{graphicx}
 \usepackage{xcolor}
-\newcommand{\todo}[1]{\colorbox{yellow}{ \color{red} \textbf{TODO}: {#1}}}
+\newcommand{\intodo}[1]{\colorbox{yellow}{ \color{red} \textbf{TODO}: {#1}}}
+
+% PROMOTOR PROMOTOR PROMOTOR PROMOTOR PROMOTOR PROMOTOR PROMOTOR PROMOTOR
+%\usepackage[top=1in, bottom=1.25in, left=1.8in, right=1.8in,marginparsep=10pt,marginparwidth=100pt]{geometry} %usunac te linijke, ona jest tylko po to by moje notatki na marginesach się miesciły
+\usepackage[shadow,color=black!15,textsize=scriptsize]{todonotes}
+\newcommand{\kdtodo}[1]{\todo[color=red!40,bordercolor=red,size=\footnotesize]{\textbf{TODO:}#1}}
+\newcommand{\kdintodo}[1]{\todo[inline,color=red!40,bordercolor=red,size=\footnotesize]{\textbf{TODO:}#1}}
+% END PROMOTOR
 
 \usepackage{cite}
 \usepackage{url}

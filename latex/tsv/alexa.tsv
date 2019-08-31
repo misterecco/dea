@@ -9,7 +9,7 @@
 8	onet.pl	Y	8	https://wiadomosci.onet.pl/nauka/zmarl-wybitny-rosyjski-astrofizyk-nikolaj-kardaszow-tworca-skali-rozwoju-cywilizacji/f96d48q
 9	wikipedia.org	N	0	https://pl.wikipedia.org/wiki/Bokeh
 10	interia.pl	N	4	https://fakty.interia.pl/swiat/news-iranska-telewizja-iran-przejal-zagraniczny-tankowiec,nId,3130879
-11	bongacams.com	--	--	-- Adult content
+11	bongacams.com	--	--	https://bongacams.com
 12	vk.com	N	0	https://vk.com/club75379670
 13	wiocha.pl	N	10	https://www.wiocha.pl/1589883,Zona-skarb
 14	otomoto.pl	N	16	https://www.otomoto.pl/oferta/bmw-seria-8-840d-xdrive-coupe-upust-126000-pln-ID6CdinC.html
@@ -22,14 +22,14 @@
 21	reddit.com	N	TO	https://www.reddit.com/r/europe/comments/cltm32/black_forest_germany/
 22	mbank.pl	N	50	https://www.mbank.pl/indywidualny/
 23	netflix.com	N	1	https://www.netflix.com/pl-en/
-24	pornhub.com	--	--	-- Adult content
+24	pornhub.com	--	--	https://pornhub.com
 25	filmweb.pl	Y	7	https://www.filmweb.pl/film/Top+Gun%3A+Maverick-2020-602101
 26	gumtree.pl	N	2	https://www.gumtree.pl/a-mieszkania-i-domy-do-wynajecia/krakow/kawalerka-do-wynajacia/1005563446690911255418809
 27	centrum24.pl	N	0	https://www.centrum24.pl/
 28	booking.com	N	TO	https://www.booking.com/hotel/pl/willa-nad-potokiem-ladek-zdroj.pl.html
 29	tvn24.pl	N	6	https://uwaga.tvn.pl/reportaze,2671,n/jak-polacy-pija-malpki,296314.html
 30	twitch.tv	N	TO	https://www.twitch.tv/summoningsalt/videos
-31	livejasmin.com	--	--	-- Adult content
+31	livejasmin.com	--	--	https://livejasmin.com
 32	instagram.com	N	6	https://www.instagram.com/paulnicklen/
 33	wykop.pl	N	3	https://www.wykop.pl/link/5074087/genialny-pomysl-pkp-dworzec-centralny-ma-wygladac-jak-w-latach-70/
 34	yahoo.com	N	TO	https://www.yahoo.com/news/texas-woman-killed-by-police-officer-attempting-to-shoot-her-dog-083943364.html
@@ -42,10 +42,10 @@
 41	blogspot.com	N	1	http://paulinaphotographer.blogspot.com
 42	pracuj.pl	N	2	https://www.pracuj.pl/praca/front-end-software-developer-wroclaw,oferta,6999667
 43	money.pl	N	20	https://www.money.pl/gospodarka/faktura-za-wizyte-prezydenta-mieszkaniec-szczecinka-oddal-pieniadze-ministrowi-6409902580459649a.html
-44	xhamster.com	--	--	-- Adult content
+44	xhamster.com	--	--	https://xhamster.com
 45	kinokrad.co	N	0	https://kinokrad.co/336686-yesterday.html
 46	google.ru	N	9	https://www.google.ru/search?q=tom+cruise
-47	xvideos.com	-- 	--	-- Adult content
+47	xvideos.com	--	--	https://xvideos.com
 48	fandom.com	N	1	https://www.fandom.com/articles/the-mandarin-shang-chi-father-mcu
 49	roblox.com	N	0	https://www.roblox.com
 50	mail.ru	N	138	https://news.mail.ru/politics/38207623/
@@ -71,7 +71,7 @@
 70	ingbank.pl	N	2	https://www.ing.pl
 71	kwejk.pl	Y	4	https://kwejk.pl/obrazek/3421509/strefa-wolna-od-lpg.html
 72	aliorbank.pl	N	0	https://www.aliorbank.pl
-73	redtube.com	--	--	-- Adult content
+73	redtube.com	--	--	https://redtube.com
 74	elektroda.pl	Y	0	https://www.elektroda.pl/rtvforum/topic3602578.html
 75	businessinsider.com.pl	Y	6	https://businessinsider.com.pl
 76	euro.com.pl	N	9	https://www.euro.com.pl/cms/tg-samsung-galaxy-a50-z-opaska.bhtml
@@ -84,7 +84,7 @@
 83	mediaexpert.pl	N	142	https://www.mediaexpert.pl/telewizory/telewizor-lg-led-55um7610,id-1367344
 84	wpolityce.pl	N	8	https://wpolityce.pl/sport/457898-banka-zapowiedzial-125-mln-zl-na-kilka-obiektow-sportowych
 85	eblik.pl	N	0	https://eblik.pl
-86	xnxx.com	--	--	-- Adult content
+86	xnxx.com	--	--	https://xnxx.com
 87	jbzdy.co	Y	24	https://jbzdy.net
 88	olx.ua	N	7	https://www.olx.ua/obyavlenie/razborka-shrot-rozborka-skoda-superb-i-azm-IDAPIUA.html
 89	dobreprogramy.pl	N	1	https://www.dobreprogramy.pl/ASUS-ROG-Strix-XG438Q.-Najwiekszy-monitor-4K-UHD-FreeSync-2-HDR,News,103080.html
@@ -99,7 +99,7 @@
 98	imgur.com	N	13	https://imgur.com/t/dogs_are_the_best_people/iCfQe0O
 99	intercity.pl	N	1	https://www.intercity.pl/pl/
 100	empik.com	N	5	https://www.empik.com/za-duzo-mysle-poradnik-dla-analizujacych-bez-konca-petitcollin-christel,p1222736270,ksiazka-p
-101	datezone.com	--	--	-- Adult content
+101	datezone.com	--	--	https://datezone.com
 102	niezalezna.pl	N	0	https://niezalezna.pl/282703-usa-rasizm-nie-byl-motywem-strzelaniny
 103	ok.ru	N	8	https://ok.ru/realmadrid.c.f
 104	google.de	N	9	https://www.google.de/search?q=tom+cruise
@@ -112,12 +112,12 @@
 111	pz.gov.pl	N	0	https://pz.gov.pl/pz/index
 112	vod.pl	N	10	https://vod.pl/filmy/alita-battle-angel-caly-film-online/35p9esb
 113	imdb.com	N	56	https://www.imdb.com/title/tt6095472/
-114	ukr.net	N	o	https://prm.ua/estoniya-ne-viznavatime-rosiyski-pasporti-vidani-zhitelyam-donbasu/
+114	ukr.net	N	0	https://prm.ua/estoniya-ne-viznavatime-rosiyski-pasporti-vidani-zhitelyam-donbasu/
 115	wordpress.com	N	0	https://wordpress.com
 116	adobe.com	N	2	https://www.adobe.com/products/photoshop-lightroom.html
 117	rozklad-pkp.pl	N	1	http://rozklad-pkp.pl
 118	pkobp.pl	N	0	https://www.pkobp.pl
-119	microsoftonline.com	--	--	-- Does not work
+119	microsoftonline.com	--	--	https://microsoftonline.com
 120	poczta-polska.pl	N	0	http://www.poczta-polska.pl/bohateron-oddajmy-hold-powstancom/
 121	discordapp.com	N	0	https://discordapp.com
 122	shinden.pl	N	0	https://shinden.pl/series/52932-dungeon-ni-deai-wo-motomeru-no-wa-machigatteiru-darou-ka-2nd-season
@@ -141,7 +141,7 @@
 140	trojmiasto.pl	Y	7	https://www.trojmiasto.pl/wiadomosci/Pierwszy-odcinek-trasy-tramwajowej-na-Stogi-zostanie-jednak-otwarty-jesienia-n136680.html
 141	steamcommunity.com	N	0	https://steamcommunity.com
 142	steampowered.com	N	563	https://store.steampowered.com/app/1089350/NBA_2K20/
-143	sex.com	--	--	-- Adult content
+143	sex.com	--	--	https://sex.com
 144	gry.pl	Y	31	http://www.gry.pl/gra/chrome-dino
 145	auto-swiat.pl	Y	11	https://www.auto-swiat.pl/klasyki/oldtimer/klasyk-z-najwyzszej-polki-citroen-ds-21-presidentielle/bz1xrvg
 146	bankier.pl	N	33	https://www.bankier.pl/wiadomosc/Donald-Trump-o-oslabieniu-juana-Chiny-manipuluja-waluta-7717876.html
@@ -151,11 +151,11 @@
 150	santander.pl	N	1	https://www.santander.pl
 151	lotto.pl	N	20	https://www.lotto.pl/eurojackpot/aktualnosci/ponad-1-mln-zlotych-w-eurojackpot-w-bydgoszczy-kumulacja-nadal-rosnie
 152	infor.pl	N	8	https://www.infor.pl/prawo/powiat/rejestracja-samochodu/2758936,Podatek-przy-zakupie-auta-2019-r.html
-153	youporn.com	--	--	-- Adult content
+153	youporn.com	--	--	https://youporn.com
 154	mozilla.org	N	0	https://blog.mozilla.org/blog/2019/06/04/when-it-comes-to-privacy-default-settings-matter/
 155	pepper.pl	N	0	https://www.pepper.pl/promocje/kupon-na-115-zl-do-hulajnog-citybee-177880
 156	gamepedia.com	N	16	https://www.gamepedia.com/news/1977-defy-the-rules-of-mass-and-physics-with-morphies
-157	showup.tv	--	--	-- Adult content
+157	showup.tv	--	--	https://showup.tv
 158	reverso.net	N	5	http://www.reverso.net/text_translation.aspx?lang=EN
 159	decathlon.pl	N	TO	https://www.decathlon.pl/rower-mtb-st-100-275-id_8400336.html
 160	ekino-tv.pl	N	37	https://ekino-tv.pl/movie/show/ksiezniczka-labedzi-i-krolestwo-muzyki-hd-the-swan-princess-kingdom-of-music-2019-dubbing/26187
@@ -172,26 +172,26 @@
 171	tumblr.com	N	0	https://oliviawhen.tumblr.com/post/186738461661/did-you-know-its-doggust-dog-august-my-new
 172	poczta.home.pl	N	1	https://login.poczta.home.pl
 173	mazowieckie.pl	N	1	https://www.mazowieckie.pl/pl/aktualnosci/aktualnosci/38711,Rzez-Woli-pamiec-cywilnych-ofiar-w-75-rocznice.html
-174	cbbp1.com	--	--	-- Unreachable
+174	cbbp1.com	--	--	https://cbbp1.com
 175	lowcygier.pl	Y	4	https://lowcygier.pl/promocje-cyfrowe/mass-effect-trilogy-w-wersji-cyfrowej-za-2990-zl-w-muvesklepie-gol/
 176	uw.edu.pl	N	0	https://www.uw.edu.pl/droga-mleczna-w-trzech-wymiarach/
 177	z1.fm	N	0	https://z1.fm/song/23170839
 178	t.co	N	0	https://t.co
 179	worldoftanks.eu	N	0	https://worldoftanks.eu/en/news/special-offers/Pz-Kpfw-IV-schmalturm-august/
 180	nazwa.pl	N	0	https://www.nazwa.pl/cennik/cennik-wordpress-cloud/
-181	zbiornik.com	-- 	--	-- Adult content
+181	zbiornik.com	--	--	https://zbiornik.com
 182	targeo.pl	N	0	https://www.targeo.pl
 183	bing.com	N	5	https://www.bing.com/search?q=tom+cruise
 184	plotek.pl	N	0	http://www.plotek.pl/plotek/7,154063,25061903,kamil-durczok-mial-kupic-wodke-na-pol-godziny-przed-kolizja.html
 185	pclab.pl	N	4	https://pclab.pl/art81578.html
 186	benchmark.pl	N	5	http://www.benchmark.pl/testy_i_recenzje/gigabyte-x570-aorus-xtreme-i-ssd-m-2-na-pcie-4-0-recenzja.html
-187	chaturbate.com	--	--	-- Adult content
+187	chaturbate.com	--	--	https://chaturbate.com
 188	komputronik.pl	N	67	https://www.komputronik.pl/product/341252/goodram-8gb-1x8gb-1600mhz-ddr3-cl11-dimm-.html
 189	9gag.com	N	1	https://9gag.com/gag/aQ1P42W
 190	leroymerlin.pl	N	0	https://www.leroymerlin.pl/podlogi-drewniane-boazerie/panele-deski-parkiety/panele-podlogowe-laminowane/panele-podlogowe-dab-elbrus-ac4-8-mm-home-inspire,p469109,l188.html
 191	wetransfer.com	N	0	https://wetransfer.com
 192	smaker.pl	N	4	https://smaker.pl/przepis-busz-poledwiczka,174227,kulinarnachwila.html
-193	roksa.pl	--	--	-- Adult content
+193	roksa.pl	--	--	https://roksa.pl
 194	rp.pl	N	0	https://www.rp.pl/Urzednicy/308069970-Kto-moglby-zaplacic-za-loty-marszalka-Marka-Kuchcinskiego.html
 195	amazon.de	N	274	https://www.amazon.de/Samsonite-SCure-Spinner-Koffer-Black/dp/B007WQJSGM/
 196	badoo.com	N	0	https://badoo.com
@@ -222,7 +222,7 @@
 221	autocentrum.pl	N	3	https://www.autocentrum.pl/newsy/wiozla-dwie-osoby-w-bagazniku-na-trzy-miesiace-straci-prawo-jazdy/
 222	duckduckgo.com	N	1	https://duckduckgo.com/?q=tom+cruise&ia=web
 223	pogodynka.pl	N	3	http://pogodynka.pl/wiadomosci/aktualnosci/1907-22072019-ocena-meteorologiczna-i-hydrologiczna-1343
-224	siteadvisor.com	--	--	-- Redirects
+224	siteadvisor.com	--	--	https://siteadvisor.com
 225	bm.pl	N	0	https://bm.pl
 226	tradedoubler.com	N	0	https://www.tradedoubler.com/en/publishers/
 227	privatbank.ua	N	1	https://privatbank.ua
@@ -235,7 +235,7 @@
 234	znanylekarz.pl	N	TO	https://www.znanylekarz.pl/magdalena-zychowska/dermatolog-lekarz-medycyny-estetycznej/wroclaw
 235	site-pl.com	N	0	http://site-pl.com/?reqp=1&reqr=
 236	wiktionary.org	N	0	https://en.wiktionary.org/wiki/amazing
-237	best2019-games-web1.com	--	--	-- 403 HTTP Error
+237	best2019-games-web1.com	--	--	https://best2019-games-web1.com
 238	kinogo.eu	N	0	http://kinogo.eu/9265-mstiteli-final-2019.html
 239	lubimyczytac.pl	Y	4	http://lubimyczytac.pl/aktualnosci/rozmowy/12508/szczescie-solo-czyli-o-zwiazku-z-samym-soba-wywiad-z-wanda-zolcinska
 240	speedtest.pl	N	0	http://www.speedtest.pl/kim_jestesmy
@@ -293,7 +293,7 @@
 292	lento.pl	N	0	https://jelenia-gora.lento.pl/poszukujemy-opiekunki-opiekunow,8060605.html
 293	gazetaprawna.pl	N	4	https://serwisy.gazetaprawna.pl/edukacja/artykuly/1425114,500-plus-dla-nauczycieli-8-6-mln-zl-lacznie.html
 294	cdaction.pl	N	1	https://www.cdaction.pl/news-57514/gamescom-2019-final-fantasy-7-remake-i-marvels-avengers-grywalne-dla-zwiedzajacych.html
-295	akamaized.net	--	--	-- CDN
+295	akamaized.net	--	--	https://akamaized.net
 296	savefrom.net	N	0	https://en.savefrom.net
 297	webcamera.pl	Y	251	https://mielno.webcamera.pl
 298	getinbank.pl	N	2	https://www.getinbank.pl
